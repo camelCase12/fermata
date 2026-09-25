@@ -1,0 +1,17 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Fermata.ViewModels"
+             x:Class="Fermata.Views.PromptDialogView"
+             x:DataType="vm:PromptDialog">
+  <Border Background="{DynamicResource RaisedBrush}" CornerRadius="14" Padding="26,22" Width="440" BoxShadow="{StaticResource DialogShadow}">
+    <StackPanel Spacing="16">
+      <TextBlock Text="{Binding Title}" Classes="h2" />
+      <TextBlock Text="{Binding Message}" Classes="secondary" TextWrapping="Wrap" IsVisible="{Binding Message, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+      <TextBox Name="Input" Classes="field" Text="{Binding Text}" PlaceholderText="{Binding Placeholder}" />
+      <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10" Margin="0,4,0,0">
+        <Button Theme="{StaticResource PillButton}" Command="{Binding CancelCommand}" Content="Cancel" />
+        <Button Theme="{StaticResource PillButton}" Classes="accent" Command="{Binding ConfirmCommand}" Content="{Binding ConfirmLabel}" IsDefault="True" />
+      </StackPanel>
+    </StackPanel>
+  </Border>
+</UserControl>

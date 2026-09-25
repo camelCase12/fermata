@@ -1,0 +1,25 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:pages="using:Fermata.ViewModels.Pages"
+             xmlns:views="using:Fermata.Views"
+             x:Class="Fermata.Views.Pages.ArtistsView"
+             x:DataType="pages:ArtistsViewModel">
+  <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+    <StackPanel Margin="32,10,32,40" Spacing="22">
+      <StackPanel Spacing="4">
+        <TextBlock Text="Artists" Classes="h1" />
+        <TextBlock Text="{Binding Summary}" Classes="secondary" />
+      </StackPanel>
+      <Grid ColumnDefinitions="*,Auto">
+        <TextBox Classes="field" Text="{Binding Filter}" PlaceholderText="Filter artists" MaxWidth="360" HorizontalAlignment="Left" MinWidth="260">
+          <TextBox.InnerLeftContent>
+            <PathIcon Data="{StaticResource Icon.Search}" Classes="small" Margin="10,0,2,0" Foreground="{DynamicResource TextTertiaryBrush}" />
+          </TextBox.InnerLeftContent>
+        </TextBox>
+        <ToggleSwitch Grid.Column="1" IsChecked="{Binding IncludeGuests}" OnContent="Including featured artists"
+                      OffContent="Including featured artists" VerticalAlignment="Center" />
+      </Grid>
+      <views:CardGrid Items="{Binding Artists}" MinCardWidth="160" />
+    </StackPanel>
+  </ScrollViewer>
+</UserControl>

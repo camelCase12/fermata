@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>Fermata</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- Avalonia.FreeDesktop already depends on this exact version; sharing it keeps one D-Bus stack in the binary. -->
+    <PackageReference Include="Tmds.DBus.Protocol" Version="0.94.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="Fermata.Tests" />
+  </ItemGroup>
+</Project>

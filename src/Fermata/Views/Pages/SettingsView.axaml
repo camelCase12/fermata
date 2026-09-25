@@ -1,0 +1,170 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:pages="using:Fermata.ViewModels.Pages"
+             xmlns:playback="using:Fermata.Playback"
+             xmlns:sys="using:System"
+             x:Class="Fermata.Views.Pages.SettingsView"
+             x:DataType="pages:SettingsViewModel">
+  <UserControl.Styles>
+    <Style Selector="Border.section">
+      <Setter Property="Background" Value="{DynamicResource SurfaceBrush}" />
+      <Setter Property="CornerRadius" Value="12" />
+      <Setter Property="Padding" Value="24,20" />
+    </Style>
+    <Style Selector="Grid.option">
+      <Setter Property="Margin" Value="0,6" />
+    </Style>
+  </UserControl.Styles>
+  <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+    <StackPanel Margin="32,10,32,40" Spacing="22" MaxWidth="860" HorizontalAlignment="Left">
+      <TextBlock Text="Settings" Classes="h1" />
+
+      <Border Classes="section">
+        <StackPanel Spacing="14">
+          <TextBlock Text="Music folders" Classes="h3" />
+          <TextBlock Text="{Binding Statistics}" Classes="secondary" />
+          <ItemsControl ItemsSource="{Binding Folders}">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate DataType="sys:String">
+                <Grid ColumnDefinitions="Auto,*,Auto" Margin="0,2">
+                  <PathIcon Data="{StaticResource Icon.Folder}" Foreground="{DynamicResource TextSecondaryBrush}" />
+                  <TextBlock Grid.Column="1" Text="{Binding}" VerticalAlignment="Center" Margin="12,0" TextTrimming="CharacterEllipsis" />
+                  <Button Grid.Column="2" Theme="{StaticResource IconButton}" ToolTip.Tip="Stop using this folder"
+                          Command="{Binding $parent[UserControl].((pages:SettingsViewModel)DataContext).RemoveFolderCommand}" CommandParameter="{Binding}">
+                    <PathIcon Data="{StaticResource Icon.Close}" Classes="small" />
+                  </Button>
+                </Grid>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+          <Grid ColumnDefinitions="*,Auto,Auto" Margin="0,4,0,0">
+            <TextBox Name="FolderBox" Classes="field" Text="{Binding NewFolder}" PlaceholderText="Type a folder path, e.g. ~/Music" />
+            <Button Grid.Column="1" Theme="{StaticResource PillButton}" Margin="10,0,0,0" Command="{Binding AddTypedFolderCommand}" Content="Add" />
+            <Button Name="BrowseButton" Grid.Column="2" Theme="{StaticResource PillButton}" Margin="10,0,0,0" Content="Browse…" />
+          </Grid>
+          <Grid ColumnDefinitions="*,Auto" Classes="option">
+            <StackPanel>
+              <TextBlock Text="Watch folders for changes" />
+              <TextBlock Text="Added, changed and removed files appear in the library by themselves." Classes="caption" />
+            </StackPanel>
+            <ToggleSwitch Grid.Column="1" IsChecked="{Binding WatchFolders}" OnContent="" OffContent="" />
+          </Grid>
+          <Button Theme="{StaticResource PillButton}" HorizontalAlignment="Left" Command="{Binding RescanCommand}">
+            <StackPanel Orientation="Horizontal" Spacing="8">
+              <PathIcon Data="{StaticResource Icon.Refresh}" Classes="small" />
+              <TextBlock Text="Scan again" VerticalAlignment="Center" />
+            </StackPanel>
+          </Button>
+        </StackPanel>
+      </Border>
+
+      <Border Classes="section">
+        <StackPanel Spacing="8">
+          <TextBlock Text="Playback" Classes="h3" Margin="0,0,0,6" />
+          <Grid ColumnDefinitions="*,Auto" Classes="option">
+            <StackPanel>
+              <TextBlock Text="Output device" />
+              <TextBlock Text="Where Fermata sends sound." Classes="caption" />
+            </StackPanel>
+            <ComboBox Grid.Column="1" ItemsSource="{Binding Devices}" SelectedItem="{Binding Device}" MinWidth="260" MaxWidth="340">
+              <ComboBox.ItemTemplate>
+                <DataTemplate DataType="playback:AudioDevice">
+                  <TextBlock Text="{Binding Description}" TextTrimming="CharacterEllipsis" />
+                </DataTemplate>
+              </ComboBox.ItemTemplate>
+            </ComboBox>
+          </Grid>
+          <Grid ColumnDefinitions="*,Auto" Classes="option">
+            <StackPanel>
+              <TextBlock Text="Volume normalization" />
+              <TextBlock Text="Uses ReplayGain tags to play songs (or whole albums) at an even loudness." Classes="caption" />
+            </StackPanel>
+            <ComboBox Grid.Column="1" ItemsSource="{Binding ReplayGainModes}" SelectedItem="{Binding ReplayGain}" MinWidth="160" />
+          </Grid>
+          <Grid ColumnDefinitions="*,Auto" Classes="option">
+            <StackPanel>
+              <TextBlock Text="Gapless playback" />
+              <TextBlock Text="Songs follow each other without a pause, as live albums and mixes intend." Classes="caption" />
+            </StackPanel>
+            <ToggleSwitch Grid.Column="1" IsChecked="{Binding Gapless}" OnContent="" OffContent="" />
+          </Grid>
+          <Grid ColumnDefinitions="*,Auto" Classes="option">
+            <StackPanel>
+              <TextBlock Text="Autoplay" />
+              <TextBlock Text="When the queue ends, keep playing similar music from your library." Classes="caption" />
+            </StackPanel>
+            <ToggleSwitch Grid.Column="1" IsChecked="{Binding Autoplay}" OnContent="" OffContent="" />
+          </Grid>
+          <Grid ColumnDefinitions="*,Auto" Classes="option">
+            <StackPanel>
+              <TextBlock Text="Resume where you left off" />
+              <TextBlock Text="Restore the queue and position (paused) when Fermata starts." Classes="caption" />
+            </StackPanel>
+            <ToggleSwitch Grid.Column="1" IsChecked="{Binding ResumeSession}" OnContent="" OffContent="" />
+          </Grid>
+          <Grid ColumnDefinitions="*,Auto" Classes="option">
+            <StackPanel>
+              <TextBlock Text="Colour from the cover" />
+              <TextBlock Text="Buttons and highlights take their colour from the playing song's cover art." Classes="caption" />
+            </StackPanel>
+            <ToggleSwitch Grid.Column="1" IsChecked="{Binding AccentFromArt}" OnContent="" OffContent="" />
+          </Grid>
+          <Grid ColumnDefinitions="*,Auto" Classes="option">
+            <StackPanel>
+              <TextBlock Text="Patterned backdrops" />
+              <TextBlock Text="Backdrops are patterns made from the colours and shapes of the cover art, instead of a soft blur of it." Classes="caption" />
+            </StackPanel>
+            <ToggleSwitch Grid.Column="1" IsChecked="{Binding GeneratedBackdrop}" OnContent="" OffContent="" />
+          </Grid>
+          <Button Theme="{StaticResource PillButton}" HorizontalAlignment="Left" Command="{Binding ClearHistoryCommand}" Margin="0,8,0,0" Content="Clear listening history" />
+        </StackPanel>
+      </Border>
+
+      <Border Classes="section">
+        <StackPanel Spacing="14">
+          <TextBlock Text="Playlists" Classes="h3" />
+          <TextBlock Text="Bring in playlists saved by other players. A playlist's own page can export it again."
+                     Classes="secondary" TextWrapping="Wrap" />
+          <Button Name="ImportButton" Theme="{StaticResource PillButton}" HorizontalAlignment="Left">
+            <StackPanel Orientation="Horizontal" Spacing="8">
+              <PathIcon Data="{StaticResource Icon.Playlist}" Classes="small" />
+              <TextBlock Text="Import M3U playlists…" VerticalAlignment="Center" />
+            </StackPanel>
+          </Button>
+        </StackPanel>
+      </Border>
+
+      <Border Classes="section">
+        <StackPanel Spacing="10">
+          <TextBlock Text="Keyboard shortcuts" Classes="h3" Margin="0,0,0,6" />
+          <ItemsControl ItemsSource="{Binding Shortcuts}">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate DataType="pages:ShortcutRow">
+                <Grid ColumnDefinitions="240,*" Margin="0,4">
+                  <TextBlock Text="{Binding Keys}" FontFamily="monospace" FontSize="13" Foreground="{DynamicResource AccentBrush}" />
+                  <TextBlock Grid.Column="1" Text="{Binding Action}" Classes="secondary" />
+                </Grid>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+          <TextBlock Classes="caption" TextWrapping="Wrap" Margin="0,6,0,0"
+                     Text="Media keys and desktop widgets control Fermata through MPRIS (for example playerctl play-pause)." />
+        </StackPanel>
+      </Border>
+
+      <Border Classes="section">
+        <StackPanel Spacing="6">
+          <TextBlock Text="About" Classes="h3" Margin="0,0,0,6" />
+          <TextBlock>
+            <Run Text="Fermata " FontWeight="SemiBold" /><Run Text="{Binding Version}" />
+          </TextBlock>
+          <TextBlock Classes="secondary">
+            <Run Text="Audio: " /><Run Text="{Binding EngineStatus}" />
+          </TextBlock>
+          <TextBlock Text="{Binding DataLocations}" Classes="caption" TextWrapping="Wrap" LineHeight="19" />
+          <TextBlock Classes="caption" TextWrapping="Wrap" Text="Icons: Material Design Icons by Pictogrammers (Apache 2.0). Audio: libmpv. Typeface: Inter." />
+        </StackPanel>
+      </Border>
+    </StackPanel>
+  </ScrollViewer>
+</UserControl>

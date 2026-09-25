@@ -1,0 +1,79 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:pages="using:Fermata.ViewModels.Pages"
+             xmlns:lib="using:Fermata.Library"
+             xmlns:views="using:Fermata.Views"
+             xmlns:controls="using:Fermata.Controls"
+             x:Class="Fermata.Views.Pages.HomeView"
+             x:DataType="pages:HomeViewModel">
+  <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+    <StackPanel Margin="32,10,32,40" Spacing="38">
+      <TextBlock Text="{Binding Greeting}" Classes="h1" />
+
+      <!-- First run, or a library folder without music -->
+      <Border IsVisible="{Binding IsLibraryEmpty}" Background="{DynamicResource SurfaceBrush}" CornerRadius="14" Padding="36,32" MaxWidth="720" HorizontalAlignment="Left">
+        <StackPanel Spacing="14">
+          <TextBlock Text="Let's find your music" Classes="h2" />
+          <TextBlock TextWrapping="Wrap" Classes="secondary" LineHeight="21">
+            <Run Text="Fermata plays the music on this computer. It is looking in" />
+            <Run Text="{Binding MusicFolders}" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" />
+            <Run Text="— add the folders where you keep music, and it will read them and keep watching for changes." />
+          </TextBlock>
+          <StackPanel Orientation="Horizontal" Spacing="10" Margin="0,6,0,0">
+            <Button Theme="{StaticResource PillButton}" Classes="accent" Command="{Binding OpenSettingsCommand}" Content="Choose music folders" />
+          </StackPanel>
+          <TextBlock Text="Scanning…" Classes="caption" IsVisible="{Binding IsLoading}" />
+        </StackPanel>
+      </Border>
+
+      <ItemsControl ItemsSource="{Binding Sections}">
+        <ItemsControl.ItemsPanel>
+          <ItemsPanelTemplate>
+            <StackPanel Spacing="42" />
+          </ItemsPanelTemplate>
+        </ItemsControl.ItemsPanel>
+        <ItemsControl.ItemTemplate>
+          <DataTemplate DataType="pages:HomeSectionViewModel">
+            <Panel>
+              <views:Shelf IsVisible="{Binding IsCards}" Title="{Binding Title}" Subtitle="{Binding Subtitle}" Items="{Binding Items}" />
+              <StackPanel IsVisible="{Binding IsTracks}" Spacing="14">
+                <StackPanel>
+                  <TextBlock Text="{Binding Subtitle}" Classes="caption" FontSize="13" Margin="0,0,0,2" />
+                  <TextBlock Text="{Binding Title}" Classes="h2" />
+                </StackPanel>
+                <ItemsControl ItemsSource="{Binding Items}">
+                  <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                      <WrapPanel ItemWidth="320" />
+                    </ItemsPanelTemplate>
+                  </ItemsControl.ItemsPanel>
+                  <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="lib:Track">
+                      <Border Classes="pick" Height="60" Padding="6" Margin="0,0,16,0" CornerRadius="8" Background="Transparent" Cursor="Hand">
+                        <Grid ColumnDefinitions="48,*">
+                          <controls:CoverArt Source="{Binding Converter={x:Static views:Converters.TrackArt}}" Width="48" Height="48" Radius="4" />
+                          <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="12,0,0,0" Spacing="2">
+                            <TextBlock Text="{Binding Title}" FontWeight="Medium" TextTrimming="CharacterEllipsis" />
+                            <TextBlock Text="{Binding DisplayArtist}" FontSize="13" Classes="secondary" TextTrimming="CharacterEllipsis" />
+                          </StackPanel>
+                        </Grid>
+                      </Border>
+                    </DataTemplate>
+                  </ItemsControl.ItemTemplate>
+                </ItemsControl>
+              </StackPanel>
+            </Panel>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+
+      <Button Theme="{StaticResource PillButton}" HorizontalAlignment="Left" Command="{Binding ShuffleLibraryCommand}"
+              IsVisible="{Binding !IsLibraryEmpty}">
+        <StackPanel Orientation="Horizontal" Spacing="8">
+          <PathIcon Data="{StaticResource Icon.Shuffle}" Classes="small" />
+          <TextBlock Text="Shuffle your whole library" VerticalAlignment="Center" />
+        </StackPanel>
+      </Button>
+    </StackPanel>
+  </ScrollViewer>
+</UserControl>

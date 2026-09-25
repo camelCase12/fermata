@@ -1,0 +1,49 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:pages="using:Fermata.ViewModels.Pages"
+             xmlns:views="using:Fermata.Views"
+             x:Class="Fermata.Views.Pages.ExploreView"
+             x:DataType="pages:ExploreViewModel">
+  <UserControl.DataTemplates>
+    <DataTemplate DataType="pages:BrowseTile">
+      <Button Classes="tile" Background="{Binding Background}" Height="96" MinWidth="180" Padding="16,12"
+              HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" VerticalContentAlignment="Bottom"
+              Command="{Binding $parent[UserControl].((pages:ExploreViewModel)DataContext).OpenTileCommand}" CommandParameter="{Binding}">
+        <StackPanel>
+          <TextBlock Text="{Binding Title}" FontSize="17" FontWeight="Bold" TextTrimming="CharacterEllipsis" />
+          <TextBlock Text="{Binding Subtitle}" FontSize="12" Opacity="0.8" />
+        </StackPanel>
+      </Button>
+    </DataTemplate>
+  </UserControl.DataTemplates>
+  <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+    <StackPanel Margin="32,10,32,40" Spacing="36">
+      <TextBlock Text="Explore" Classes="h1" />
+      <StackPanel Spacing="14" IsVisible="{Binding Genres.Count, Converter={x:Static views:Converters.Positive}}">
+        <TextBlock Text="Genres" Classes="h2" />
+        <ItemsControl ItemsSource="{Binding Genres}">
+          <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+              <UniformGrid Columns="4" />
+            </ItemsPanelTemplate>
+          </ItemsControl.ItemsPanel>
+        </ItemsControl>
+      </StackPanel>
+      <StackPanel Spacing="14" IsVisible="{Binding Decades.Count, Converter={x:Static views:Converters.Positive}}">
+        <TextBlock Text="Decades" Classes="h2" />
+        <ItemsControl ItemsSource="{Binding Decades}">
+          <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+              <UniformGrid Columns="4" />
+            </ItemsPanelTemplate>
+          </ItemsControl.ItemsPanel>
+        </ItemsControl>
+      </StackPanel>
+      <views:Shelf Title="New in your library" Items="{Binding NewAlbums}" />
+      <StackPanel Spacing="12" IsVisible="{Binding HasTopSongs}">
+        <TextBlock Text="Your most played" Classes="h2" />
+        <views:TrackList DataContext="{Binding TopSongs}" />
+      </StackPanel>
+    </StackPanel>
+  </ScrollViewer>
+</UserControl>

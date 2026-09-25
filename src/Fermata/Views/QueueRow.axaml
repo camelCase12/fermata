@@ -1,0 +1,52 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:playback="using:Fermata.Playback"
+             xmlns:vm="using:Fermata.ViewModels"
+             xmlns:views="using:Fermata.Views"
+             xmlns:controls="using:Fermata.Controls"
+             x:Class="Fermata.Views.QueueRow"
+             x:DataType="playback:QueueEntry"
+             Height="58" Background="Transparent">
+  <UserControl.Styles>
+    <Style Selector="views|QueueRow Button#RemoveButton, views|QueueRow Border#PlayingOverlay">
+      <Setter Property="IsVisible" Value="False" />
+    </Style>
+    <Style Selector="ListBoxItem:pointerover views|QueueRow:not(.current) Button#RemoveButton">
+      <Setter Property="IsVisible" Value="True" />
+    </Style>
+    <Style Selector="ListBoxItem:pointerover views|QueueRow TextBlock#Duration">
+      <Setter Property="IsVisible" Value="False" />
+    </Style>
+    <Style Selector="ListBoxItem:pointerover views|QueueRow.current TextBlock#Duration">
+      <Setter Property="IsVisible" Value="True" />
+    </Style>
+    <Style Selector="views|QueueRow.current TextBlock#Title">
+      <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
+    </Style>
+    <Style Selector="views|QueueRow.current Border#PlayingOverlay">
+      <Setter Property="IsVisible" Value="True" />
+    </Style>
+    <Style Selector="views|QueueRow.played">
+      <Setter Property="Opacity" Value="0.55" />
+    </Style>
+  </UserControl.Styles>
+  <Grid ColumnDefinitions="46,*,Auto" Margin="6,0">
+    <Panel Width="44" Height="44">
+      <controls:CoverArt Name="Art" Width="44" Height="44" Radius="4" />
+      <Border Name="PlayingOverlay" Background="{DynamicResource ShadeStrongBrush}" CornerRadius="4">
+        <PathIcon Data="{StaticResource Icon.Equalizer}" Classes="small" Foreground="{DynamicResource AccentBrush}" />
+      </Border>
+    </Panel>
+    <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="12,0" Spacing="2">
+      <TextBlock Name="Title" Text="{Binding Track.Title}" FontWeight="Medium" TextTrimming="CharacterEllipsis" />
+      <TextBlock Text="{Binding Track.DisplayArtist}" FontSize="13" Classes="secondary" TextTrimming="CharacterEllipsis" />
+    </StackPanel>
+    <Panel Grid.Column="2" VerticalAlignment="Center" Margin="0,0,4,0">
+      <TextBlock Name="Duration" Text="{Binding Track.Duration, Converter={x:Static vm:Formats.DurationConverter}}"
+                 Classes="secondary" FontSize="13" VerticalAlignment="Center" />
+      <Button Name="RemoveButton" Theme="{StaticResource IconButton}" Width="30" Height="30" ToolTip.Tip="Remove from queue">
+        <PathIcon Data="{StaticResource Icon.Close}" Classes="small" />
+      </Button>
+    </Panel>
+  </Grid>
+</UserControl>

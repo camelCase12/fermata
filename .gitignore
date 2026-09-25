@@ -1,0 +1,22 @@
+# Build output
+**/bin/
+**/obj/
+/artifacts/
+/.cache/
+
+# Editors and IDEs
+.vs/
+.vscode/
+.idea/
+*.user
+*.swp
+*~
+
+# Misc
+**/__pycache__/
+.DS_Store
+*.log
+
+# Compiled test helpers (see the top of each .c file)
+/tools/pointer
+/tools/xinput

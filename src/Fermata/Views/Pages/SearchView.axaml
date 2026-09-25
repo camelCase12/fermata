@@ -1,0 +1,68 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:pages="using:Fermata.ViewModels.Pages"
+             xmlns:views="using:Fermata.Views"
+             xmlns:controls="using:Fermata.Controls"
+             x:Class="Fermata.Views.Pages.SearchView"
+             x:DataType="pages:SearchViewModel">
+  <UserControl.DataTemplates>
+    <DataTemplate DataType="pages:BrowseTile">
+      <Button Classes="tile" Background="{Binding Background}" Height="72" MinWidth="170" Padding="14,10"
+              HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" VerticalContentAlignment="Bottom"
+              Command="{Binding $parent[UserControl].((pages:SearchViewModel)DataContext).OpenTileCommand}" CommandParameter="{Binding}">
+        <TextBlock Text="{Binding Title}" FontSize="15" FontWeight="Bold" TextTrimming="CharacterEllipsis" />
+      </Button>
+    </DataTemplate>
+  </UserControl.DataTemplates>
+  <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+    <StackPanel Margin="32,10,32,40" Spacing="34">
+      <TextBlock IsVisible="{Binding !HasResults}" Classes="secondary" FontSize="15" Margin="0,20,0,0">
+        <Run Text="No results for “" /><Run Text="{Binding Query}" /><Run Text="”." />
+      </TextBlock>
+
+      <StackPanel Spacing="14" IsVisible="{Binding TopResult, Converter={x:Static ObjectConverters.IsNotNull}}">
+        <TextBlock Text="Top result" Classes="h2" />
+        <Border Name="TopCard" Background="{DynamicResource SurfaceBrush}" CornerRadius="12" Padding="20" MaxWidth="560" HorizontalAlignment="Left" Cursor="Hand">
+          <Grid ColumnDefinitions="Auto,*,Auto">
+            <controls:CoverArt Name="TopArt" Width="96" Height="96" Radius="8" />
+            <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="20,0" Spacing="4">
+              <TextBlock Name="TopTitle" FontSize="22" FontWeight="Bold" TextTrimming="CharacterEllipsis" />
+              <TextBlock Name="TopSubtitle" Classes="secondary" TextTrimming="CharacterEllipsis" />
+            </StackPanel>
+            <Button Grid.Column="2" Theme="{StaticResource IconButton}" Width="48" Height="48" CornerRadius="24" VerticalAlignment="Center"
+                    Background="{DynamicResource AccentBrush}" Foreground="{DynamicResource AccentForegroundBrush}"
+                    Command="{Binding PlayTopResultCommand}" ToolTip.Tip="Play">
+              <PathIcon Data="{StaticResource Icon.Play}" Width="34" Height="34" />
+            </Button>
+          </Grid>
+        </Border>
+      </StackPanel>
+
+      <StackPanel Spacing="12" IsVisible="{Binding Songs.Tracks.Count, Converter={x:Static views:Converters.Positive}}">
+        <TextBlock Text="Songs" Classes="h2" />
+        <views:TrackList DataContext="{Binding Songs}" />
+        <Button Theme="{StaticResource PillButton}" HorizontalAlignment="Left" Command="{Binding ToggleAllSongsCommand}"
+                IsVisible="{Binding SongsSummary, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+          <Panel>
+            <TextBlock Text="{Binding SongsSummary}" IsVisible="{Binding !ShowAllSongs}" />
+            <TextBlock Text="Show fewer" IsVisible="{Binding ShowAllSongs}" />
+          </Panel>
+        </Button>
+      </StackPanel>
+
+      <views:Shelf Title="Artists" Items="{Binding Artists}" IsVisible="{Binding Artists.Count, Converter={x:Static views:Converters.Positive}}" />
+      <views:Shelf Title="Albums" Items="{Binding Albums}" IsVisible="{Binding Albums.Count, Converter={x:Static views:Converters.Positive}}" />
+      <views:Shelf Title="Playlists" Items="{Binding Playlists}" IsVisible="{Binding Playlists.Count, Converter={x:Static views:Converters.Positive}}" />
+      <StackPanel Spacing="14" IsVisible="{Binding Genres.Count, Converter={x:Static views:Converters.Positive}}">
+        <TextBlock Text="Genres" Classes="h2" />
+        <ItemsControl ItemsSource="{Binding Genres}">
+          <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+              <UniformGrid Columns="4" />
+            </ItemsPanelTemplate>
+          </ItemsControl.ItemsPanel>
+        </ItemsControl>
+      </StackPanel>
+    </StackPanel>
+  </ScrollViewer>
+</UserControl>

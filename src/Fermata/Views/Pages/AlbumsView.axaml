@@ -1,0 +1,33 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:pages="using:Fermata.ViewModels.Pages"
+             xmlns:views="using:Fermata.Views"
+             x:Class="Fermata.Views.Pages.AlbumsView"
+             x:DataType="pages:AlbumsViewModel">
+  <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+    <StackPanel Margin="32,10,32,40" Spacing="22">
+      <StackPanel Spacing="4">
+        <TextBlock Text="Albums" Classes="h1" />
+        <TextBlock Text="{Binding Summary}" Classes="secondary" />
+      </StackPanel>
+      <Grid ColumnDefinitions="*,Auto">
+        <TextBox Classes="field" Text="{Binding Filter}" PlaceholderText="Filter albums" MaxWidth="360" HorizontalAlignment="Left" MinWidth="260">
+          <TextBox.InnerLeftContent>
+            <PathIcon Data="{StaticResource Icon.Search}" Classes="small" Margin="10,0,2,0" Foreground="{DynamicResource TextTertiaryBrush}" />
+          </TextBox.InnerLeftContent>
+        </TextBox>
+        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+          <TextBlock Text="Sort by" Classes="secondary" VerticalAlignment="Center" FontSize="13" />
+          <ComboBox ItemsSource="{Binding SortChoices}" SelectedItem="{Binding SelectedSort}" MinWidth="170">
+            <ComboBox.ItemTemplate>
+              <DataTemplate DataType="pages:SortChoice">
+                <TextBlock Text="{Binding Label}" />
+              </DataTemplate>
+            </ComboBox.ItemTemplate>
+          </ComboBox>
+        </StackPanel>
+      </Grid>
+      <views:CardGrid Items="{Binding Albums}" />
+    </StackPanel>
+  </ScrollViewer>
+</UserControl>

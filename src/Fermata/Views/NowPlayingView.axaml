@@ -1,0 +1,151 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Fermata.ViewModels"
+             xmlns:lib="using:Fermata.Library"
+             xmlns:playback="using:Fermata.Playback"
+             xmlns:views="using:Fermata.Views"
+             xmlns:controls="using:Fermata.Controls"
+             x:Class="Fermata.Views.NowPlayingView"
+             x:DataType="vm:NowPlayingViewModel">
+  <UserControl.Styles>
+    <Style Selector="TextBlock.lyric">
+      <Setter Property="FontSize" Value="26" />
+      <Setter Property="FontWeight" Value="Bold" />
+      <Setter Property="TextWrapping" Value="Wrap" />
+      <Setter Property="Foreground" Value="{DynamicResource OnTintTertiaryBrush}" />
+      <Setter Property="Margin" Value="0,9" />
+      <Setter Property="Transitions">
+        <Transitions>
+          <BrushTransition Property="Foreground" Duration="0:0:0.25" />
+        </Transitions>
+      </Setter>
+    </Style>
+    <Style Selector="TextBlock.lyric.past">
+      <Setter Property="Foreground" Value="{DynamicResource OnTintFaintBrush}" />
+    </Style>
+    <Style Selector="TextBlock.lyric.active">
+      <Setter Property="Foreground" Value="{DynamicResource OnTintPrimaryBrush}" />
+    </Style>
+    <Style Selector="TextBlock.lyric.plain">
+      <Setter Property="Foreground" Value="{DynamicResource OnTintSecondaryBrush}" />
+      <Setter Property="FontSize" Value="20" />
+      <Setter Property="Margin" Value="0,5" />
+    </Style>
+    <!-- Artist and album links over the gradient. -->
+    <Style Selector="Button.onTint">
+      <Setter Property="Foreground" Value="{DynamicResource OnTintSecondaryBrush}" />
+    </Style>
+    <Style Selector="Button.onTint:pointerover">
+      <Setter Property="Foreground" Value="{DynamicResource OnTintPrimaryBrush}" />
+    </Style>
+  </UserControl.Styles>
+
+  <Grid Background="{DynamicResource BackgroundBrush}">
+    <!-- The cover's colours, dimmed and dithered, behind everything; a little darker towards the bottom. -->
+    <controls:AmbientBackdrop Covers="{Binding Player.Art, Converter={x:Static views:Converters.OneCover}}"
+                              FadeStart="0.3" FadeEnd="1" FadeAmount="0.55" />
+    <Grid ColumnDefinitions="*,460" RowDefinitions="Auto,*" Margin="28,16,28,20">
+      <Button Theme="{StaticResource IconButton}" Command="{Binding CloseCommand}" ToolTip.Tip="Close (Esc)" HorizontalAlignment="Left">
+        <PathIcon Data="{StaticResource Icon.ChevronDown}" Width="36" Height="36" />
+      </Button>
+
+      <!-- Art and title -->
+      <Grid Grid.Row="1" RowDefinitions="*,Auto" Margin="20,0,48,0">
+        <!-- Not clipped: the Viewbox would otherwise cut the shadow off at the cover's square edge, leaving
+             only the bits inside the rounded corners (which then looked square). -->
+        <Viewbox Stretch="Uniform" MaxWidth="620" MaxHeight="620" VerticalAlignment="Center" ClipToBounds="False">
+          <Border Name="Cover" Width="620" Height="620" CornerRadius="12" BoxShadow="{StaticResource CoverShadow}" Cursor="Hand">
+            <controls:CoverArt Source="{Binding Player.Art}" PlaceholderKey="{Binding Player.Title}" Radius="12" />
+          </Border>
+        </Viewbox>
+        <StackPanel Grid.Row="1" HorizontalAlignment="Center" Spacing="6" Margin="0,24,0,0">
+          <TextBlock Text="{Binding Player.Title}" FontSize="26" FontWeight="Bold" HorizontalAlignment="Center" TextTrimming="CharacterEllipsis" />
+          <controls:InlineRow HorizontalAlignment="Center">
+            <Button Theme="{StaticResource LinkButton}" Classes="onTint" Command="{Binding Player.OpenArtistCommand}">
+              <TextBlock Text="{Binding Player.Artist}" FontSize="16" TextTrimming="CharacterEllipsis" />
+            </Button>
+            <TextBlock Text="  •  " FontSize="16" Foreground="{DynamicResource OnTintTertiaryBrush}" IsVisible="{Binding Player.Details, Converter={x:Static vm:Formats.NotEmpty}}" />
+            <Button Theme="{StaticResource LinkButton}" Classes="onTint" Command="{Binding Player.OpenAlbumCommand}">
+              <TextBlock Text="{Binding Player.Details}" FontSize="16" TextTrimming="CharacterEllipsis" />
+            </Button>
+          </controls:InlineRow>
+        </StackPanel>
+      </Grid>
+
+      <!-- Tabs -->
+      <Grid Grid.Column="1" Grid.RowSpan="2" RowDefinitions="Auto,*" Margin="0,8,0,0">
+        <StackPanel Orientation="Horizontal" Spacing="8">
+          <RadioButton Theme="{StaticResource ChipButton}" GroupName="nowplaying" Content="Up next" Name="UpNextTab" IsChecked="{Binding IsUpNext, Mode=OneWay}"
+                       Command="{Binding ShowTabCommand}" CommandParameter="{x:Static vm:NowPlayingTab.UpNext}" />
+          <RadioButton Theme="{StaticResource ChipButton}" GroupName="nowplaying" Content="Lyrics" IsChecked="{Binding IsLyrics, Mode=OneWay}"
+                       Command="{Binding ShowTabCommand}" CommandParameter="{x:Static vm:NowPlayingTab.Lyrics}" />
+          <RadioButton Theme="{StaticResource ChipButton}" GroupName="nowplaying" Content="Related" IsChecked="{Binding IsRelated, Mode=OneWay}"
+                       Command="{Binding ShowTabCommand}" CommandParameter="{x:Static vm:NowPlayingTab.Related}" />
+        </StackPanel>
+
+        <!-- Up next -->
+        <Grid Grid.Row="1" RowDefinitions="Auto,*,Auto" IsVisible="{Binding IsUpNext}" Margin="0,18,0,0">
+          <Grid ColumnDefinitions="*,Auto" Margin="4,0,4,10">
+            <StackPanel>
+              <TextBlock Classes="caption">
+                <Run Text="Playing from " /><Run Text="{Binding Player.SourceText}" FontWeight="SemiBold" />
+              </TextBlock>
+              <TextBlock Text="{Binding UpNextSummary}" Classes="caption" />
+            </StackPanel>
+            <ToggleSwitch Grid.Column="1" IsChecked="{Binding Autoplay}" OnContent="Autoplay" OffContent="Autoplay"
+                          ToolTip.Tip="Keep playing similar music when the queue ends" />
+          </Grid>
+          <ListBox Name="QueueList" Grid.Row="1" Classes="rows" ItemsSource="{Binding Entries}" SelectionMode="Multiple">
+            <ListBox.ItemTemplate>
+              <DataTemplate DataType="playback:QueueEntry">
+                <views:QueueRow />
+              </DataTemplate>
+            </ListBox.ItemTemplate>
+          </ListBox>
+          <StackPanel Grid.Row="2" Orientation="Horizontal" Spacing="10" Margin="0,12,0,0">
+            <Button Theme="{StaticResource PillButton}" Command="{Binding SaveQueueAsPlaylistCommand}" Content="Save as playlist" />
+            <Button Theme="{StaticResource PillButton}" Command="{Binding ClearUpcomingCommand}" Content="Clear up next" />
+          </StackPanel>
+        </Grid>
+
+        <!-- Lyrics -->
+        <Panel Grid.Row="1" IsVisible="{Binding IsLyrics}" Margin="0,18,0,0">
+          <TextBlock Text="{Binding LyricsStatus}" Classes="secondary" TextWrapping="Wrap" VerticalAlignment="Center" TextAlignment="Center" Margin="20,0" />
+          <ScrollViewer Name="LyricsScroller" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Hidden">
+            <ItemsControl Name="LyricsList" ItemsSource="{Binding LyricLines}" Margin="4,120,16,260">
+              <ItemsControl.ItemTemplate>
+                <DataTemplate DataType="vm:LyricLineViewModel">
+                  <TextBlock Classes="lyric" Classes.active="{Binding IsActive}" Classes.past="{Binding IsPast}" Text="{Binding Text}" Cursor="Hand" />
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+          </ScrollViewer>
+        </Panel>
+
+        <!-- Related -->
+        <ScrollViewer Grid.Row="1" IsVisible="{Binding IsRelated}" Margin="0,18,0,0" HorizontalScrollBarVisibility="Disabled">
+          <StackPanel Spacing="10">
+            <TextBlock Text="Similar songs from your library" Classes="caption" Margin="4,0" />
+            <ItemsControl Name="RelatedList" ItemsSource="{Binding Related}">
+              <ItemsControl.ItemTemplate>
+                <DataTemplate DataType="lib:Track">
+                  <Border Classes="pick" Height="58" Padding="6" CornerRadius="8" Background="Transparent" Cursor="Hand">
+                    <Grid ColumnDefinitions="46,*,Auto">
+                      <controls:CoverArt Source="{Binding Converter={x:Static views:Converters.TrackArt}}" Width="46" Height="46" Radius="4" />
+                      <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="12,0" Spacing="2">
+                        <TextBlock Text="{Binding Title}" FontWeight="Medium" TextTrimming="CharacterEllipsis" />
+                        <TextBlock Text="{Binding DisplayArtist}" FontSize="13" Classes="secondary" TextTrimming="CharacterEllipsis" />
+                      </StackPanel>
+                      <TextBlock Grid.Column="2" Text="{Binding Duration, Converter={x:Static vm:Formats.DurationConverter}}"
+                                 VerticalAlignment="Center" Classes="secondary" FontSize="13" Margin="0,0,6,0" />
+                    </Grid>
+                  </Border>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+          </StackPanel>
+        </ScrollViewer>
+      </Grid>
+    </Grid>
+  </Grid>
+</UserControl>

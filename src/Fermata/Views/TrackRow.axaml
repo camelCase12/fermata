@@ -1,0 +1,121 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:lib="using:Fermata.Library"
+             xmlns:vm="using:Fermata.ViewModels"
+             xmlns:views="using:Fermata.Views"
+             xmlns:controls="using:Fermata.Controls"
+             x:Class="Fermata.Views.TrackRow"
+             x:DataType="lib:Track"
+             Height="{StaticResource TrackRowHeight}"
+             Background="Transparent">
+  <!--
+    Every state is a class on the row (library, album, artist, playing, liked) so that hover and
+    state styles combine without code: the code-behind only switches classes.
+  -->
+  <UserControl.Styles>
+    <!-- Defaults -->
+    <Style Selector="views|TrackRow Button.hover">
+      <Setter Property="Opacity" Value="0" />
+    </Style>
+    <Style Selector="views|TrackRow Border#PlayOverlay, views|TrackRow Border#PlayingOverlay, views|TrackRow TextBlock#Number,
+                     views|TrackRow PathIcon#NumberPlay, views|TrackRow PathIcon#NumberPlaying, views|TrackRow TextBlock#SubArtist">
+      <Setter Property="IsVisible" Value="False" />
+    </Style>
+    <Style Selector="views|TrackRow PathIcon#LikeIcon">
+      <Setter Property="Data" Value="{StaticResource Icon.HeartOutline}" />
+    </Style>
+
+    <!-- Layouts -->
+    <Style Selector="views|TrackRow.album controls|CoverArt#Art">
+      <Setter Property="IsVisible" Value="False" />
+    </Style>
+    <Style Selector="views|TrackRow.album TextBlock#Number">
+      <Setter Property="IsVisible" Value="True" />
+    </Style>
+    <!-- Without an artist column, the artist appears under the title where it differs (guests, compilations). -->
+    <Style Selector="views|TrackRow.guest:not(.library) TextBlock#SubArtist">
+      <Setter Property="IsVisible" Value="True" />
+    </Style>
+    <Style Selector="views|TrackRow:not(.library) Button#ArtistLink, views|TrackRow.album Button#AlbumLink">
+      <Setter Property="IsVisible" Value="False" />
+    </Style>
+
+    <!-- Hover and selection -->
+    <Style Selector="ListBoxItem:pointerover views|TrackRow Button.hover, ListBoxItem:selected views|TrackRow Button.hover">
+      <Setter Property="Opacity" Value="1" />
+    </Style>
+    <Style Selector="ListBoxItem:pointerover views|TrackRow:not(.album):not(.playing) Border#PlayOverlay">
+      <Setter Property="IsVisible" Value="True" />
+    </Style>
+    <Style Selector="ListBoxItem:pointerover views|TrackRow.album TextBlock#Number">
+      <Setter Property="IsVisible" Value="False" />
+    </Style>
+    <Style Selector="ListBoxItem:pointerover views|TrackRow.album:not(.playing) PathIcon#NumberPlay">
+      <Setter Property="IsVisible" Value="True" />
+    </Style>
+
+    <!-- The playing song -->
+    <Style Selector="views|TrackRow.playing TextBlock#Title">
+      <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
+    </Style>
+    <Style Selector="views|TrackRow.playing:not(.album) Border#PlayingOverlay">
+      <Setter Property="IsVisible" Value="True" />
+    </Style>
+    <Style Selector="views|TrackRow.playing.album TextBlock#Number">
+      <Setter Property="IsVisible" Value="False" />
+    </Style>
+    <Style Selector="views|TrackRow.playing.album PathIcon#NumberPlaying">
+      <Setter Property="IsVisible" Value="True" />
+    </Style>
+
+    <!-- Liked: the heart stays visible and filled -->
+    <Style Selector="views|TrackRow.liked Button#LikeButton">
+      <Setter Property="Opacity" Value="1" />
+      <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
+    </Style>
+    <Style Selector="views|TrackRow.liked PathIcon#LikeIcon">
+      <Setter Property="Data" Value="{StaticResource Icon.Heart}" />
+    </Style>
+  </UserControl.Styles>
+
+  <Grid Name="Columns" ColumnDefinitions="52,4*,3*,3*,40,60,40" Margin="8,0,4,0">
+    <!-- Cover (with a play button on hover) or track number -->
+    <Panel Name="Leading" Width="40" Height="40">
+      <controls:CoverArt Name="Art" Width="40" Height="40" Radius="4" />
+      <Border Name="PlayOverlay" Background="{DynamicResource ShadeBrush}" CornerRadius="4" Cursor="Hand">
+        <PathIcon Data="{StaticResource Icon.Play}" Foreground="{DynamicResource OnTintPrimaryBrush}" />
+      </Border>
+      <Border Name="PlayingOverlay" Background="{DynamicResource ShadeStrongBrush}" CornerRadius="4">
+        <PathIcon Data="{StaticResource Icon.Equalizer}" Foreground="{DynamicResource AccentBrush}" Classes="small" />
+      </Border>
+      <TextBlock Name="Number" HorizontalAlignment="Center" VerticalAlignment="Center"
+                 Foreground="{DynamicResource TextTertiaryBrush}" FontSize="13" />
+      <PathIcon Name="NumberPlay" Data="{StaticResource Icon.Play}" Classes="small" Cursor="Hand" />
+      <PathIcon Name="NumberPlaying" Data="{StaticResource Icon.Equalizer}" Classes="small" Foreground="{DynamicResource AccentBrush}" />
+    </Panel>
+
+    <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,16,0" Spacing="2">
+      <TextBlock Name="Title" Text="{Binding Title}" FontSize="14" FontWeight="Medium" TextTrimming="CharacterEllipsis" />
+      <TextBlock Name="SubArtist" Text="{Binding DisplayArtist}" FontSize="12.5" Classes="secondary" TextTrimming="CharacterEllipsis" />
+    </StackPanel>
+
+    <Button Name="ArtistLink" Grid.Column="2" Theme="{StaticResource LinkButton}" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="0,0,16,0">
+      <TextBlock Text="{Binding DisplayArtist}" FontSize="13.5" TextTrimming="CharacterEllipsis" />
+    </Button>
+
+    <Button Name="AlbumLink" Grid.Column="3" Theme="{StaticResource LinkButton}" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="0,0,16,0">
+      <TextBlock Text="{Binding AlbumTitle}" FontSize="13.5" TextTrimming="CharacterEllipsis" />
+    </Button>
+
+    <Button Name="LikeButton" Grid.Column="4" Classes="hover" Theme="{StaticResource IconButton}" Width="32" Height="32">
+      <PathIcon Name="LikeIcon" Classes="small" />
+    </Button>
+
+    <TextBlock Name="Duration" Grid.Column="5" Text="{Binding Duration, Converter={x:Static vm:Formats.DurationConverter}}"
+               HorizontalAlignment="Right" VerticalAlignment="Center" FontSize="13" Classes="secondary" Margin="0,0,8,0" />
+
+    <Button Name="MoreButton" Grid.Column="6" Classes="hover" Theme="{StaticResource IconButton}" Width="32" Height="32" ToolTip.Tip="More">
+      <PathIcon Data="{StaticResource Icon.More}" Classes="small" />
+    </Button>
+  </Grid>
+</UserControl>

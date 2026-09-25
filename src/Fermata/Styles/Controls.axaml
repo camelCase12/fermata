@@ -1,0 +1,445 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <Styles.Resources>
+    <ResourceDictionary>
+      <!-- Round, transparent button for a single icon (player controls, row actions, toolbars). -->
+      <ControlTheme x:Key="IconButton" TargetType="Button">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
+        <Setter Property="Width" Value="36" />
+        <Setter Property="Height" Value="36" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="CornerRadius" Value="18" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="FocusAdorner">
+          <FocusAdornerTemplate>
+            <Border BorderThickness="2" BorderBrush="{DynamicResource FocusRingBrush}" CornerRadius="999" Margin="-2" />
+          </FocusAdornerTemplate>
+        </Setter>
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="Template">
+          <ControlTemplate>
+            <Border Background="{TemplateBinding Background}" CornerRadius="{TemplateBinding CornerRadius}">
+              <ContentPresenter Name="PART_ContentPresenter" Content="{TemplateBinding Content}"
+                                ContentTemplate="{TemplateBinding ContentTemplate}"
+                                Padding="{TemplateBinding Padding}"
+                                HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+            </Border>
+          </ControlTemplate>
+        </Setter>
+        <Style Selector="^:pointerover">
+          <Setter Property="Background" Value="{DynamicResource HoverBrush}" />
+          <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+        </Style>
+        <Style Selector="^:pressed">
+          <Setter Property="Background" Value="{DynamicResource PressedBrush}" />
+        </Style>
+        <Style Selector="^:disabled">
+          <Setter Property="Opacity" Value="0.35" />
+        </Style>
+      </ControlTheme>
+
+      <!-- Two-state icon button (shuffle, repeat, like): accent when on. -->
+      <ControlTheme x:Key="IconToggle" TargetType="ToggleButton">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
+        <Setter Property="Width" Value="36" />
+        <Setter Property="Height" Value="36" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="CornerRadius" Value="18" />
+        <Setter Property="FocusAdorner">
+          <FocusAdornerTemplate>
+            <Border BorderThickness="2" BorderBrush="{DynamicResource FocusRingBrush}" CornerRadius="999" Margin="-2" />
+          </FocusAdornerTemplate>
+        </Setter>
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Template">
+          <ControlTemplate>
+            <Border Background="{TemplateBinding Background}" CornerRadius="{TemplateBinding CornerRadius}">
+              <ContentPresenter Content="{TemplateBinding Content}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+            </Border>
+          </ControlTemplate>
+        </Setter>
+        <Style Selector="^:pointerover">
+          <Setter Property="Background" Value="{DynamicResource HoverBrush}" />
+          <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+        </Style>
+        <Style Selector="^:checked">
+          <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
+        </Style>
+        <Style Selector="^:checked:pointerover">
+          <Setter Property="Foreground" Value="{DynamicResource AccentHoverBrush}" />
+        </Style>
+      </ControlTheme>
+
+      <!-- Rounded text button; add class "accent" for the primary action. -->
+      <ControlTheme x:Key="PillButton" TargetType="Button">
+        <Setter Property="Background" Value="{DynamicResource FillBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+        <Setter Property="Height" Value="36" />
+        <Setter Property="Padding" Value="16,0" />
+        <Setter Property="CornerRadius" Value="18" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="FocusAdorner">
+          <FocusAdornerTemplate>
+            <Border BorderThickness="2" BorderBrush="{DynamicResource FocusRingBrush}" CornerRadius="999" Margin="-2" />
+          </FocusAdornerTemplate>
+        </Setter>
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Template">
+          <ControlTemplate>
+            <Border Background="{TemplateBinding Background}" CornerRadius="{TemplateBinding CornerRadius}"
+                    Padding="{TemplateBinding Padding}">
+              <ContentPresenter Content="{TemplateBinding Content}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+            </Border>
+          </ControlTemplate>
+        </Setter>
+        <Style Selector="^:pointerover">
+          <Setter Property="Background" Value="{DynamicResource FillHoverBrush}" />
+        </Style>
+        <Style Selector="^:pressed">
+          <Setter Property="Background" Value="{DynamicResource FillPressedBrush}" />
+        </Style>
+        <Style Selector="^.accent">
+          <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
+          <Setter Property="Foreground" Value="{DynamicResource AccentForegroundBrush}" />
+        </Style>
+        <Style Selector="^.accent:pointerover">
+          <Setter Property="Background" Value="{DynamicResource AccentHoverBrush}" />
+        </Style>
+        <Style Selector="^.accent:pressed">
+          <Setter Property="Background" Value="{DynamicResource AccentPressedBrush}" />
+        </Style>
+        <Style Selector="^.danger">
+          <Setter Property="Foreground" Value="{DynamicResource DangerBrush}" />
+        </Style>
+        <Style Selector="^:disabled">
+          <Setter Property="Opacity" Value="0.4" />
+        </Style>
+      </ControlTheme>
+
+      <!-- Text that navigates (artist and album names): underlined on hover like a web link. -->
+      <ControlTheme x:Key="LinkButton" TargetType="Button">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
+        <Setter Property="FocusAdorner">
+          <FocusAdornerTemplate>
+            <Border BorderThickness="2" BorderBrush="{DynamicResource FocusRingBrush}" CornerRadius="4" Margin="-4,-2" />
+          </FocusAdornerTemplate>
+        </Setter>
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Template">
+          <ControlTemplate>
+            <ContentPresenter Name="PART_ContentPresenter" Content="{TemplateBinding Content}" Background="Transparent" />
+          </ControlTemplate>
+        </Setter>
+        <Style Selector="^:pointerover">
+          <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+        </Style>
+        <Style Selector="^:pointerover /template/ ContentPresenter TextBlock">
+          <Setter Property="TextDecorations" Value="Underline" />
+        </Style>
+      </ControlTheme>
+
+      <!-- Sidebar entry: icon and label, highlighted when it is the current section. -->
+      <ControlTheme x:Key="NavButton" TargetType="RadioButton">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
+        <Setter Property="Height" Value="40" />
+        <Setter Property="Padding" Value="12,0" />
+        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="HorizontalContentAlignment" Value="Left" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="FocusAdorner">
+          <FocusAdornerTemplate>
+            <Border BorderThickness="2" BorderBrush="{DynamicResource FocusRingBrush}" CornerRadius="10" Margin="-2" />
+          </FocusAdornerTemplate>
+        </Setter>
+        <Setter Property="FontWeight" Value="Medium" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Template">
+          <ControlTemplate>
+            <Border Background="{TemplateBinding Background}" CornerRadius="{TemplateBinding CornerRadius}"
+                    Padding="{TemplateBinding Padding}">
+              <ContentPresenter Content="{TemplateBinding Content}" VerticalAlignment="Center"
+                                HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" />
+            </Border>
+          </ControlTemplate>
+        </Setter>
+        <Style Selector="^:pointerover">
+          <Setter Property="Background" Value="{DynamicResource HoverBrush}" />
+          <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+        </Style>
+        <Style Selector="^:checked">
+          <Setter Property="Background" Value="{DynamicResource SelectedBrush}" />
+          <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+        </Style>
+      </ControlTheme>
+
+      <!-- Filter/tab chip. -->
+      <ControlTheme x:Key="ChipButton" TargetType="RadioButton">
+        <Setter Property="Background" Value="{DynamicResource SubtleFillBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+        <Setter Property="Height" Value="32" />
+        <Setter Property="Padding" Value="14,0" />
+        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="FocusAdorner">
+          <FocusAdornerTemplate>
+            <Border BorderThickness="2" BorderBrush="{DynamicResource FocusRingBrush}" CornerRadius="10" Margin="-2" />
+          </FocusAdornerTemplate>
+        </Setter>
+        <Setter Property="FontWeight" Value="Medium" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Template">
+          <ControlTemplate>
+            <Border Background="{TemplateBinding Background}" CornerRadius="{TemplateBinding CornerRadius}" Padding="{TemplateBinding Padding}">
+              <ContentPresenter Content="{TemplateBinding Content}" VerticalAlignment="Center" />
+            </Border>
+          </ControlTemplate>
+        </Setter>
+        <Style Selector="^:pointerover">
+          <Setter Property="Background" Value="{DynamicResource HoverBrush}" />
+        </Style>
+        <Style Selector="^:checked">
+          <Setter Property="Background" Value="{DynamicResource TextPrimaryBrush}" />
+          <Setter Property="Foreground" Value="{DynamicResource BackgroundBrush}" />
+        </Style>
+      </ControlTheme>
+    </ResourceDictionary>
+  </Styles.Resources>
+
+  <!-- Keyboard focus rings are rounded like the controls; themes above set rings that match their shapes. -->
+  <Style Selector="AdornerLayer">
+    <Setter Property="DefaultFocusAdorner">
+      <FocusAdornerTemplate>
+        <Border BorderThickness="2" BorderBrush="{DynamicResource FocusRingBrush}" CornerRadius="6" Margin="-2" />
+      </FocusAdornerTemplate>
+    </Setter>
+  </Style>
+
+  <!--
+    Tooltips sit above their button (or below it when there is no room), never at the pointer: a tooltip
+    is its own window, and one placed under the pointer (as at the bottom of a fullscreen window) takes
+    the pointer from the button, which loses its hover state until the tooltip closes again.
+  -->
+  <Style Selector=":is(Button)">
+    <Setter Property="ToolTip.Placement" Value="Top" />
+    <Setter Property="ToolTip.VerticalOffset" Value="-6" />
+  </Style>
+
+  <Style Selector="Window">
+    <Setter Property="Background" Value="{DynamicResource BackgroundBrush}" />
+    <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+    <Setter Property="FontFamily" Value="{DynamicResource UiFont}" />
+    <Setter Property="FontSize" Value="14" />
+  </Style>
+
+  <!-- Typography. -->
+  <Style Selector="TextBlock.display">
+    <Setter Property="FontSize" Value="40" />
+    <Setter Property="FontWeight" Value="Bold" />
+    <Setter Property="LetterSpacing" Value="-0.5" />
+  </Style>
+  <Style Selector="TextBlock.h1">
+    <Setter Property="FontSize" Value="28" />
+    <Setter Property="FontWeight" Value="Bold" />
+  </Style>
+  <Style Selector="TextBlock.h2">
+    <Setter Property="FontSize" Value="20" />
+    <Setter Property="FontWeight" Value="Bold" />
+  </Style>
+  <Style Selector="TextBlock.h3">
+    <Setter Property="FontSize" Value="15" />
+    <Setter Property="FontWeight" Value="SemiBold" />
+  </Style>
+  <Style Selector="TextBlock.secondary">
+    <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
+  </Style>
+  <Style Selector="TextBlock.tertiary">
+    <Setter Property="Foreground" Value="{DynamicResource TextTertiaryBrush}" />
+  </Style>
+  <Style Selector="TextBlock.caption">
+    <Setter Property="FontSize" Value="12" />
+    <Setter Property="Foreground" Value="{DynamicResource TextTertiaryBrush}" />
+  </Style>
+  <Style Selector="TextBlock.overline">
+    <Setter Property="FontSize" Value="11" />
+    <Setter Property="FontWeight" Value="SemiBold" />
+    <Setter Property="LetterSpacing" Value="1" />
+    <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
+  </Style>
+
+  <!-- Search and text entry: rounded and dark. -->
+  <Style Selector="TextBox.field">
+    <Setter Property="Background" Value="{DynamicResource FillBrush}" />
+    <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="BorderBrush" Value="Transparent" />
+    <Setter Property="CornerRadius" Value="10" />
+    <Setter Property="Padding" Value="12,8" />
+    <Setter Property="MinHeight" Value="38" />
+    <Setter Property="VerticalContentAlignment" Value="Center" />
+  </Style>
+  <Style Selector="TextBox.field:pointerover /template/ Border#PART_BorderElement">
+    <Setter Property="Background" Value="{DynamicResource FillHoverBrush}" />
+    <Setter Property="BorderBrush" Value="Transparent" />
+  </Style>
+  <Style Selector="TextBox.field:focus /template/ Border#PART_BorderElement">
+    <Setter Property="Background" Value="{DynamicResource FillHoverBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
+    <Setter Property="BorderThickness" Value="1" />
+  </Style>
+
+  <!-- Lists of tracks and queue entries: flat rows with hover and selection washes. -->
+  <Style Selector="ListBox.rows">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderThickness" Value="0" />
+    <Setter Property="Padding" Value="0" />
+  </Style>
+  <!--
+    A list inside a scrolling page has no scroll viewer of its own: the page scrolls it (and its
+    virtualization follows the page's viewport), and Page Up/Down reach the page.
+  -->
+  <Style Selector="ListBox.inline">
+    <Setter Property="Template">
+      <ControlTemplate>
+        <ItemsPresenter Name="PART_ItemsPresenter" ItemsPanel="{TemplateBinding ItemsPanel}" Margin="{TemplateBinding Padding}" />
+      </ControlTemplate>
+    </Setter>
+  </Style>
+  <Style Selector="ListBox.rows ListBoxItem">
+    <Setter Property="Padding" Value="0" />
+    <Setter Property="Margin" Value="0" />
+    <Setter Property="MinHeight" Value="0" />
+    <Setter Property="CornerRadius" Value="6" />
+    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+    <!-- Rows touch, so their ring sits inside. -->
+    <Setter Property="FocusAdorner">
+      <FocusAdornerTemplate>
+        <Border BorderThickness="2" BorderBrush="{DynamicResource FocusRingBrush}" CornerRadius="6" />
+      </FocusAdornerTemplate>
+    </Setter>
+  </Style>
+  <Style Selector="ListBox.rows ListBoxItem /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="CornerRadius" Value="6" />
+  </Style>
+  <Style Selector="ListBox.rows ListBoxItem:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource HoverBrush}" />
+  </Style>
+  <Style Selector="ListBox.rows ListBoxItem:selected /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource SelectedBrush}" />
+  </Style>
+  <Style Selector="ListBox.rows ListBoxItem:selected:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource PressedBrush}" />
+  </Style>
+  <Style Selector="ListBox.rows ListBoxItem:selected:focus /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource SelectedBrush}" />
+  </Style>
+
+  <!-- Drop-downs have the text fields' shape. -->
+  <Style Selector="ComboBox">
+    <Setter Property="CornerRadius" Value="10" />
+    <Setter Property="MinHeight" Value="38" />
+  </Style>
+
+  <!-- Dragging rows: the row being dragged fades, a line marks where it will land, and a playlist
+       that would take the songs lights up. -->
+  <Style Selector="ListBox.rows ListBoxItem.dragging">
+    <Setter Property="Opacity" Value="0.4" />
+  </Style>
+  <Style Selector="Border.drop-marker">
+    <Setter Property="Height" Value="2" />
+    <Setter Property="CornerRadius" Value="1" />
+    <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
+  </Style>
+  <Style Selector="ListBox.rows ListBoxItem.drop /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource DropTargetBrush}" />
+  </Style>
+
+  <!-- Coloured genre and decade tiles. -->
+  <Style Selector="Button.tile">
+    <Setter Property="Margin" Value="0,0,14,14" />
+    <Setter Property="CornerRadius" Value="10" />
+    <Setter Property="Foreground" Value="{DynamicResource OnTintPrimaryBrush}" />
+    <Setter Property="Cursor" Value="Hand" />
+    <Setter Property="Template">
+      <ControlTemplate>
+        <Border Background="{TemplateBinding Background}" CornerRadius="{TemplateBinding CornerRadius}" Padding="{TemplateBinding Padding}">
+          <ContentPresenter Content="{TemplateBinding Content}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                            VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+        </Border>
+      </ControlTemplate>
+    </Setter>
+  </Style>
+  <Style Selector="Button.tile:pointerover">
+    <Setter Property="Opacity" Value="0.88" />
+  </Style>
+
+  <!-- Compact clickable song tiles (quick picks, related songs). -->
+  <Style Selector="Border.pick:pointerover">
+    <Setter Property="Background" Value="{DynamicResource HoverBrush}" />
+  </Style>
+
+  <!-- Menus. -->
+  <Style Selector="ContextMenu, MenuFlyoutPresenter">
+    <Setter Property="Background" Value="{DynamicResource RaisedBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource DividerBrush}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="10" />
+    <Setter Property="Padding" Value="4" />
+  </Style>
+  <Style Selector="MenuItem">
+    <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+    <Setter Property="CornerRadius" Value="6" />
+    <Setter Property="Padding" Value="10,7" />
+    <Setter Property="FontSize" Value="13" />
+  </Style>
+  <Style Selector="MenuItem PathIcon">
+    <Setter Property="Width" Value="20" />
+    <Setter Property="Height" Value="20" />
+    <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
+  </Style>
+
+  <Style Selector="ToolTip">
+    <Setter Property="Background" Value="{DynamicResource PopupBrush}" />
+    <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+    <Setter Property="BorderThickness" Value="0" />
+    <Setter Property="CornerRadius" Value="6" />
+    <Setter Property="Padding" Value="8,5" />
+    <Setter Property="FontSize" Value="12" />
+  </Style>
+
+  <!--
+    Icons are drawn on their 24×24 design grid and scaled as a whole. (Fluent fits each icon's outline to
+    its box instead, which throws away the grid's optical centring: a heart sits a little low on the
+    grid to look centred, a play triangle a little right, and every icon ends up a different size.)
+  -->
+  <Style Selector="PathIcon">
+    <Setter Property="Width" Value="24" />
+    <Setter Property="Height" Value="24" />
+    <Setter Property="Template">
+      <ControlTemplate>
+        <Viewbox Width="{TemplateBinding Width}" Height="{TemplateBinding Height}">
+          <Canvas Width="24" Height="24">
+            <Path Data="{TemplateBinding Data}" Fill="{TemplateBinding Foreground}" />
+          </Canvas>
+        </Viewbox>
+      </ControlTemplate>
+    </Setter>
+  </Style>
+  <Style Selector="PathIcon.small">
+    <Setter Property="Width" Value="20" />
+    <Setter Property="Height" Value="20" />
+  </Style>
+  <Style Selector="PathIcon.large">
+    <Setter Property="Width" Value="32" />
+    <Setter Property="Height" Value="32" />
+  </Style>
+</Styles>

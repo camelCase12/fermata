@@ -1,0 +1,96 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <!--
+    Fermata's palette: near-black surfaces in steps of elevation, three levels of text, and one warm
+    gold accent. Every colour used by the views comes from here.
+  -->
+  <Color x:Key="BackgroundColor">#0D0D10</Color>
+  <Color x:Key="SidebarColor">#111115</Color>
+  <Color x:Key="SurfaceColor">#17171C</Color>
+  <Color x:Key="RaisedColor">#1F1F25</Color>
+  <Color x:Key="PopupColor">#2C2C35</Color>
+  <Color x:Key="HoverColor">#FFFFFF</Color>
+  <Color x:Key="DividerColor">#25252C</Color>
+  <Color x:Key="TextPrimaryColor">#F3F3F5</Color>
+  <Color x:Key="TextSecondaryColor">#A4A4AF</Color>
+  <Color x:Key="TextTertiaryColor">#6F6F7B</Color>
+  <Color x:Key="AccentColor">#F2B43C</Color>
+  <Color x:Key="AccentHoverColor">#F7C867</Color>
+  <Color x:Key="AccentPressedColor">#D89D26</Color>
+  <Color x:Key="AccentForegroundColor">#1A1408</Color>
+  <Color x:Key="DangerColor">#FF6B6B</Color>
+  <Color x:Key="ShadeColor">#99000000</Color>
+
+  <SolidColorBrush x:Key="BackgroundBrush" Color="{StaticResource BackgroundColor}" />
+  <SolidColorBrush x:Key="SidebarBrush" Color="{StaticResource SidebarColor}" />
+  <SolidColorBrush x:Key="SurfaceBrush" Color="{StaticResource SurfaceColor}" />
+  <SolidColorBrush x:Key="RaisedBrush" Color="{StaticResource RaisedColor}" />
+  <SolidColorBrush x:Key="PopupBrush" Color="{StaticResource PopupColor}" />
+  <SolidColorBrush x:Key="DividerBrush" Color="{StaticResource DividerColor}" />
+  <SolidColorBrush x:Key="TextPrimaryBrush" Color="{StaticResource TextPrimaryColor}" />
+  <SolidColorBrush x:Key="TextSecondaryBrush" Color="{StaticResource TextSecondaryColor}" />
+  <SolidColorBrush x:Key="TextTertiaryBrush" Color="{StaticResource TextTertiaryColor}" />
+  <SolidColorBrush x:Key="AccentBrush" Color="{StaticResource AccentColor}" />
+  <SolidColorBrush x:Key="AccentHoverBrush" Color="{StaticResource AccentHoverColor}" />
+  <SolidColorBrush x:Key="AccentPressedBrush" Color="{StaticResource AccentPressedColor}" />
+  <SolidColorBrush x:Key="AccentForegroundBrush" Color="{StaticResource AccentForegroundColor}" />
+  <SolidColorBrush x:Key="DangerBrush" Color="{StaticResource DangerColor}" />
+  <!-- Translucent white layers read correctly on every surface. -->
+  <SolidColorBrush x:Key="HoverBrush" Color="{StaticResource HoverColor}" Opacity="0.07" />
+  <SolidColorBrush x:Key="PressedBrush" Color="{StaticResource HoverColor}" Opacity="0.12" />
+  <SolidColorBrush x:Key="SelectedBrush" Color="{StaticResource HoverColor}" Opacity="0.10" />
+  <SolidColorBrush x:Key="SubtleFillBrush" Color="{StaticResource HoverColor}" Opacity="0.05" />
+  <!-- Fields and secondary buttons are washes too, so they sit as well on a cover-coloured backdrop as
+       on the plain background (where they look like the opaque raised surface). -->
+  <SolidColorBrush x:Key="FillBrush" Color="{StaticResource HoverColor}" Opacity="0.08" />
+  <SolidColorBrush x:Key="FillHoverBrush" Color="{StaticResource HoverColor}" Opacity="0.12" />
+  <SolidColorBrush x:Key="FillPressedBrush" Color="{StaticResource HoverColor}" Opacity="0.16" />
+  <SolidColorBrush x:Key="ScrimBrush" Color="#000000" Opacity="0.55" />
+  <!-- Darkening over cover art, under play buttons and the playing indicator. -->
+  <SolidColorBrush x:Key="ShadeBrush" Color="{StaticResource ShadeColor}" />
+  <SolidColorBrush x:Key="ShadeStrongBrush" Color="#000000" Opacity="0.7" />
+  <!-- Text over the now-playing gradient, whose colour comes from the cover. -->
+  <SolidColorBrush x:Key="OnTintPrimaryBrush" Color="#FFFFFF" />
+  <SolidColorBrush x:Key="OnTintSecondaryBrush" Color="#FFFFFF" Opacity="0.8" />
+  <SolidColorBrush x:Key="OnTintTertiaryBrush" Color="#FFFFFF" Opacity="0.5" />
+  <SolidColorBrush x:Key="OnTintFaintBrush" Color="#FFFFFF" Opacity="0.3" />
+  <!-- A playlist in the sidebar under songs being dragged. -->
+  <SolidColorBrush x:Key="DropTargetBrush" Color="{StaticResource AccentColor}" Opacity="0.22" />
+  <!-- Keyboard focus: the same gold ring as a focused text field. -->
+  <SolidColorBrush x:Key="FocusRingBrush" Color="{StaticResource AccentColor}" />
+
+  <!-- Map Fluent's accent onto ours so built-in controls (text selection, focus, sliders) agree. -->
+  <Color x:Key="SystemAccentColor">#F2B43C</Color>
+  <Color x:Key="SystemAccentColorLight1">#F7C867</Color>
+  <Color x:Key="SystemAccentColorLight2">#FAD68A</Color>
+  <Color x:Key="SystemAccentColorLight3">#FCE4B0</Color>
+  <Color x:Key="SystemAccentColorDark1">#D89D26</Color>
+  <Color x:Key="SystemAccentColorDark2">#B98314</Color>
+  <Color x:Key="SystemAccentColorDark3">#8F6208</Color>
+
+  <BoxShadows x:Key="PopupShadow">0 6 24 0 #80000000</BoxShadows>
+  <BoxShadows x:Key="CoverShadow">0 24 60 0 #99000000</BoxShadows>
+  <BoxShadows x:Key="DialogShadow">0 16 48 0 #99000000</BoxShadows>
+
+  <!-- Fluent's drop-downs, restyled to match the text fields. -->
+  <StaticResource x:Key="ComboBoxBackground" ResourceKey="FillBrush" />
+  <StaticResource x:Key="ComboBoxBackgroundPointerOver" ResourceKey="FillHoverBrush" />
+  <StaticResource x:Key="ComboBoxBackgroundPressed" ResourceKey="FillPressedBrush" />
+  <StaticResource x:Key="ComboBoxBackgroundDisabled" ResourceKey="SurfaceBrush" />
+  <SolidColorBrush x:Key="ComboBoxBorderBrush" Color="Transparent" />
+  <SolidColorBrush x:Key="ComboBoxBorderBrushPointerOver" Color="Transparent" />
+  <SolidColorBrush x:Key="ComboBoxBorderBrushPressed" Color="Transparent" />
+  <SolidColorBrush x:Key="ComboBoxBorderBrushDisabled" Color="Transparent" />
+  <StaticResource x:Key="ComboBoxDropDownBackground" ResourceKey="RaisedBrush" />
+  <StaticResource x:Key="ComboBoxDropDownBorderBrush" ResourceKey="DividerBrush" />
+  <StaticResource x:Key="ComboBoxItemBackgroundPointerOver" ResourceKey="HoverBrush" />
+  <StaticResource x:Key="ComboBoxItemBackgroundPressed" ResourceKey="PressedBrush" />
+  <StaticResource x:Key="ComboBoxItemBackgroundSelected" ResourceKey="SelectedBrush" />
+  <StaticResource x:Key="ComboBoxItemBackgroundSelectedPointerOver" ResourceKey="PressedBrush" />
+  <StaticResource x:Key="ComboBoxItemBackgroundSelectedPressed" ResourceKey="PressedBrush" />
+
+  <FontFamily x:Key="UiFont">fonts:Inter#Inter, $Default</FontFamily>
+  <x:Double x:Key="TrackRowHeight">56</x:Double>
+  <CornerRadius x:Key="CardRadius">8</CornerRadius>
+  <CornerRadius x:Key="ArtRadius">6</CornerRadius>
+</ResourceDictionary>

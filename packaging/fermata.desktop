@@ -1,0 +1,25 @@
+[Desktop Entry]
+Type=Application
+Name=Fermata
+GenericName=Music Player
+Comment=Play and organize your music library
+Exec=fermata %F
+Icon=fermata
+Terminal=false
+Categories=AudioVideo;Audio;Player;
+Keywords=music;audio;player;playlist;library;songs;
+MimeType=audio/flac;audio/mpeg;audio/mp4;audio/x-m4a;audio/aac;audio/ogg;audio/x-vorbis+ogg;audio/x-opus+ogg;audio/opus;audio/x-speex;audio/wav;audio/x-wav;audio/aiff;audio/x-aiff;audio/x-wavpack;audio/x-ape;audio/x-musepack;audio/x-tta;audio/x-ms-wma;audio/x-matroska;audio/webm;audio/x-dsf;
+StartupWMClass=fermata
+Actions=PlayPause;Next;Previous;
+
+[Desktop Action PlayPause]
+Name=Play or Pause
+Exec=fermata --play-pause
+
+[Desktop Action Next]
+Name=Next Song
+Exec=fermata --next
+
+[Desktop Action Previous]
+Name=Previous Song
+Exec=fermata --previous

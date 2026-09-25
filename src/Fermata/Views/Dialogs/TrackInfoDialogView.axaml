@@ -1,0 +1,32 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Fermata.ViewModels"
+             xmlns:views="using:Fermata.Views"
+             xmlns:controls="using:Fermata.Controls"
+             x:Class="Fermata.Views.TrackInfoDialogView"
+             x:DataType="vm:TrackInfoDialog">
+  <Border Background="{DynamicResource RaisedBrush}" CornerRadius="14" Padding="26,22" Width="600" BoxShadow="{StaticResource DialogShadow}">
+    <StackPanel Spacing="18">
+      <Grid ColumnDefinitions="Auto,*,Auto">
+        <controls:CoverArt Source="{Binding Track, Converter={x:Static views:Converters.TrackArt}}" Width="72" Height="72" Radius="6" />
+        <StackPanel Grid.Column="1" Margin="16,0" VerticalAlignment="Center" Spacing="3">
+          <TextBlock Text="{Binding Track.Title}" Classes="h2" TextTrimming="CharacterEllipsis" />
+          <TextBlock Text="{Binding Track.DisplayArtist}" Classes="secondary" />
+        </StackPanel>
+        <Button Grid.Column="2" Theme="{StaticResource IconButton}" Command="{Binding CloseCommand}" VerticalAlignment="Top" ToolTip.Tip="Close">
+          <PathIcon Data="{StaticResource Icon.Close}" />
+        </Button>
+      </Grid>
+      <ItemsControl ItemsSource="{Binding Rows}">
+        <ItemsControl.ItemTemplate>
+          <DataTemplate DataType="vm:InfoRow">
+            <Grid ColumnDefinitions="130,*" Margin="0,4">
+              <TextBlock Text="{Binding Label}" Classes="tertiary" FontSize="13" />
+              <SelectableTextBlock Grid.Column="1" Text="{Binding Value}" TextWrapping="Wrap" FontSize="13" />
+            </Grid>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+    </StackPanel>
+  </Border>
+</UserControl>

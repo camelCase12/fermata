@@ -1,0 +1,28 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:pages="using:Fermata.ViewModels.Pages"
+             xmlns:views="using:Fermata.Views"
+             x:Class="Fermata.Views.Pages.HistoryView"
+             x:DataType="pages:HistoryViewModel">
+  <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+    <StackPanel Margin="32,10,32,40" Spacing="26">
+      <TextBlock Text="Recently played" Classes="h1" />
+      <TextBlock Text="Songs you play appear here." IsVisible="{Binding IsEmpty}" Classes="secondary" />
+      <ItemsControl ItemsSource="{Binding Groups}">
+        <ItemsControl.ItemsPanel>
+          <ItemsPanelTemplate>
+            <StackPanel Spacing="26" />
+          </ItemsPanelTemplate>
+        </ItemsControl.ItemsPanel>
+        <ItemsControl.ItemTemplate>
+          <DataTemplate DataType="pages:HistoryGroup">
+            <StackPanel Spacing="10">
+              <TextBlock Text="{Binding Title}" Classes="h3" />
+              <views:TrackList DataContext="{Binding List}" />
+            </StackPanel>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+    </StackPanel>
+  </ScrollViewer>
+</UserControl>
