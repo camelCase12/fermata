@@ -63,7 +63,8 @@ internal static class MpvChecks
         check.Near(paused.TotalSeconds, player.Position.TotalSeconds, 0.02, "position holds while paused");
         player.Seek(TimeSpan.FromSeconds(0.9));
         context.RunUntil(() => Math.Abs(player.Position.TotalSeconds - 0.9) < 0.05, TimeSpan.FromSeconds(2));
-        check.Near(0.9, player.Position.TotalSeconds, 0.05, "seek while paused");
+        check.Near(0.9, player.Position.TotalSeconds, 0.05,
+            $"seek while paused (from {paused.TotalSeconds:0.###} s, state {player.State}, mpv client API {LibMpv.ClientApiVersion() >> 16}.{LibMpv.ClientApiVersion() & 0xffff})");
         player.Resume();
         bool advanced = context.RunUntil(() => player.CurrentTrack?.Title == "tone1", TimeSpan.FromSeconds(3));
         check.That(advanced, "resumes and advances after the seek point");
