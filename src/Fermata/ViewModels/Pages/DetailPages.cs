@@ -178,7 +178,11 @@ public sealed partial class PlaylistViewModel : PageViewModel
             if (changed == playlist)
                 Refresh();
         };
-        shell.Services.Playlists.ListChanged += () => Title = playlist.Name;
+        shell.Services.Playlists.ListChanged += () =>
+        {
+            Title = playlist.Name;
+            List.Source = List.Source with { Title = playlist.Name };
+        };
     }
 
     public PlaylistViewModel(Shell shell, PlaylistKind kind) : base(shell)

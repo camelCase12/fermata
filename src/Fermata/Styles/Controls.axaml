@@ -121,8 +121,12 @@
         <Style Selector="^.accent:pressed">
           <Setter Property="Background" Value="{DynamicResource AccentPressedBrush}" />
         </Style>
-        <Style Selector="^.danger">
-          <Setter Property="Foreground" Value="{DynamicResource DangerBrush}" />
+        <Style Selector="^.danger, ^.danger:pointerover, ^.danger:pressed">
+          <Setter Property="Background" Value="{DynamicResource DangerBrush}" />
+          <Setter Property="Foreground" Value="{DynamicResource AccentForegroundBrush}" />
+        </Style>
+        <Style Selector="^.danger:pointerover">
+          <Setter Property="Opacity" Value="0.88" />
         </Style>
         <Style Selector="^:disabled">
           <Setter Property="Opacity" Value="0.4" />

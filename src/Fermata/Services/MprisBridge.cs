@@ -184,8 +184,11 @@ public sealed class MprisBridge : IMprisTarget, IDisposable
 
     public void SetPosition(string trackId, TimeSpan position)
     {
-        if (services.Player.CurrentEntry is { } entry && trackId == $"/org/fermata/entry/{entry.Id}")
-            services.Player.Seek(position);
+        // MPRIS asks players to ignore positions outside the track.
+        var player = services.Player;
+        if (player.CurrentEntry is { } entry && trackId == $"/org/fermata/entry/{entry.Id}"
+            && position >= TimeSpan.Zero && (player.Duration <= TimeSpan.Zero || position <= player.Duration))
+            player.Seek(position);
     }
 
     public void SetShuffle(bool shuffle) => services.Player.SetShuffle(shuffle);

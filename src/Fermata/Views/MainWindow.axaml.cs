@@ -130,6 +130,7 @@ public partial class MainWindow : Window
                 break;
             case Key.F when modifiers == KeyModifiers.Control:
             case Key.OemQuestion or Key.Divide when plain && !typing:
+                Model.Shell.IsNowPlayingOpen = false;
                 SearchBox.Focus();
                 SearchBox.SelectAll();
                 break;
@@ -200,11 +201,12 @@ public partial class MainWindow : Window
         e.Handled = true;
     }
 
-    /// <summary>Navigates after leaving the search box.</summary>
+    /// <summary>Navigates, closing Now playing, and gives the page keyboard focus.</summary>
     private void Navigate(Action navigate)
     {
-        LeaveSearchBox();
+        Model.Shell.IsNowPlayingOpen = false;
         navigate();
+        PageHost.Focus();
     }
 
     /// <summary>Moves keyboard focus from the search box to the page.</summary>

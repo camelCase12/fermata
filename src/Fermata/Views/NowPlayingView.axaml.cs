@@ -2,7 +2,9 @@ using System.ComponentModel;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
+using Avalonia.Interactivity;
 using Avalonia.Media;
+using Avalonia.Threading;
 using Avalonia.VisualTree;
 using Fermata.Controls;
 using Fermata.Library;
@@ -29,7 +31,8 @@ public partial class NowPlayingView : UserControl
             if (FindData<QueueEntry>(e.Source) is { } entry)
                 model?.JumpTo(entry);
         };
-        QueueList.KeyDown += (_, e) =>
+        // Tunnelling runs before the list's own key handling, which takes Enter.
+        QueueList.AddHandler(KeyDownEvent, (_, e) =>
         {
             if (model is null)
                 return;
@@ -40,10 +43,20 @@ public partial class NowPlayingView : UserControl
             }
             else if (e.Key == Key.Delete && QueueList.SelectedItems?.Count > 0)
             {
+                int index = QueueList.SelectedIndex;
                 model.Remove(QueueList.SelectedItems.OfType<QueueEntry>().ToList());
                 e.Handled = true;
+                // Focus stays in the queue, on the row that took the removed one's place.
+                Dispatcher.UIThread.Post(() =>
+                {
+                    int count = QueueList.ItemCount;
+                    if (count == 0)
+                        return;
+                    QueueList.SelectedIndex = Math.Min(index, count - 1);
+                    QueueList.ContainerFromIndex(QueueList.SelectedIndex)?.Focus(NavigationMethod.Directional);
+                }, DispatcherPriority.Loaded);
             }
-        };
+        }, RoutingStrategies.Tunnel);
         RowDragging.Attach(QueueList,
             index => model is { } m && (uint)index < (uint)m.Entries.Count ? [m.Entries[index].Track] : [],
             () => model is not null,

@@ -7,6 +7,22 @@ internal static unsafe partial class LibMpv
 {
     private const string Library = "libmpv.so.2";
 
+    /// <summary>The older library name, from mpv 0.34 and earlier, which offers the same calls.</summary>
+    private const string OlderLibrary = "libmpv.so.1";
+
+    static LibMpv()
+    {
+        NativeLibrary.SetDllImportResolver(typeof(LibMpv).Assembly, (name, assembly, paths) =>
+        {
+            if (name != Library)
+                return 0;
+            if (NativeLibrary.TryLoad(Library, assembly, paths, out nint handle)
+                || NativeLibrary.TryLoad(OlderLibrary, assembly, paths, out handle))
+                return handle;
+            return 0;
+        });
+    }
+
     public enum Format
     {
         None = 0,

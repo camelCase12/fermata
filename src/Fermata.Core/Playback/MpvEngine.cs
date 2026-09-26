@@ -42,7 +42,7 @@ public sealed unsafe class MpvEngine : IAudioEngine
         }
         catch (Exception error) when (error is DllNotFoundException or EntryPointNotFoundException)
         {
-            UnavailableReason = "libmpv could not be loaded. Install mpv (it provides libmpv.so.2).";
+            UnavailableReason = "libmpv could not be loaded. Install mpv, which provides it.";
             return;
         }
         if (handle == 0)

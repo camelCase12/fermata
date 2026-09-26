@@ -247,6 +247,9 @@ public sealed class PlaylistStore
             if (library.FindTrack(path) is { } track)
                 text.Append("#EXTINF:").Append((int)track.Duration.TotalSeconds).Append(',').Append(track.DisplayArtist).Append(" - ").Append(track.Title).Append('\n');
             string relative = Path.GetRelativePath(baseDirectory, path);
+            // A line starting with '#' would read back as a comment.
+            if (relative.StartsWith('#'))
+                relative = "./" + relative;
             text.Append(relative.StartsWith("..", StringComparison.Ordinal) ? path : relative).Append('\n');
         }
         AtomicFile.WriteAllBytes(file, Encoding.UTF8.GetBytes(text.ToString()));
@@ -263,7 +266,7 @@ public sealed class PlaylistStore
         string baseDirectory = Path.GetDirectoryName(Path.GetFullPath(file)) ?? "";
         string? name = null;
         var paths = new List<string>();
-        foreach (string raw in File.ReadLines(file))
+        foreach (string raw in ReadText(file).Split('\n'))
         {
             string line = raw.Trim().TrimStart('\uFEFF');
             if (line.StartsWith(NameDirective, StringComparison.Ordinal) && name is null && line.Length > NameDirective.Length)
@@ -276,9 +279,27 @@ public sealed class PlaylistStore
                     paths.Add(uri.LocalPath);
                 continue;
             }
-            paths.Add(Path.GetFullPath(line.Replace('\\', '/'), baseDirectory));
+            // Playlists written on Windows separate folders with backslashes, which are ordinary characters in Linux names.
+            string path = Path.GetFullPath(line, baseDirectory);
+            if (line.Contains('\\') && !File.Exists(path))
+                path = Path.GetFullPath(line.Replace('\\', '/'), baseDirectory);
+            paths.Add(path);
         }
         return new M3uPlaylist(string.IsNullOrEmpty(name) ? null : name, paths);
+    }
+
+    /// <summary>The text of a playlist file, read as UTF-8, or as Latin-1 when it is not valid UTF-8.</summary>
+    private static string ReadText(string file)
+    {
+        byte[] bytes = File.ReadAllBytes(file);
+        try
+        {
+            return new UTF8Encoding(false, throwOnInvalidBytes: true).GetString(bytes);
+        }
+        catch (DecoderFallbackException)
+        {
+            return Encoding.Latin1.GetString(bytes);
+        }
     }
 
     private string UniqueName(string name)

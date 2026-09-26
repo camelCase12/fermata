@@ -149,8 +149,16 @@ public partial class App : Application
             IEnumerable<string> files;
             if (Directory.Exists(path))
             {
-                files = Directory.EnumerateFiles(path, "*", SearchOption.AllDirectories)
-                    .Where(f => Metadata.TagReader.AudioExtensions.Contains(Path.GetExtension(f))).Order(StringComparer.Ordinal);
+                try
+                {
+                    files = Directory.EnumerateFiles(path, "*", new EnumerationOptions { RecurseSubdirectories = true, IgnoreInaccessible = true })
+                        .Where(f => Metadata.TagReader.AudioExtensions.Contains(Path.GetExtension(f))).Order(StringComparer.Ordinal).ToList();
+                }
+                catch (Exception error) when (error is IOException or UnauthorizedAccessException)
+                {
+                    failed.Add(path);
+                    continue;
+                }
             }
             else if (IsPlaylistFile(path) && File.Exists(path))
             {
@@ -161,7 +169,7 @@ public partial class App : Application
                     continue;
                 }
                 playlistName ??= playlist.Name ?? Path.GetFileNameWithoutExtension(path);
-                files = playlist.Paths.Where(File.Exists);
+                files = playlist.Paths;
             }
             else
             {

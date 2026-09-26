@@ -45,7 +45,10 @@ public sealed partial class NowPlayingViewModel : ObservableObject
             if (change.HasFlag(QueueChange.Entries) || change.HasFlag(QueueChange.Mode))
                 entriesStale = true;
             if (change.HasFlag(QueueChange.Current))
+            {
                 CurrentIndex = queue.CurrentIndex;
+                UpdateSummary();
+            }
             Refresh();
         };
         shell.Player.TrackChanged += () =>
@@ -99,6 +102,15 @@ public sealed partial class NowPlayingViewModel : ObservableObject
     [RelayCommand]
     private void ShowTab(NowPlayingTab tab) => Tab = tab;
 
+    /// <summary>Counts the songs after the current one, and their length.</summary>
+    private void UpdateSummary()
+    {
+        var queue = shell.Player.Queue;
+        int upcoming = Math.Max(0, queue.Count - queue.CurrentIndex - 1);
+        var remaining = TimeSpan.FromTicks(queue.Entries.Skip(queue.CurrentIndex + 1).Sum(e => e.Track.Duration.Ticks));
+        UpNextSummary = upcoming == 0 ? "Nothing up next" : $"{upcoming} up next · {Formats.LongDuration(remaining)}";
+    }
+
     private void Refresh()
     {
         if (!shell.IsNowPlayingOpen)
@@ -110,9 +122,7 @@ public sealed partial class NowPlayingViewModel : ObservableObject
                 var queue = shell.Player.Queue;
                 Entries = queue.Entries.ToList();
                 CurrentIndex = queue.CurrentIndex;
-                int upcoming = Math.Max(0, queue.Count - queue.CurrentIndex - 1);
-                var remaining = TimeSpan.FromTicks(queue.Entries.Skip(queue.CurrentIndex + 1).Sum(e => e.Track.Duration.Ticks));
-                UpNextSummary = upcoming == 0 ? "Nothing up next" : $"{upcoming} up next · {Formats.LongDuration(remaining)}";
+                UpdateSummary();
                 break;
             case NowPlayingTab.Lyrics when lyricsStale:
                 lyricsStale = false;

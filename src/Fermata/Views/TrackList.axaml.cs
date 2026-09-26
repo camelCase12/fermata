@@ -1,5 +1,6 @@
 using Avalonia.Controls;
 using Avalonia.Input;
+using Avalonia.Interactivity;
 using Avalonia.VisualTree;
 using Fermata.Controls;
 using Fermata.Library;
@@ -18,7 +19,8 @@ public partial class TrackList : UserControl
             if (e.Source is Control source && source.FindAncestorOfType<TrackRow>(includeSelf: true) is { } row)
                 PlayRow(row);
         };
-        List.KeyDown += OnKeyDown;
+        // Tunnelling runs before the list's own key handling, which takes Enter.
+        List.AddHandler(KeyDownEvent, OnKeyDown, RoutingStrategies.Tunnel);
         RowDragging.Attach(List, SongsAt, () => Model?.CanReorder == true, (from, to) => Model?.Move(from, to));
     }
 

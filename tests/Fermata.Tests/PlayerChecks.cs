@@ -13,6 +13,7 @@ internal static class PlayerChecks
         RepeatOne(check);
         EndOfQueue(check);
         Failures(check);
+        WithoutEngine(check);
         Statistics(check);
         Autoplay(check);
         Fuzz(check);
@@ -166,6 +167,13 @@ internal static class PlayerChecks
             engine.Deliver();
         check.That(player.State != PlaybackState.Playing && player.CurrentTrack == tracks[1] && player.Queue.Count == 4 && messages.Count == 1,
             "a song whose folder is missing stops playback there and keeps the queue");
+    }
+
+    private static void WithoutEngine(Checks check)
+    {
+        var player = new Player(new UnavailableEngine("no libmpv"), new PlayQueue(new Random(1)), new UserData());
+        player.Play(QueueChecks.MakeTracks(2), 0, new QueueSource("album", "A"));
+        check.That(player.State != PlaybackState.Playing, "without an engine, playing a song leaves the player paused");
     }
 
     private static void Statistics(Checks check)

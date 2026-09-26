@@ -233,7 +233,7 @@ second signal exits at once.
 
 ## Testing
 
-`tests/Fermata.Tests` is a console program of 664 checks in nine groups:
+`tests/Fermata.Tests` is a console program of checks in nine groups:
 
 - **Text folding:** accents, ligatures and sort keys.
 - **Imaging:** OKLab conversions and cover analysis, on synthetic covers with known families,
@@ -311,7 +311,7 @@ compositor session:
 
 ```sh
 ./build.sh test                                             # build, then run the checks
-dotnet run --project tests/Fermata.Tests -c Release         # 666 checks, about 8 s
+dotnet run --project tests/Fermata.Tests -c Release         # all the checks, about 8 s
 FERMATA_FUZZ_RUNS=20000 dotnet run --project tests/Fermata.Tests -c Release   # a longer queue fuzz
 dotnet run --project tests/Fermata.Tests -c Release -- --compare-ffprobe DIR  # tags and durations against ffprobe
 dotnet run --project tests/Fermata.Tests -c Release -- --make-large-library DIR 50000

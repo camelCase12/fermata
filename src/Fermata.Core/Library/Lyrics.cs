@@ -84,7 +84,7 @@ public sealed class Lyrics
                     return candidate;
             }
         }
-        catch (IOException)
+        catch (Exception error) when (error is IOException or UnauthorizedAccessException)
         {
         }
         return null;

@@ -314,7 +314,7 @@ public sealed class Player : IDisposable
         long id = engine.Play(entry.Track.Path, start, paused: !play);
         playing = id >= 0 ? new EngineItem(id, entry) : null;
         UpdateDuration(entry.Track.Duration);
-        SetState(play ? PlaybackState.Playing : PlaybackState.Paused);
+        SetState(play && playing is not null ? PlaybackState.Playing : PlaybackState.Paused);
         StartListening();
         TrackChanged?.Invoke();
         Seeked?.Invoke();

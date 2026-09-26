@@ -37,7 +37,7 @@
 
       <Grid Grid.Row="1" ColumnDefinitions="*,Auto,*" Margin="14,0,18,4">
         <!-- Current track -->
-        <Grid ColumnDefinitions="Auto,*,Auto" IsVisible="{Binding HasTrack}">
+        <Grid ColumnDefinitions="Auto,*,Auto" IsVisible="{Binding ShowsTrack}">
           <Button Theme="{StaticResource LinkButton}" Command="{Binding ToggleNowPlayingCommand}" ToolTip.Tip="Now playing (Q)">
             <controls:CoverArt Source="{Binding Art}" PlaceholderKey="{Binding Title}" Width="50" Height="50" Radius="6" />
           </Button>

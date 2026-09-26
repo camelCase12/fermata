@@ -409,8 +409,18 @@ public sealed partial class SettingsViewModel : PageViewModel
     [RelayCommand]
     private void RemoveFolder(string folder)
     {
-        Folders.Remove(folder);
+        int index = Folders.IndexOf(folder);
+        if (index < 0)
+            return;
+        Folders.RemoveAt(index);
         ApplyFolders();
+        Shell.Toasts.Show($"Removed {folder} from your library", "Undo", () =>
+        {
+            if (Folders.Contains(folder))
+                return;
+            Folders.Insert(Math.Min(index, Folders.Count), folder);
+            ApplyFolders();
+        });
     }
 
     [RelayCommand]
@@ -421,11 +431,7 @@ public sealed partial class SettingsViewModel : PageViewModel
     }
 
     [RelayCommand]
-    private void ClearHistory()
-    {
-        Shell.Services.UserData.ClearHistory();
-        Shell.Toasts.Show("Cleared listening history (play counts are kept)");
-    }
+    private Task ClearHistory() => Shell.ClearHistoryAsync();
 
     private void ApplyFolders()
     {

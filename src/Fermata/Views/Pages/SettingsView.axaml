@@ -28,7 +28,7 @@
               <DataTemplate DataType="sys:String">
                 <Grid ColumnDefinitions="Auto,*,Auto" Margin="0,2">
                   <PathIcon Data="{StaticResource Icon.Folder}" Foreground="{DynamicResource TextSecondaryBrush}" />
-                  <TextBlock Grid.Column="1" Text="{Binding}" VerticalAlignment="Center" Margin="12,0" TextTrimming="CharacterEllipsis" />
+                  <TextBlock Grid.Column="1" Text="{Binding}" VerticalAlignment="Center" Margin="12,0" TextTrimming="PathSegmentEllipsis" ToolTip.Tip="{Binding}" />
                   <Button Grid.Column="2" Theme="{StaticResource IconButton}" ToolTip.Tip="Stop using this folder"
                           Command="{Binding $parent[UserControl].((pages:SettingsViewModel)DataContext).RemoveFolderCommand}" CommandParameter="{Binding}">
                     <PathIcon Data="{StaticResource Icon.Close}" Classes="small" />

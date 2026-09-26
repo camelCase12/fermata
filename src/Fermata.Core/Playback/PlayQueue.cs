@@ -40,6 +40,8 @@ public enum QueueChange
     Current = 2,
     /// <summary>Shuffle or repeat changed.</summary>
     Mode = 4,
+    /// <summary>The source was renamed.</summary>
+    Source = 8,
 }
 
 /// <summary>The play queue, with shuffle and repeat.</summary>
@@ -83,6 +85,15 @@ public sealed class PlayQueue
     public QueueEntry? Current => current >= 0 ? Entries[current] : null;
     public bool Shuffle => shuffled is not null;
     public QueueSource? Source { get; private set; }
+
+    /// <summary>Gives the source a new title when it is the one with this key, such as a renamed playlist.</summary>
+    public void RenameSource(string key, string title)
+    {
+        if (Source is not { } source || source.Key != key || source.Title == title)
+            return;
+        Source = source with { Title = title };
+        Notify(QueueChange.Source);
+    }
 
     /// <summary>Increments on every change.</summary>
     public long Version { get; private set; }

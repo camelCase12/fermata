@@ -23,8 +23,18 @@ The background and the accent colour come from the cover of whatever's playing.
 
 ## Installing
 
-Fermata runs on x86-64 Linux and needs mpv installed, which provides libmpv. On Arch that's
-`pacman -S mpv`, and on Debian or Ubuntu `apt install libmpv2`.
+Fermata runs on x86-64 Linux with glibc 2.35 or newer, which covers Ubuntu 22.04 and later, Debian 12,
+Fedora, Arch and openSUSE. It plays through libmpv, which you install from your distribution:
+
+| | |
+| --- | --- |
+| Arch | `pacman -S mpv` |
+| Debian 12, Ubuntu 24.04 and later | `apt install libmpv2` |
+| Ubuntu 22.04 | `apt install libmpv1` |
+| Fedora | `dnf install mpv-libs` |
+| openSUSE | `zypper install libmpv2` |
+
+It also needs the X11 libraries any desktop already has, including libICE and libSM.
 
 Download the tarball from the [latest release](https://github.com/camelCase12/fermata/releases/latest),
 unpack it and run `./install.sh`. That puts Fermata in `~/.local` with a launcher entry, and

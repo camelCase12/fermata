@@ -198,6 +198,16 @@ public sealed partial class Shell : ObservableObject
 
     public async Task<Playlist?> CreatePlaylistAsync(IReadOnlyList<Track>? tracks = null)
     {
+        int outside = 0;
+        if (tracks is not null)
+        {
+            (tracks, outside) = InLibrary(tracks);
+            if (tracks.Count == 0)
+            {
+                Toasts.Show(OutsideLibraryMessage);
+                return null;
+            }
+        }
         var dialog = new PromptDialog
         {
             Title = "New playlist",
@@ -209,12 +219,28 @@ public sealed partial class Shell : ObservableObject
         if (name is null)
             return null;
         var playlist = Services.Playlists.Create(name, tracks?.Select(t => t.Path));
-        Toasts.Show(tracks is { Count: > 0 } ? $"Created “{playlist.Name}” with {Formats.Count(tracks.Count, "song")}" : $"Created “{playlist.Name}”");
+        string created = tracks is { Count: > 0 } ? $"Created “{playlist.Name}” with {Formats.Count(tracks.Count, "song")}" : $"Created “{playlist.Name}”";
+        Toasts.Show(outside > 0 ? $"{created}. {Formats.Count(outside, "song")} outside your library were left out." : created);
         return playlist;
+    }
+
+    private const string OutsideLibraryMessage = "Only songs in your library can go in playlists. Add their folder in Settings.";
+
+    /// <summary>The tracks that are in the library, and how many are not.</summary>
+    private (IReadOnlyList<Track> Tracks, int Outside) InLibrary(IReadOnlyList<Track> tracks)
+    {
+        var inside = tracks.Where(t => Library.FindTrack(t.Path) is not null).ToList();
+        return (inside, tracks.Count - inside.Count);
     }
 
     public void AddToPlaylist(Playlist playlist, IReadOnlyList<Track> tracks)
     {
+        (tracks, int outside) = InLibrary(tracks);
+        if (tracks.Count == 0)
+        {
+            Toasts.Show(OutsideLibraryMessage);
+            return;
+        }
         int before = playlist.Paths.Count;
         int added = Services.Playlists.Add(playlist, tracks.Select(t => t.Path));
         if (added == 0)
@@ -222,7 +248,8 @@ public sealed partial class Shell : ObservableObject
             Toasts.Show(tracks.Count == 1 ? $"Already in “{playlist.Name}”" : $"All already in “{playlist.Name}”");
             return;
         }
-        Toasts.Show($"Added {Formats.Count(added, "song")} to “{playlist.Name}”", "Undo",
+        string message = $"Added {Formats.Count(added, "song")} to “{playlist.Name}”";
+        Toasts.Show(outside > 0 ? $"{message}. {Formats.Count(outside, "song")} outside your library were left out." : message, "Undo",
             () => Services.Playlists.RemoveAt(playlist, Enumerable.Range(before, added)));
     }
 
@@ -290,8 +317,10 @@ public sealed partial class Shell : ObservableObject
     {
         var dialog = new PromptDialog { Title = "Rename playlist", ConfirmLabel = "Rename", Text = playlist.Name };
         string? name = await Show(dialog, dialog.Result);
-        if (name is not null)
-            Services.Playlists.Rename(playlist, name, playlist.Description);
+        if (name is null)
+            return;
+        Services.Playlists.Rename(playlist, name, playlist.Description);
+        Player.Queue.RenameSource(playlist.Id, playlist.Name);
     }
 
     public async Task DeletePlaylistAsync(Playlist playlist)
@@ -309,6 +338,21 @@ public sealed partial class Shell : ObservableObject
             Navigator.GoBack();
         Services.Playlists.Delete(playlist);
         Toasts.Show($"Deleted “{playlist.Name}”");
+    }
+
+    public async Task ClearHistoryAsync()
+    {
+        var dialog = new ConfirmDialog
+        {
+            Title = "Clear listening history?",
+            Message = "Recently played will be emptied. Play counts and likes are kept.",
+            ConfirmLabel = "Clear",
+            IsDestructive = true,
+        };
+        if (!await Show(dialog, dialog.Result))
+            return;
+        Services.UserData.ClearHistory();
+        Toasts.Show("Cleared listening history");
     }
 
     // Files ----------------------------------------------------------------------------------

@@ -46,6 +46,7 @@ public sealed partial class PlayerViewModel : ObservableObject
     /// <summary>Whether a track is loaded.</summary>
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(PlayPauseCommand), nameof(NextCommand), nameof(PreviousCommand), nameof(ToggleNowPlayingCommand))]
+    [NotifyPropertyChangedFor(nameof(ShowsTrack))]
     public partial bool HasTrack { get; private set; }
     [ObservableProperty] public partial string Title { get; private set; } = "";
     [ObservableProperty] public partial string Artist { get; private set; } = "";
@@ -62,7 +63,12 @@ public sealed partial class PlayerViewModel : ObservableObject
     [ObservableProperty] public partial string PositionText { get; private set; } = "0:00";
     [ObservableProperty] public partial string DurationText { get; private set; } = "0:00";
     [ObservableProperty] public partial string? SourceText { get; private set; }
-    [ObservableProperty] public partial bool EngineMissing { get; private set; }
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ShowsTrack))]
+    public partial bool EngineMissing { get; private set; }
+
+    /// <summary>Whether the bar shows the current track, which gives way to the message that playback is unavailable.</summary>
+    public bool ShowsTrack => HasTrack && !EngineMissing;
 
     public string? EngineMessage => player.EngineUnavailableReason;
 

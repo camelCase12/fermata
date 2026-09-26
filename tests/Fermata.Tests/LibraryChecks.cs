@@ -211,6 +211,21 @@ internal static class LibraryChecks
         File.Delete(foreign);
         check.Equal(null, foreignRead.Name, "a playlist without a name line has no name");
         check.That(foreignRead.Paths.SequenceEqual([first, first]), "file URLs and backslashed relative entries are read; streams are skipped");
+
+
+        // Linux names that look like M3U syntax: a leading '#' and a literal backslash.
+        string odd = Fixtures.Directory("m3u-odd");
+        string hash = Path.Combine(odd, "#1 song.flac"), slash = Path.Combine(odd, "back\\slash.flac");
+        File.WriteAllText(hash, "");
+        File.WriteAllText(slash, "");
+        string oddList = Path.Combine(odd, "Odd.m3u8");
+        PlaylistStore.ExportM3u(store.Create("Odd", [hash, slash]), library, oddList);
+        check.That(PlaylistStore.ReadM3u(oddList).Paths.SequenceEqual([hash, slash]), "names starting with '#' or containing a backslash survive export and import");
+
+        // An older player's playlist in Latin-1.
+        string latin = Path.Combine(odd, "Latin.m3u");
+        File.WriteAllBytes(latin, System.Text.Encoding.Latin1.GetBytes("Canción.flac\n"));
+        check.Equal(Path.Combine(odd, "Canción.flac"), PlaylistStore.ReadM3u(latin).Paths.Single(), "a Latin-1 playlist is read as Latin-1");
     }
 
     private static bool SharesAlbumKeys(LibrarySnapshot library) =>
