@@ -2,11 +2,8 @@ using System.Runtime.InteropServices;
 
 namespace Fermata;
 
-/// <summary>
-/// Records unhandled exceptions in <c>crash.log</c> in Fermata's state folder, so that a crash in a window
-/// started from a launcher still leaves details for a bug report. Newer entries are appended, and the
-/// file is cut back to its newest half when it grows past 256 KiB.
-/// </summary>
+/// <summary>The log of unhandled exceptions.</summary>
+/// <remarks>Entries are appended, and the file is cut to its newest half when it grows past 256 KiB.</remarks>
 internal static class CrashLog
 {
     private const int Limit = 256 * 1024;
@@ -23,7 +20,8 @@ internal static class CrashLog
         TaskScheduler.UnobservedTaskException += (_, e) => Write(e.Exception, "Unobserved background error");
     }
 
-    /// <summary>Appends an entry and returns the log's path, or null when it could not be written.</summary>
+    /// <summary>Appends an entry to the log.</summary>
+    /// <returns>The log's path, or null when it could not be written.</returns>
     private static string? Write(Exception? error, string kind)
     {
         if (file is null)

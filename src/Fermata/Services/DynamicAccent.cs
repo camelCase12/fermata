@@ -6,18 +6,8 @@ using Fermata.Imaging;
 
 namespace Fermata.Services;
 
-/// <summary>
-/// Takes the accent colour from the playing song's cover. The accent is used by play buttons, the
-/// playing song, toggles, the progress bar and focus rings. The cover's accent hue is brought to the
-/// lightness and chroma of the theme's gold, so every hue reads the same on the dark surfaces and
-/// under the play button's dark text. Covers without real colour, no song, or the setting turned off
-/// keep the gold. Changes crossfade.
-/// </summary>
-/// <remarks>
-/// The accent brushes are shared resources, so recolouring them in place updates everything that uses
-/// them. Fluent's own accent colours, which toggle switches use, are replaced as resources once at the
-/// end of each change.
-/// </remarks>
+/// <summary>The app's accent colour, taken from the cover of the playing song.</summary>
+/// <remarks>Without a cover with real colour, or with the setting turned off, the accent is the theme's gold.</remarks>
 public sealed class DynamicAccent
 {
     private const double Lightness = 0.80, HoverLightness = 0.86, PressedLightness = 0.72;
@@ -53,7 +43,7 @@ public sealed class DynamicAccent
             ? brush
             : throw new InvalidOperationException($"The theme has no {key}.");
 
-    /// <summary>Recomputes the accent after a song change or a change of setting.</summary>
+    /// <summary>Recomputes the accent.</summary>
     public void Update()
     {
         int request = ++requests;

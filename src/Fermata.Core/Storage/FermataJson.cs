@@ -32,11 +32,11 @@ public sealed partial class FermataJson : JsonSerializerContext
         }
     }
 
-    /// <summary>
-    /// Reads a JSON file that Fermata will later save over. When the file exists but cannot be read, it is
-    /// renamed so that the next save cannot replace it, and <see cref="Loaded{T}.SetAside"/> gives its new
-    /// path. The new name does not end in <c>.json</c>, so folder scans do not pick it up again.
-    /// </summary>
+    /// <summary>Reads a JSON file, setting it aside when it exists but cannot be read.</summary>
+    /// <remarks>
+    /// A file is set aside by renaming it to <c>NAME.unreadable-TIME</c>, which does not end in
+    /// <c>.json</c>.
+    /// </remarks>
     public static Loaded<T> LoadOrSetAside<T>(string path, System.Text.Json.Serialization.Metadata.JsonTypeInfo<T> type,
         System.DateTime? now = null) where T : class
     {
@@ -74,8 +74,7 @@ public sealed partial class FermataJson : JsonSerializerContext
         AtomicFile.Write(path, stream => JsonSerializer.Serialize(stream, value, type));
 }
 
-/// <summary>
-/// A value read by <see cref="FermataJson.LoadOrSetAside{T}"/>. Value is null when the file was missing or
-/// unreadable, and SetAside is the unreadable file's path, after it was renamed if that was possible.
-/// </summary>
+/// <summary>The result of <see cref="FermataJson.LoadOrSetAside{T}"/>.</summary>
+/// <param name="Value">The value read, or null when the file was missing or unreadable.</param>
+/// <param name="SetAside">The path of an unreadable file after it was set aside, or null.</param>
 public readonly record struct Loaded<T>(T? Value, string? SetAside) where T : class;

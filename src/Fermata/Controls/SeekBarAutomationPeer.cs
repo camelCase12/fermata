@@ -3,7 +3,7 @@ using Avalonia.Automation.Provider;
 
 namespace Fermata.Controls;
 
-/// <summary>Presents a <see cref="SeekBar"/> to screen readers as a slider from 0 to 1 that can be set.</summary>
+/// <summary>The automation peer of a <see cref="SeekBar"/>.</summary>
 internal sealed class SeekBarAutomationPeer(SeekBar owner) : ControlAutomationPeer(owner), IRangeValueProvider
 {
     private SeekBar Bar => (SeekBar)Owner;

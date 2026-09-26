@@ -12,26 +12,7 @@ using SkiaSharp;
 
 namespace Fermata.Controls;
 
-/// <summary>
-/// A field of cover colours behind a page, dimmed so white text stays legible, fading into the page
-/// background, and crossfading when the art changes. Four covers make a 2×2 field, as
-/// <see cref="Mosaic"/> shows them.
-/// </summary>
-/// <remarks>
-/// <para>
-/// The field has two styles. The soft style is the cover blurred far out of focus: each region of the
-/// cover tints the matching region of the backdrop, from a small grid of the cover's average colours
-/// (<see cref="ArtCache.RequestColorGrid"/>) smoothed with a cubic B-spline. The generated style, used
-/// when <see cref="Settings.GeneratedBackdrop"/> is on, paints the cover's hue families
-/// (<see cref="ArtCache.RequestPalette"/>) as regions with soft edges, placed where the cover has them
-/// and bent by a noise flow that follows the direction and busyness of the cover's shapes.
-/// </para>
-/// <para>
-/// Each style is one GPU shader. All of the arithmetic is in floating point, and a little noise is added
-/// before the final rounding to 8 bits, so neighbouring pixels round differently rather than in bands.
-/// Nothing animates at rest; the backdrop redraws only when its art changes or the window does.
-/// </para>
-/// </remarks>
+/// <summary>A field of cover colours drawn behind a page.</summary>
 public sealed class AmbientBackdrop : Control
 {
     public static readonly StyledProperty<IReadOnlyList<ArtSource>?> CoversProperty =
@@ -100,10 +81,7 @@ public sealed class AmbientBackdrop : Control
         set => SetValue(AlignTopProperty, value);
     }
 
-    /// <summary>
-    /// Why the shaders could not be compiled, if they could not. A style whose shader failed draws only
-    /// the page background.
-    /// </summary>
+    /// <summary>Why the shaders could not be compiled, or null.</summary>
     internal static string? ShaderErrors => SoftShader.Errors ?? FlowShader.Errors;
 
     protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
@@ -127,7 +105,7 @@ public sealed class AmbientBackdrop : Control
             services.AppearanceChanged -= Load;
     }
 
-    /// <summary>Asks for what each cover's field needs. The field changes once all of it has arrived.</summary>
+    /// <summary>Requests what the field needs for the current covers.</summary>
     private void Load()
     {
         int request = ++requests;
@@ -168,7 +146,7 @@ public sealed class AmbientBackdrop : Control
         }
     }
 
-    /// <summary>Makes one grid of four covers. Each takes a quadrant, at half resolution.</summary>
+    /// <summary>Combines four covers' colour grids into one, a quadrant each.</summary>
     private byte[]? Quadrants(byte[]?[] grids)
     {
         if (grids.All(g => g is null))
@@ -277,7 +255,7 @@ public sealed class AmbientBackdrop : Control
         public float[] Fade => [(float)FadeStart, (float)FadeEnd, (float)FadeAmount];
     }
 
-    /// <summary>What a backdrop shows. Each kind of field makes its own shader.</summary>
+    /// <summary>What a backdrop shows.</summary>
     private abstract class Field
     {
         /// <summary>
@@ -401,10 +379,7 @@ public sealed class AmbientBackdrop : Control
         }
     }
 
-    /// <summary>
-    /// One recording of a field, made on the UI thread and replayed on the render thread whenever
-    /// something above it redraws. Its Skia objects are built on the first replay and reused after.
-    /// </summary>
+    /// <summary>A recorded drawing of a field.</summary>
     private sealed class FieldOperation(Field field, Layout layout, double opacity) : ICustomDrawOperation
     {
         private readonly Field field = field;
@@ -449,13 +424,7 @@ public sealed class AmbientBackdrop : Control
         }
     }
 
-    /// <summary>
-    /// SkSL shared by both shaders. It turns a linear colour into the final pixel. Saturation is raised a
-    /// little at the same luminance, and bright colours are compressed towards a low luminance ceiling, so
-    /// hues stay vivid while white text keeps a contrast above 10:1 and dark covers stay as they are. The
-    /// colour then fades into the page background, and triangular noise of up to one 8-bit step, fixed
-    /// per pixel, is added before the final rounding.
-    /// </summary>
+    /// <summary>The SkSL both shaders use to turn a linear colour into the final pixel.</summary>
     private const string Finish = """
         uniform float height;
         uniform float3 fade;

@@ -5,10 +5,7 @@ using Fermata.Playback;
 
 namespace Fermata.Views;
 
-/// <summary>
-/// An entry in "Up next". The playing entry is highlighted, entries already played are dimmed, and the
-/// first entry added by autoplay has a divider above it.
-/// </summary>
+/// <summary>A row in the Up next list.</summary>
 public partial class QueueRow : UserControl
 {
     private QueueEntry? entry;

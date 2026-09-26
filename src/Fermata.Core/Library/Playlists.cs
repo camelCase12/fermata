@@ -82,7 +82,7 @@ public sealed class PlaylistStore
     /// <summary>Raised after any change that needs saving.</summary>
     public event Action? Changed;
 
-    /// <summary>Playlist files that could not be read by the last <see cref="Load"/>, after being set aside.</summary>
+    /// <summary>The playlist files that the last <see cref="Load"/> could not read.</summary>
     public IReadOnlyList<string> Unreadable => unreadable;
     private readonly List<string> unreadable = [];
 

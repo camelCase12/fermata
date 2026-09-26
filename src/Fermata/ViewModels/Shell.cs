@@ -318,7 +318,7 @@ public sealed partial class Shell : ObservableObject
 
     public void ShowInFolder(Track track) => Launch("xdg-open", track.Directory);
 
-    /// <summary>Tells the user which saved files could not be read at startup, and where they were kept.</summary>
+    /// <summary>Shows a notice about saved files that could not be read.</summary>
     public void ReportUnreadable(IReadOnlyList<UnreadableFile> files)
     {
         if (files.Count == 0)

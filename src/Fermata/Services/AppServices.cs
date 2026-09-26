@@ -76,10 +76,7 @@ public sealed class AppServices : IDisposable
     public AppPaths Paths { get; }
     public Settings Settings { get; }
 
-    /// <summary>
-    /// Saved files that existed but could not be read at startup. Each was renamed so that Fermata does not
-    /// save over it, and Fermata started without its contents.
-    /// </summary>
+    /// <summary>The saved files that could not be read at startup.</summary>
     public IReadOnlyList<UnreadableFile> Unreadable { get; }
 
     /// <summary>True when no settings existed: the library folder was guessed and should be confirmed.</summary>
@@ -234,5 +231,7 @@ public sealed class AppServices : IDisposable
     }
 }
 
-/// <summary>A saved file that could not be read. What names its contents, as it reads in a sentence.</summary>
+/// <summary>A saved file that could not be read.</summary>
+/// <param name="What">What the file holds, as a phrase such as "likes and history".</param>
+/// <param name="Path">Where the file is now.</param>
 public sealed record UnreadableFile(string What, string Path);

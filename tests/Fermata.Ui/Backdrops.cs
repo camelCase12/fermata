@@ -10,9 +10,7 @@ using Fermata.Controls;
 using Fermata.Library;
 using Fermata.Services;
 
-/// <summary>
-/// Renders the ambient backdrop for each cover image in both styles, with the cover inset for comparison.
-/// </summary>
+/// <summary>Renders the ambient backdrop for cover images.</summary>
 internal static class Backdrops
 {
     public static int Render(AppServices services, string output, string[] images)

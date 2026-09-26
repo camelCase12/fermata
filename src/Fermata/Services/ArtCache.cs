@@ -193,11 +193,11 @@ public sealed class ArtCache
         return codec is not null && codec.Info.Width > codec.Info.Height;
     }
 
-    /// <summary>
-    /// Gets a cover's average colours on a <see cref="ColorGridSize"/>-square grid, as row-major RGBA
-    /// bytes averaged in linear light. Only the centred square of the cover, which is the part shown, is
-    /// used. The result is delivered on the UI thread, and is null when the cover cannot be read.
-    /// </summary>
+    /// <summary>Gets a grid of a cover's average colours.</summary>
+    /// <remarks>
+    /// The grid is <see cref="ColorGridSize"/> cells square, as row-major RGBA bytes, over the cover's
+    /// centred square. It is delivered on the UI thread, and is null when the cover cannot be read.
+    /// </remarks>
     public void RequestColorGrid(ArtSource source, Action<byte[]?> done)
     {
         if (colorGrids.TryGetValue(source, out var known))
@@ -218,11 +218,8 @@ public sealed class ArtCache
         });
     }
 
-    /// <summary>
-    /// Gets the analysis of a cover's colours and structure, from its centred square decoded at
-    /// <see cref="PaletteSize"/> pixels. The result is delivered on the UI thread, and is null when the
-    /// cover cannot be read.
-    /// </summary>
+    /// <summary>Gets the palette of a cover.</summary>
+    /// <remarks>It is delivered on the UI thread, and is null when the cover cannot be read.</remarks>
     public void RequestPalette(ArtSource source, Action<CoverPalette?> done)
     {
         if (palettes.TryGetValue(source, out var known))

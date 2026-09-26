@@ -95,7 +95,7 @@ public sealed class SeekBar : Control
 
     protected override AutomationPeer OnCreateAutomationPeer() => new SeekBarAutomationPeer(this);
 
-    /// <summary>Sets a value as if the user had clicked it, for screen readers.</summary>
+    /// <summary>Sets the value and raises <see cref="ValueCommitted"/>.</summary>
     internal void Commit(double value)
     {
         ValueCommitted?.Invoke(this, value);

@@ -1,9 +1,9 @@
 namespace Fermata.Imaging;
 
-/// <summary>
-/// A colour in the OKLab colour space. L is the perceived lightness from 0 to 1, and A and B place the
-/// colour on the green–red and blue–yellow axes.
-/// </summary>
+/// <summary>A colour in the OKLab colour space.</summary>
+/// <param name="L">The perceived lightness, from 0 to 1.</param>
+/// <param name="A">The position on the green–red axis.</param>
+/// <param name="B">The position on the blue–yellow axis.</param>
 public readonly record struct Oklab(double L, double A, double B)
 {
     public double Chroma => Math.Sqrt(A * A + B * B);
@@ -46,7 +46,8 @@ public readonly record struct Oklab(double L, double A, double B)
             -0.0041960863 * l - 0.7034186147 * m + 1.7076147010 * s);
     }
 
-    /// <summary>To 8-bit sRGB, lowering chroma (keeping lightness and hue) until the colour fits the gamut.</summary>
+    /// <summary>Converts the colour to 8-bit sRGB.</summary>
+    /// <remarks>A colour outside the sRGB gamut loses chroma until it fits, keeping its lightness and hue.</remarks>
     public (byte R, byte G, byte B) ToSrgb()
     {
         var color = this;

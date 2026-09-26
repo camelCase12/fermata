@@ -1,37 +1,31 @@
 namespace Fermata.Imaging;
 
-/// <summary>
-/// One family of similar colours in a cover. The colour is representative of the family's richer
-/// pixels, and the position and covariance describe where in the cover the family's pixels are, in
-/// coordinates from 0 to 1 across the cover's square. The weight is the fraction of the cover's pixels
-/// that belong to the family. A neutral family holds the cover's greys, near-blacks and near-whites
-/// rather than one of its hues.
-/// </summary>
+/// <summary>A family of similar colours in a cover.</summary>
+/// <param name="Color">The family's colour, taken from its richer pixels.</param>
+/// <param name="X">The horizontal centre of the family's pixels, from 0 to 1 across the cover.</param>
+/// <param name="Y">The vertical centre of the family's pixels, from 0 to 1 down the cover.</param>
+/// <param name="Sxx">The variance of the family's pixel positions across the cover.</param>
+/// <param name="Sxy">The covariance of the family's pixel positions.</param>
+/// <param name="Syy">The variance of the family's pixel positions down the cover.</param>
+/// <param name="Weight">The fraction of the cover's pixels in the family.</param>
+/// <param name="IsNeutral">Whether the family holds greys, near-blacks or near-whites rather than a hue.</param>
 public readonly record struct ColorBlob(Oklab Color, double X, double Y, double Sxx, double Sxy, double Syy, double Weight,
     bool IsNeutral = false);
 
-/// <summary>
-/// What a cover looks like, reduced to a few numbers: its hue families, the colour to use as an accent,
-/// the direction its shapes and edges mostly run in, how strongly they agree on that direction, how much
-/// fine detail it has, and a seed that differs from cover to cover.
-/// </summary>
+/// <summary>The colours and structure of a cover.</summary>
+/// <param name="Blobs">The cover's colour families, heaviest first.</param>
 /// <param name="Accent">The richest common hue, or null when the cover has no real colour.</param>
 /// <param name="Orientation">The dominant direction of structure in radians, measured from the x axis.</param>
 /// <param name="Coherence">How consistently the structure follows that direction, from 0 to 1.</param>
 /// <param name="Detail">How busy the cover is, from 0 for flat colour to 1 for dense detail.</param>
+/// <param name="Seed">A number derived from the cover's pixels.</param>
 public sealed record CoverPalette(IReadOnlyList<ColorBlob> Blobs, Oklab? Accent, double Orientation, double Coherence,
     double Detail, uint Seed)
 {
-    /// <summary>
-    /// The most blobs a palette has. A single cover has at most six, which are four hue families and the
-    /// dark and light neutral families, and a mosaic keeps its six heaviest.
-    /// </summary>
+    /// <summary>The most blobs a palette has.</summary>
     public const int MaxBlobs = 6;
 
-    /// <summary>
-    /// Combines the palettes of up to four covers shown as a 2×2 mosaic. Each cover's blobs move into its
-    /// quadrant, and the heaviest blobs overall are kept.
-    /// </summary>
+    /// <summary>Combines the palettes of up to four covers shown as a 2×2 mosaic.</summary>
     public static CoverPalette Mosaic(IReadOnlyList<CoverPalette> covers)
     {
         if (covers.Count == 1)
@@ -68,10 +62,7 @@ public sealed record CoverPalette(IReadOnlyList<ColorBlob> Blobs, Oklab? Accent,
     }
 }
 
-/// <summary>
-/// Measures a cover's colours and structure. Colours are grouped by hue rather than averaged, so two
-/// different hues are never mixed into a third colour that the cover does not contain.
-/// </summary>
+/// <summary>Finds the colour families and structure of a cover.</summary>
 public static class CoverAnalysis
 {
     private const int HueBins = 72;
@@ -185,10 +176,8 @@ public static class CoverAnalysis
         return d > Math.PI ? 2 * Math.PI - d : d;
     }
 
-    /// <summary>
-    /// Assigns each pixel to the family with the nearest hue, if it is chromatic and within
-    /// <see cref="AssignWidth"/> of it. Other pixels are assigned −1.
-    /// </summary>
+    /// <summary>Assigns each chromatic pixel to the family with the nearest hue.</summary>
+    /// <returns>The family of each pixel, or −1 for a pixel without one.</returns>
     private static int[] Assign(Oklab[] colors, double[] weights, List<double> hues)
     {
         var families = new int[colors.Length];
@@ -246,11 +235,11 @@ public static class CoverAnalysis
         return Place(color, families, family, size);
     }
 
-    /// <summary>
-    /// Describes the dark or the light pixels without a family as one blob of their average colour. The
-    /// pixels are marked in <paramref name="families"/> as <see cref="DarkNeutral"/> or
+    /// <summary>Describes the dark or the light pixels without a family as one blob.</summary>
+    /// <remarks>
+    /// The pixels are marked in <paramref name="families"/> as <see cref="DarkNeutral"/> or
     /// <see cref="LightNeutral"/>.
-    /// </summary>
+    /// </remarks>
     private static ColorBlob? Neutral(Oklab[] colors, int[] families, bool light, int size)
     {
         int family = light ? LightNeutral : DarkNeutral;
@@ -270,10 +259,7 @@ public static class CoverAnalysis
         return n == 0 ? null : Place(new Oklab(l / n, a / n, b / n), families, family, size);
     }
 
-    /// <summary>
-    /// Makes a blob of the given colour from where the family's pixels are: their centroid, their
-    /// covariance and the fraction of the cover they cover.
-    /// </summary>
+    /// <summary>Makes a blob of the given colour from where a family's pixels are.</summary>
     private static ColorBlob Place(Oklab color, int[] families, int family, int size)
     {
         double x = 0, y = 0;
@@ -302,10 +288,7 @@ public static class CoverAnalysis
         return new ColorBlob(color, x, y, sxx / n + 0.002, sxy / n, syy / n + 0.002, (double)n / families.Length);
     }
 
-    /// <summary>
-    /// The structure tensor of the lightness channel. Its main eigenvector is the direction in which
-    /// lightness changes most, so shapes and edges run perpendicular to it.
-    /// </summary>
+    /// <summary>Measures the direction, coherence and detail of a cover's lightness.</summary>
     private static (double Orientation, double Coherence, double Detail) Structure(Oklab[] colors, int size)
     {
         double jxx = 0, jxy = 0, jyy = 0, magnitude = 0;
@@ -327,6 +310,7 @@ public static class CoverAnalysis
             return (0, 0, 0);
         double half = (jxx + jyy) / 2, root = Math.Sqrt((jxx - jyy) * (jxx - jyy) / 4 + jxy * jxy);
         double coherence = half > 1e-12 ? Math.Pow(root / half, 2) : 0;
+        // The structure tensor's main direction is where lightness changes most; shapes run across it.
         double gradient = Math.Atan2(2 * jxy, jxx - jyy) / 2;
         double detail = Math.Clamp(magnitude / samples * 12, 0, 1);
         return (gradient + Math.PI / 2, coherence, detail);
