@@ -318,6 +318,7 @@ dotnet run --project tests/Fermata.Tests -c Release -- --make-large-library DIR 
 dotnet run --project tests/Fermata.Tests -c Release -- --measure-scan DIR
 dotnet run --project tests/Fermata.Ui -c Release -- --screenshots OUT_DIR MUSIC_DIR  # every page, headless
 tools/make-sample-library.py DIR                            # 105 tagged songs in 12 formats, with covers and lyrics
+dotnet run --project tools/icons [PREVIEW.png]                # regenerates the icons in Styles/Icons.axaml
 ```
 
 The checks cover the tag readers (against files written by ffmpeg), the library and its index,

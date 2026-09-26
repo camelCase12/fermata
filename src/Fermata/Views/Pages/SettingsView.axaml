@@ -162,7 +162,7 @@
             <Run Text="Audio: " /><Run Text="{Binding EngineStatus}" />
           </TextBlock>
           <TextBlock Text="{Binding DataLocations}" Classes="caption" TextWrapping="Wrap" LineHeight="19" />
-          <TextBlock Classes="caption" TextWrapping="Wrap" Text="Icons: Material Design Icons by Pictogrammers (Apache 2.0). Audio: libmpv. Typeface: Inter." />
+          <TextBlock Classes="caption" TextWrapping="Wrap" Text="Audio: libmpv. Typeface: Inter." />
         </StackPanel>
       </Border>
     </StackPanel>
