@@ -14,17 +14,8 @@
       <!-- Sidebar -->
       <Border Background="{DynamicResource SidebarBrush}">
         <DockPanel>
-          <!-- The wordmark, with a fermata held over its last letter. -->
-          <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="24,20,16,16" TextElement.FontFamily="{DynamicResource DisplayFont}"
-                      TextElement.FontSize="27" TextElement.FontWeight="ExtraBold">
-            <TextBlock Text="fermat" LetterSpacing="-0.9" />
-            <Panel>
-              <TextBlock Text="a" />
-              <Path Width="13" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,-3,0,0"
-                    Fill="{DynamicResource AccentBrush}"
-                    Data="F1 M0 36A36 36 0 0 1 72 36L63 36A27 22 0 0 0 9 36Z M43 32A7 7 0 1 1 29 32A7 7 0 1 1 43 32Z" />
-            </Panel>
-          </StackPanel>
+          <TextBlock DockPanel.Dock="Top" Text="fermata" Margin="24,20,16,16" FontFamily="{DynamicResource DisplayFont}"
+                     FontSize="27" FontWeight="ExtraBold" LetterSpacing="-0.9" />
 
           <StackPanel DockPanel.Dock="Bottom" Margin="12,6,12,14" Spacing="2">
             <TextBlock Text="{Binding LibraryStatus}" IsVisible="{Binding LibraryStatus, Converter={x:Static ObjectConverters.IsNotNull}}"
