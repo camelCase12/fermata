@@ -173,8 +173,9 @@ public sealed unsafe class MpvEngine : IAudioEngine
 
     public void Seek(TimeSpan position)
     {
+        // "exact" asks for the precise position on every mpv version, instead of the nearest seek point.
         if (handle != 0)
-            LibMpv.Run(handle, ["seek", position.TotalSeconds.ToString("0.###", CultureInfo.InvariantCulture), "absolute"]);
+            LibMpv.Run(handle, ["seek", position.TotalSeconds.ToString("0.###", CultureInfo.InvariantCulture), "absolute+exact"]);
     }
 
     /// <summary>Runs loadfile and returns the playlist entry id it created.</summary>
