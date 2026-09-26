@@ -33,6 +33,7 @@ public sealed class AppPaths
     public string LibraryCacheFile => Path.Combine(Cache, "library.bin");
     public string ArtExportDirectory => Path.Combine(Cache, "art");
     public string SessionFile => Path.Combine(State, "session.json");
+    public string CrashLogFile => Path.Combine(State, "crash.log");
     public string InstanceSocket => Path.Combine(Runtime, "fermata.sock");
 
     public static AppPaths FromEnvironment()

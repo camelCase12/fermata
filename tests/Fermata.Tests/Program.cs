@@ -10,6 +10,7 @@ if (args is ["--measure-scan", var scanDirectory])
 var checks = new Checks();
 checks.Run("text folding", TextChecks.Run);
 checks.Run("imaging", ImagingChecks.Run);
+checks.Run("storage", StorageChecks.Run);
 checks.Run("metadata", MetadataChecks.Run);
 checks.Run("library", LibraryChecks.Run);
 checks.Run("play queue", QueueChecks.Run);

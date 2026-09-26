@@ -45,7 +45,11 @@ public partial class App : Application
             var model = new MainViewModel(shell);
             var window = new MainWindow { DataContext = model };
             desktop.MainWindow = window;
-            window.Opened += (_, _) => Program.Trace("window opened");
+            window.Opened += (_, _) =>
+            {
+                Program.Trace("window opened");
+                shell.ReportUnreadable(services.Unreadable);
+            };
             desktop.ShutdownMode = ShutdownMode.OnMainWindowClose;
             shell.GoHome();
 

@@ -232,11 +232,12 @@ second signal exits at once.
 
 ## Testing
 
-`tests/Fermata.Tests` is a console program of 653 checks in eight groups:
+`tests/Fermata.Tests` is a console program of 664 checks in nine groups:
 
 - **Text folding:** accents, ligatures and sort keys.
 - **Imaging:** OKLab conversions and cover analysis, on synthetic covers with known families,
   accents and structure.
+- **Storage:** damaged settings, likes and playlists are set aside rather than saved over.
 - **Metadata:** the tag readers, against files ffmpeg writes in every supported format.
 - **Library:** grouping, scanning, the cache, incremental rescans, search, following renamed files,
   M3U import and export, and recommendations.
@@ -248,8 +249,11 @@ second signal exits at once.
 Checks that need ffmpeg, libmpv or a D-Bus daemon skip themselves when those are missing.
 
 `tests/Fermata.Ui` renders every page with Avalonia's headless platform and real Skia. It includes a
-keyboard-focus page and a Page Down page. With `--backdrops OUTPUT IMAGE...` it instead renders the
-ambient backdrop in both styles for each image, prints each cover's analysis, and times the analysis.
+keyboard-focus page and a Page Down page. It also checks that every visible button has a name for
+screen readers and that the seek and volume bars present themselves as named sliders.
+
+With `--backdrops OUTPUT IMAGE...` it instead renders the ambient backdrop in both styles for each
+image, prints each cover's analysis, and times the analysis.
 
 `tools/isolated-session.sh` runs the real executable in a private headless sway session with
 XWayland, D-Bus, XDG directories and silent audio, with `FERMATA_GPU` choosing the GPU. That is how
@@ -306,7 +310,7 @@ compositor session:
 
 ```sh
 ./build.sh test                                             # build, then run the checks
-dotnet run --project tests/Fermata.Tests -c Release         # 653 checks, about 8 s
+dotnet run --project tests/Fermata.Tests -c Release         # 664 checks, about 8 s
 FERMATA_FUZZ_RUNS=20000 dotnet run --project tests/Fermata.Tests -c Release   # a longer queue fuzz
 dotnet run --project tests/Fermata.Tests -c Release -- --compare-ffprobe DIR  # tags and durations against ffprobe
 dotnet run --project tests/Fermata.Tests -c Release -- --make-large-library DIR 50000

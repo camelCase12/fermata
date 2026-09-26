@@ -95,9 +95,37 @@ foreach (var track in library.Tracks.OrderBy(_ => random.Next()).Take(40))
 services.Playlists.Create("Late night drive", library.Tracks.OrderBy(_ => random.Next()).Take(14).Select(t => t.Path));
 services.Playlists.Create("Focus", library.Tracks.Where(t => t.Genres.Contains("Ambient") || t.Genres.Contains("Classical")).Select(t => t.Path));
 
+// Screen readers: every visible button needs a name, and the seek bars are named sliders.
+int namedButtons = 0, unnamedControls = 0;
+void CheckNames(string page)
+{
+    foreach (var control in window.GetVisualDescendants().OfType<Button>().Where(b => b.IsEffectivelyVisible))
+    {
+        var peer = Avalonia.Automation.Peers.ControlAutomationPeer.CreatePeerForElement(control);
+        if (!string.IsNullOrWhiteSpace(peer.GetName()))
+        {
+            namedButtons++;
+            continue;
+        }
+        unnamedControls++;
+        Console.Error.WriteLine($"{page}: button without an accessible name: {control.Name ?? control.GetType().Name} in {control.FindAncestorOfType<UserControl>()?.GetType().Name}");
+    }
+    foreach (var bar in window.GetVisualDescendants().OfType<Fermata.Controls.SeekBar>())
+    {
+        var peer = Avalonia.Automation.Peers.ControlAutomationPeer.CreatePeerForElement(bar);
+        if (peer.GetAutomationControlType() != Avalonia.Automation.Peers.AutomationControlType.Slider
+            || string.IsNullOrEmpty(peer.GetName()) || peer is not Avalonia.Automation.Provider.IRangeValueProvider)
+        {
+            unnamedControls++;
+            Console.Error.WriteLine($"{page}: seek bar {bar.Name} is not a named slider");
+        }
+    }
+}
+
 void Capture(string name)
 {
     Pump(700);
+    CheckNames(name);
     var frame = window.CaptureRenderedFrame();
     if (frame is null)
     {
@@ -164,6 +192,10 @@ if (Fermata.Controls.AmbientBackdrop.ShaderErrors is { } errors)
     Console.Error.WriteLine("ambient backdrop shader failed to compile:\n" + errors);
     return 1;
 }
+
+Console.WriteLine($"accessible names: {namedButtons} buttons named, {unnamedControls} problems");
+if (unnamedControls > 0)
+    return 1;
 
 services.Shutdown();
 services.Dispose();

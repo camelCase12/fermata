@@ -20,3 +20,6 @@
 # Compiled test helpers (see the top of each .c file)
 /tools/pointer
 /tools/xinput
+
+# Release packages
+/dist/

@@ -82,14 +82,21 @@ public sealed class PlaylistStore
     /// <summary>Raised after any change that needs saving.</summary>
     public event Action? Changed;
 
+    /// <summary>Playlist files that could not be read by the last <see cref="Load"/>, after being set aside.</summary>
+    public IReadOnlyList<string> Unreadable => unreadable;
+    private readonly List<string> unreadable = [];
+
     public void Load()
     {
         playlists.Clear();
+        unreadable.Clear();
         if (!Directory.Exists(directory))
             return;
-        foreach (string file in Directory.EnumerateFiles(directory, "*.json"))
+        foreach (string file in Directory.GetFiles(directory, "*.json"))
         {
-            var document = FermataJson.Load(file, FermataJson.Default.PlaylistDocument);
+            var (document, setAside) = FermataJson.LoadOrSetAside(file, FermataJson.Default.PlaylistDocument);
+            if (setAside is not null)
+                unreadable.Add(setAside);
             if (document is null)
                 continue;
             playlists.Add(new Playlist(Path.GetFileNameWithoutExtension(file), document.Name, document.Description,

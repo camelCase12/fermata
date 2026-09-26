@@ -136,7 +136,8 @@
               Background="{DynamicResource PopupBrush}" CornerRadius="10" Padding="16,10" BoxShadow="{StaticResource PopupShadow}"
               IsVisible="{Binding Shell.Toasts.Current, Converter={x:Static ObjectConverters.IsNotNull}}">
         <StackPanel Orientation="Horizontal" Spacing="18">
-          <TextBlock Text="{Binding Shell.Toasts.Current.Message}" VerticalAlignment="Center" MaxWidth="520" TextTrimming="CharacterEllipsis" />
+          <TextBlock Text="{Binding Shell.Toasts.Current.Message}" VerticalAlignment="Center" MaxWidth="520" TextWrapping="Wrap"
+                     MaxLines="3" TextTrimming="CharacterEllipsis" />
           <Button Theme="{StaticResource LinkButton}" IsVisible="{Binding Shell.Toasts.Current.HasAction}"
                   Command="{Binding Shell.Toasts.Current.RunActionCommand}" Foreground="{DynamicResource AccentBrush}">
             <TextBlock Text="{Binding Shell.Toasts.Current.ActionLabel}" FontWeight="SemiBold" />

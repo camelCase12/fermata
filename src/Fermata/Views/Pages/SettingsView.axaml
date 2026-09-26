@@ -47,7 +47,7 @@
               <TextBlock Text="Watch folders for changes" />
               <TextBlock Text="Added, changed and removed files appear in the library by themselves." Classes="caption" />
             </StackPanel>
-            <ToggleSwitch Grid.Column="1" IsChecked="{Binding WatchFolders}" OnContent="" OffContent="" />
+            <ToggleSwitch Grid.Column="1" IsChecked="{Binding WatchFolders}" OnContent="" OffContent="" AutomationProperties.Name="Watch folders for changes" />
           </Grid>
           <Button Theme="{StaticResource PillButton}" HorizontalAlignment="Left" Command="{Binding RescanCommand}">
             <StackPanel Orientation="Horizontal" Spacing="8">
@@ -86,35 +86,35 @@
               <TextBlock Text="Gapless playback" />
               <TextBlock Text="Songs follow each other without a pause, as live albums and mixes intend." Classes="caption" />
             </StackPanel>
-            <ToggleSwitch Grid.Column="1" IsChecked="{Binding Gapless}" OnContent="" OffContent="" />
+            <ToggleSwitch Grid.Column="1" IsChecked="{Binding Gapless}" OnContent="" OffContent="" AutomationProperties.Name="Gapless playback" />
           </Grid>
           <Grid ColumnDefinitions="*,Auto" Classes="option">
             <StackPanel>
               <TextBlock Text="Autoplay" />
               <TextBlock Text="When the queue ends, keep playing similar music from your library." Classes="caption" />
             </StackPanel>
-            <ToggleSwitch Grid.Column="1" IsChecked="{Binding Autoplay}" OnContent="" OffContent="" />
+            <ToggleSwitch Grid.Column="1" IsChecked="{Binding Autoplay}" OnContent="" OffContent="" AutomationProperties.Name="Autoplay" />
           </Grid>
           <Grid ColumnDefinitions="*,Auto" Classes="option">
             <StackPanel>
               <TextBlock Text="Resume where you left off" />
               <TextBlock Text="Restore the queue and position (paused) when Fermata starts." Classes="caption" />
             </StackPanel>
-            <ToggleSwitch Grid.Column="1" IsChecked="{Binding ResumeSession}" OnContent="" OffContent="" />
+            <ToggleSwitch Grid.Column="1" IsChecked="{Binding ResumeSession}" OnContent="" OffContent="" AutomationProperties.Name="Resume where you left off" />
           </Grid>
           <Grid ColumnDefinitions="*,Auto" Classes="option">
             <StackPanel>
               <TextBlock Text="Colour from the cover" />
               <TextBlock Text="Buttons and highlights take their colour from the playing song's cover art." Classes="caption" />
             </StackPanel>
-            <ToggleSwitch Grid.Column="1" IsChecked="{Binding AccentFromArt}" OnContent="" OffContent="" />
+            <ToggleSwitch Grid.Column="1" IsChecked="{Binding AccentFromArt}" OnContent="" OffContent="" AutomationProperties.Name="Colour from the cover" />
           </Grid>
           <Grid ColumnDefinitions="*,Auto" Classes="option">
             <StackPanel>
               <TextBlock Text="Patterned backdrops" />
               <TextBlock Text="Backdrops are patterns made from the colours and shapes of the cover art, instead of a soft blur of it." Classes="caption" />
             </StackPanel>
-            <ToggleSwitch Grid.Column="1" IsChecked="{Binding GeneratedBackdrop}" OnContent="" OffContent="" />
+            <ToggleSwitch Grid.Column="1" IsChecked="{Binding GeneratedBackdrop}" OnContent="" OffContent="" AutomationProperties.Name="Patterned backdrops" />
           </Grid>
           <Button Theme="{StaticResource PillButton}" HorizontalAlignment="Left" Command="{Binding ClearHistoryCommand}" Margin="0,8,0,0" Content="Clear listening history" />
         </StackPanel>

@@ -17,7 +17,8 @@
           </TextBox.InnerLeftContent>
         </TextBox>
         <ToggleSwitch Grid.Column="1" IsChecked="{Binding IncludeGuests}" OnContent="Including featured artists"
-                      OffContent="Including featured artists" VerticalAlignment="Center" />
+                      OffContent="Including featured artists" VerticalAlignment="Center"
+                      AutomationProperties.Name="Include featured artists" />
       </Grid>
       <views:CardGrid Items="{Binding Artists}" MinCardWidth="160" />
     </StackPanel>

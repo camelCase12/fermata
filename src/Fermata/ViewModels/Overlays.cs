@@ -30,7 +30,7 @@ public sealed partial class ToastService : ObservableObject
     [ObservableProperty]
     public partial Toast? Current { get; private set; }
 
-    public void Show(string message, string? actionLabel = null, Action? action = null)
+    public void Show(string message, string? actionLabel = null, Action? action = null, TimeSpan? duration = null)
     {
         Current = new Toast(message, actionLabel, action is null ? null : () =>
         {
@@ -38,7 +38,7 @@ public sealed partial class ToastService : ObservableObject
             Dismiss();
         });
         timer.Stop();
-        timer.Interval = TimeSpan.FromSeconds(action is null ? 3.5 : 6);
+        timer.Interval = duration ?? TimeSpan.FromSeconds(action is null ? 3.5 : 6);
         timer.Start();
     }
 

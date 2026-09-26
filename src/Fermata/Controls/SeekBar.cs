@@ -1,4 +1,5 @@
 using Avalonia;
+using Avalonia.Automation.Peers;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Media;
@@ -91,6 +92,16 @@ public sealed class SeekBar : Control
     public event EventHandler<double>? ValueDragged;
 
     private double Shown => dragging ? dragValue : Math.Clamp(Value, 0, 1);
+
+    protected override AutomationPeer OnCreateAutomationPeer() => new SeekBarAutomationPeer(this);
+
+    /// <summary>Sets a value as if the user had clicked it, for screen readers.</summary>
+    internal void Commit(double value)
+    {
+        ValueCommitted?.Invoke(this, value);
+        SetCurrentValue(ValueProperty, value);
+        InvalidateVisual();
+    }
 
     protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
     {

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>io.github.camelcase12.Fermata</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>MIT</project_license>
+  <name>Fermata</name>
+  <summary>Play the music files you already have</summary>
+  <developer id="io.github.camelcase12">
+    <name>Chase Brower</name>
+  </developer>
+  <description>
+    <p>
+      Fermata is a music player for your own library, with a home page of mixes, radio, a queue you can
+      edit, lyrics, playlists, likes and history. It starts quickly and uses almost no CPU while paused.
+    </p>
+    <ul>
+      <li>Reads MP3, FLAC, Ogg, Opus, AAC, ALAC, WAV, AIFF, WavPack, WMA and more</li>
+      <li>Gapless playback and ReplayGain</li>
+      <li>Colours taken from the cover of the song that is playing</li>
+      <li>Synced lyrics from .lrc files or tags</li>
+      <li>Media keys and desktop controls through MPRIS</li>
+      <li>No network connections, and it never changes your music files</li>
+    </ul>
+  </description>
+  <launchable type="desktop-id">io.github.camelcase12.Fermata.desktop</launchable>
+  <url type="homepage">https://github.com/camelCase12/fermata</url>
+  <url type="bugtracker">https://github.com/camelCase12/fermata/issues</url>
+  <screenshots>
+    <screenshot type="default">
+      <caption>Now playing</caption>
+      <image>https://raw.githubusercontent.com/camelCase12/fermata/main/docs/now-playing.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>A playlist</caption>
+      <image>https://raw.githubusercontent.com/camelCase12/fermata/main/docs/playlist.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>Albums</caption>
+      <image>https://raw.githubusercontent.com/camelCase12/fermata/main/docs/albums.png</image>
+    </screenshot>
+  </screenshots>
+  <supports>
+    <control>keyboard</control>
+    <control>pointing</control>
+  </supports>
+  <provides>
+    <binary>fermata</binary>
+  </provides>
+  <content_rating type="oars-1.1" />
+  <releases>
+    <release version="0.1.0" date="2026-09-26">
+      <description>
+        <p>The first release.</p>
+      </description>
+    </release>
+  </releases>
+</component>

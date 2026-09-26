@@ -1,0 +1,44 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    # The oldest supported Ubuntu, so the executable runs on distributions with an older glibc.
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Install build tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends clang zlib1g-dev
+
+      - name: Check that the tag matches the version
+        run: |
+          version=$(sed -n 's:.*<Version>\(.*\)</Version>.*:\1:p' Directory.Build.props)
+          test "v$version" = "$GITHUB_REF_NAME" || { echo "Tag $GITHUB_REF_NAME does not match version $version"; exit 1; }
+
+      - name: Build and package
+        run: |
+          ./build.sh
+          tools/package-release.sh
+
+      - name: Create a draft release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cat > "$RUNNER_TEMP/notes.md" <<'NOTES'
+          Download the tarball, unpack it and run `./install.sh`. Fermata needs mpv installed, which provides libmpv.
+          NOTES
+          gh release create "$GITHUB_REF_NAME" dist/*.tar.gz dist/*.sha256 --draft \
+            --title "Fermata ${GITHUB_REF_NAME#v}" --notes-file "$RUNNER_TEMP/notes.md"

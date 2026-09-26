@@ -233,6 +233,12 @@
     <Setter Property="ToolTip.VerticalOffset" Value="-6" />
   </Style>
 
+  <!-- A button with only an icon has no text for screen readers, so its tooltip names it. A name set on
+       the button itself takes precedence, and buttons with text are named by their text. -->
+  <Style Selector=":is(Button)">
+    <Setter Property="AutomationProperties.Name" Value="{Binding $self.(ToolTip.Tip)}" />
+  </Style>
+
   <Style Selector="Window">
     <Setter Property="Background" Value="{DynamicResource BackgroundBrush}" />
     <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />

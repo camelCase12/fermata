@@ -63,6 +63,7 @@ internal static class Program
             lines.Add("raise");
 
         var paths = AppPaths.FromEnvironment();
+        CrashLog.Install(paths.CrashLogFile);
         SingleInstance? instance;
         try
         {

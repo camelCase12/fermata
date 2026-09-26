@@ -318,6 +318,22 @@ public sealed partial class Shell : ObservableObject
 
     public void ShowInFolder(Track track) => Launch("xdg-open", track.Directory);
 
+    /// <summary>Tells the user which saved files could not be read at startup, and where they were kept.</summary>
+    public void ReportUnreadable(IReadOnlyList<UnreadableFile> files)
+    {
+        if (files.Count == 0)
+            return;
+        var names = files.Where(f => f.What != "a playlist").Select(f => f.What).ToList();
+        int playlists = files.Count(f => f.What == "a playlist");
+        if (playlists > 0)
+            names.Add(playlists == 1 ? "a playlist" : $"{playlists} playlists");
+        string list = names.Count == 1 ? names[0] : string.Join(", ", names[..^1]) + " and " + names[^1];
+        bool one = files.Count == 1;
+        string folder = Path.GetDirectoryName(files[0].Path) ?? "";
+        Toasts.Show($"Couldn't read your {list}, so {(one ? "the file was" : "the files were")} set aside.",
+            "Show", () => Launch("xdg-open", folder), TimeSpan.FromSeconds(15));
+    }
+
     public async Task ShowTrackInfoAsync(Track track)
     {
         var dialog = new TrackInfoDialog(track, Services.UserData.StatsFor(track.Path)) { Title = "Song info" };

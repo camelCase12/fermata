@@ -18,12 +18,22 @@ public sealed class AppServices : IDisposable
     public AppServices(SynchronizationContext context, AppPaths paths)
     {
         Paths = paths;
-        var saved = FermataJson.Load(paths.SettingsFile, FermataJson.Default.Settings);
-        IsFirstRun = saved is null;
-        Settings = saved ?? new Settings { MusicFolders = [AppPaths.DefaultMusicFolder()] };
-        UserData = UserData.FromDocument(FermataJson.Load(paths.UserDataFile, FermataJson.Default.UserDataDocument));
+        var saved = FermataJson.LoadOrSetAside(paths.SettingsFile, FermataJson.Default.Settings);
+        IsFirstRun = saved.Value is null;
+        Settings = saved.Value ?? new Settings { MusicFolders = [AppPaths.DefaultMusicFolder()] };
+        var userData = FermataJson.LoadOrSetAside(paths.UserDataFile, FermataJson.Default.UserDataDocument);
+        UserData = UserData.FromDocument(userData.Value);
         Playlists = new PlaylistStore(paths.PlaylistsDirectory);
         Playlists.Load();
+        var unreadable = new List<UnreadableFile>();
+        if (saved.SetAside is { } settingsFile)
+            unreadable.Add(new("settings", settingsFile));
+        if (userData.SetAside is { } userDataFile)
+            unreadable.Add(new("likes and history", userDataFile));
+        unreadable.AddRange(Playlists.Unreadable.Select(file => new UnreadableFile("a playlist", file)));
+        Unreadable = unreadable;
+        foreach (var file in unreadable)
+            Console.Error.WriteLine($"fermata: could not read {file.What}; the file was kept as {file.Path}");
         Library = new MusicLibrary(paths, context);
         Art = new ArtCache();
 
@@ -65,6 +75,12 @@ public sealed class AppServices : IDisposable
 
     public AppPaths Paths { get; }
     public Settings Settings { get; }
+
+    /// <summary>
+    /// Saved files that existed but could not be read at startup. Each was renamed so that Fermata does not
+    /// save over it, and Fermata started without its contents.
+    /// </summary>
+    public IReadOnlyList<UnreadableFile> Unreadable { get; }
 
     /// <summary>True when no settings existed: the library folder was guessed and should be confirmed.</summary>
     public bool IsFirstRun { get; }
@@ -217,3 +233,6 @@ public sealed class AppServices : IDisposable
             save.Dispose();
     }
 }
+
+/// <summary>A saved file that could not be read. What names its contents, as it reads in a sentence.</summary>
+public sealed record UnreadableFile(string What, string Path);
