@@ -4,6 +4,7 @@ using Avalonia.Media;
 using Avalonia.Media.Immutable;
 using Avalonia.Rendering.SceneGraph;
 using Avalonia.Skia;
+using Avalonia.Threading;
 using Fermata.Library;
 using Fermata.Imaging;
 using Fermata.Services;
@@ -31,7 +32,7 @@ public sealed class AmbientBackdrop : Control
     public static readonly StyledProperty<double> FadeAmountProperty =
         AvaloniaProperty.Register<AmbientBackdrop, double>(nameof(FadeAmount), 1);
 
-    /// <summary>Lines the cover's top up with the backdrop's top instead of centring it, as pages do.</summary>
+    /// <summary>Whether the cover's top lines up with the backdrop's top instead of being centred.</summary>
     public static readonly StyledProperty<bool> AlignTopProperty =
         AvaloniaProperty.Register<AmbientBackdrop, bool>(nameof(AlignTop));
 
@@ -84,6 +85,13 @@ public sealed class AmbientBackdrop : Control
     /// <summary>Why the shaders could not be compiled, or null.</summary>
     internal static string? ShaderErrors => SoftShader.Errors ?? FlowShader.Errors;
 
+    /// <summary>Whether the generated style is drawn even when frames are drawn without a GPU.</summary>
+    internal static bool PatternWithoutGpu { get; set; }
+
+    /// <summary>Whether a frame has been drawn without a GPU.</summary>
+    /// <remarks>Once it is set, backdrops load the soft style unless <see cref="PatternWithoutGpu"/> is set.</remarks>
+    private static volatile bool drawnWithoutGpu;
+
     protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
     {
         base.OnPropertyChanged(change);
@@ -118,7 +126,7 @@ public sealed class AmbientBackdrop : Control
             return;
         }
         int pending = sources.Length;
-        if (services.Settings.GeneratedBackdrop)
+        if (services.Settings.GeneratedBackdrop && (!drawnWithoutGpu || PatternWithoutGpu))
         {
             var palettes = new CoverPalette?[sources.Length];
             for (int i = 0; i < sources.Length; i++)
@@ -229,21 +237,20 @@ public sealed class AmbientBackdrop : Control
         // The field covers the whole area with the cover's square, like a cover image cropped to fill it.
         double side = Math.Max(size.Width, size.Height);
         var origin = new Point((size.Width - side) / 2, AlignTop ? 0 : (size.Height - side) / 2);
-        // Where the fade reaches the plain background, nothing is drawn and the background shows through,
-        // so controls that redraw there do not make the field redraw.
+        // Nothing is drawn where the fade reaches the plain background.
         var drawn = FadeAmount >= 1 ? new Rect(0, 0, size.Width, size.Height * Math.Clamp(FadeEnd, 0, 1)) : new Rect(size);
         var layout = new Layout(drawn, origin, side, size.Height, Background(), FadeStart, FadeEnd, FadeAmount);
         if (progress >= 1)
         {
             if (to is not null)
-                context.Custom(new FieldOperation(to, layout, 1));
+                context.Custom(new FieldOperation(this, to, layout, 1));
             return;
         }
         double t = progress * progress * (3 - 2 * progress);
         if (from is not null)
-            context.Custom(new FieldOperation(from, layout, to is null ? 1 - t : 1));
+            context.Custom(new FieldOperation(this, from, layout, to is null ? 1 - t : 1));
         if (to is not null)
-            context.Custom(new FieldOperation(to, layout, t));
+            context.Custom(new FieldOperation(this, to, layout, t));
     }
 
     /// <summary>Where and how a field is drawn.</summary>
@@ -258,10 +265,9 @@ public sealed class AmbientBackdrop : Control
     /// <summary>What a backdrop shows.</summary>
     private abstract class Field
     {
-        /// <summary>
-        /// Makes the shader that draws this field. Objects that must live as long as the shader are added
-        /// to <paramref name="owned"/>.
-        /// </summary>
+        /// <summary>Makes the shader that draws this field.</summary>
+        /// <param name="layout">Where and how the field is drawn.</param>
+        /// <param name="owned">Receives objects that must live as long as the shader.</param>
         public abstract SKShader? CreateShader(Layout layout, List<IDisposable> owned);
     }
 
@@ -298,7 +304,7 @@ public sealed class AmbientBackdrop : Control
         private const int MaxBlobs = CoverPalette.MaxBlobs;
         private const double NeutralPenalty = 0.75;
 
-        // The shader's uniforms depend only on the palette, apart from the layout, so they are computed once.
+        // The uniforms that depend only on the palette.
         private readonly float[] colors = new float[MaxBlobs * 4];
         private readonly float[] shapes = new float[MaxBlobs * 4];
         private readonly float[] shears = new float[MaxBlobs * 4];
@@ -328,16 +334,14 @@ public sealed class AmbientBackdrop : Control
                     continue;
                 }
                 var blob = palette.Blobs[i];
-                // Each family spreads a little further than it does in the cover, so the families fill the field.
+                // Each family spreads a little further than it does in the cover.
                 double sxx = 1.3 * blob.Sxx + 0.01, sxy = 1.3 * blob.Sxy, syy = 1.3 * blob.Syy + 0.01;
                 double determinant = sxx * syy - sxy * sxy;
                 colors[i * 4] = (float)blob.Color.L;
                 colors[i * 4 + 1] = (float)blob.Color.A;
                 colors[i * 4 + 2] = (float)blob.Color.B;
-                // The score is based on the logarithm of the family's density as a Gaussian mixture component,
-                // so a compact family wins near its centre even when it covers little of the cover. The area
-                // is raised to the power 0.75, so small features of a cover still show, and neutral families
-                // score lower, so the cover's colours show against them.
+                // The score is the logarithm of the family's density as a Gaussian mixture component, with its
+                // area raised to the power 0.75, less a penalty for neutral families.
                 colors[i * 4 + 3] = (float)(0.75 * Math.Log(Math.Max(blob.Weight, 1e-4)) - 0.5 * Math.Log(determinant)
                     - (blob.IsNeutral ? NeutralPenalty : 0));
                 shapes[i * 4] = (float)blob.X;
@@ -346,8 +350,7 @@ public sealed class AmbientBackdrop : Control
                 shapes[i * 4 + 3] = (float)(sxx / determinant);
                 shears[i * 4] = (float)(-sxy / determinant);
             }
-            // Busy covers give a finer pattern, and covers whose shapes share a direction give a pattern
-            // stretched along that direction with less turbulence across it.
+            // Busier covers give a finer pattern, and more coherent structure stretches it along its direction.
             flow[0] = (float)Math.Cos(palette.Orientation);
             flow[1] = (float)Math.Sin(palette.Orientation);
             flow[2] = (float)(1 + 2.5 * palette.Coherence);
@@ -380,8 +383,9 @@ public sealed class AmbientBackdrop : Control
     }
 
     /// <summary>A recorded drawing of a field.</summary>
-    private sealed class FieldOperation(Field field, Layout layout, double opacity) : ICustomDrawOperation
+    private sealed class FieldOperation(AmbientBackdrop owner, Field field, Layout layout, double opacity) : ICustomDrawOperation
     {
+        private readonly AmbientBackdrop owner = owner;
         private readonly Field field = field;
         private readonly Layout layout = layout;
         private readonly double opacity = opacity;
@@ -400,17 +404,23 @@ public sealed class AmbientBackdrop : Control
         {
             if (context.TryGetFeature<ISkiaSharpApiLeaseFeature>() is not { } skia)
                 return;
+            using var lease = skia.Lease();
+            if (lease.GrContext is null && field is FlowField && !PatternWithoutGpu)
+            {
+                if (!drawnWithoutGpu)
+                {
+                    drawnWithoutGpu = true;
+                    Dispatcher.UIThread.Post(owner.Load);
+                }
+                return;
+            }
             if (shader is null)
             {
                 shader = field.CreateShader(layout, owned);
                 if (shader is null)
-                {
-                    context.FillRectangle(new ImmutableSolidColorBrush(layout.Background, opacity), layout.Drawn);
                     return;
-                }
                 paint.Shader = shader;
             }
-            using var lease = skia.Lease();
             paint.Color = SKColors.White.WithAlpha((byte)Math.Round(255 * opacity * lease.CurrentOpacity));
             lease.SkCanvas.DrawRect(SKRect.Create((float)layout.Drawn.Width, (float)layout.Drawn.Height), paint);
         }
@@ -466,8 +476,7 @@ public sealed class AmbientBackdrop : Control
         public static readonly SKRuntimeEffect? Effect = Compile(Finish + Source, out Errors);
         public static readonly string? Errors;
 
-        // Colours are interpolated with a cubic B-spline, which is smooth and never overshoots. It is
-        // computed with four bilinear lookups instead of sixteen.
+        // Colours are interpolated with a cubic B-spline, computed from four bilinear lookups.
         private const string Source = """
             uniform shader colors;
             uniform float2 origin;
@@ -507,13 +516,10 @@ public sealed class AmbientBackdrop : Control
         public static readonly SKRuntimeEffect? Effect = Compile(Finish + Source, out Errors);
         public static readonly string? Errors;
 
-        // Positions are in the cover's square, from 0 to 1. The position is first displaced by two levels
-        // of domain-warped value noise, measured in a frame turned to the cover's structure direction and
-        // stretched along it. Each family then scores by the area it covers, by a Gaussian of its shape,
-        // and by a noise field of its own, so families that share a region of the cover divide it into
-        // patches. The scores are sharpened so families meet at soft edges instead of blending into each
-        // other. Colours are mixed in OKLab, and one more noise value varies the lightness to show the
-        // pattern within a family.
+        // Positions are in the cover's square, from 0 to 1. Each position is displaced by domain-warped
+        // value noise, in a frame turned to the cover's structure direction. Each family then scores by its
+        // area, a Gaussian of its shape and a noise field of its own, and the sharpened scores mix the
+        // families' colours in OKLab. A further noise value varies the lightness.
         private const string Source = """
             uniform float2 origin;
             uniform float side;

@@ -179,7 +179,8 @@ density at that point, and a noise field of its own, and the scores are sharpene
 soft edges instead of mixing. Neutral families score a little lower, so the cover's colours show
 against them. Before scoring, the position is displaced by domain-warped value noise, stretched along
 the cover's structure direction, and finer for busier covers. Colours are mixed in OKLab. Analysing a
-cover takes under a millisecond, once per cover.
+cover takes under a millisecond, once per cover. The shader is too slow to draw on the CPU, so when frames are drawn
+without a GPU (the software renderer, or the headless page renderer) backdrops use the soft style.
 
 Both shaders then work alike:
 

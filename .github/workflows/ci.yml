@@ -23,26 +23,13 @@ jobs:
       - name: Build and run the checks
         env:
           FERMATA_MPV_LOG: ${{ runner.temp }}/mpv.log
-        run: |
-          ffmpeg -version | head -1
-          ./build.sh test
+        run: ./build.sh test
 
       - name: Render every page
         timeout-minutes: 10
         run: |
           python3 tools/make-sample-library.py "$RUNNER_TEMP/library" --seconds 5 10
-          dotnet build tests/Fermata.Ui -c Release
-          dotnet tool install -g dotnet-stack >/dev/null
-          dotnet tests/Fermata.Ui/bin/Release/net10.0/Fermata.Ui.dll --screenshots "$RUNNER_TEMP/pages" "$RUNNER_TEMP/library" &
-          pid=$!
-          for i in $(seq 240); do kill -0 $pid 2>/dev/null || break; sleep 1; done
-          if kill -0 $pid 2>/dev/null; then
-            echo "The page renderer is still running after 4 minutes; its threads:"
-            ~/.dotnet/tools/dotnet-stack report -p $pid || true
-            kill $pid
-            exit 1
-          fi
-          wait $pid
+          dotnet run --project tests/Fermata.Ui -c Release -- --screenshots "$RUNNER_TEMP/pages" "$RUNNER_TEMP/library"
 
       - uses: actions/upload-artifact@v5
         if: always()

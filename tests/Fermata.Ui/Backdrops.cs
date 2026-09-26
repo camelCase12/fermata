@@ -15,6 +15,7 @@ internal static class Backdrops
 {
     public static int Render(AppServices services, string output, string[] images)
     {
+        AmbientBackdrop.PatternWithoutGpu = true;
         var backdrop = new AmbientBackdrop { FadeAmount = 0 };
         var inset = new Image { Width = 200, Height = 200, Margin = new Thickness(24), HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Bottom };
         var window = new Window { Width = 1280, Height = 720, Content = new Grid { Children = { backdrop, inset } } };
