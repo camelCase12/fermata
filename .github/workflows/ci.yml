@@ -21,7 +21,11 @@ jobs:
           sudo apt-get install -y --no-install-recommends clang zlib1g-dev ffmpeg libmpv2 playerctl dbus fontconfig
 
       - name: Build and run the checks
-        run: ./build.sh test
+        env:
+          FERMATA_MPV_LOG: ${{ runner.temp }}/mpv.log
+        run: |
+          ffmpeg -version | head -1
+          ./build.sh test
 
       - name: Render every page
         run: |
@@ -31,6 +35,8 @@ jobs:
       - uses: actions/upload-artifact@v5
         if: always()
         with:
-          name: pages
-          path: ${{ runner.temp }}/pages
+          name: pages-and-logs
+          path: |
+            ${{ runner.temp }}/pages
+            ${{ runner.temp }}/mpv.log
           if-no-files-found: ignore

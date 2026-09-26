@@ -332,8 +332,9 @@ virtual pointer) and `tools/xinput.c` (XTEST keys) drive it; build instructions 
 each file.
 
 Environment variables for troubleshooting: `FERMATA_RENDERING=gl|vulkan|software` picks the
-renderer, `FERMATA_AUDIO_OUTPUT` sets mpv's audio output (`null` for silence), and
-`FERMATA_TRACE_STARTUP=1` prints startup timings.
+renderer, `FERMATA_AUDIO_OUTPUT` sets mpv's audio output (`null` for silence),
+`FERMATA_MPV_LOG=FILE` writes mpv's detailed log to a file, and `FERMATA_TRACE_STARTUP=1` prints
+startup timings.
 
 ### Not included
 

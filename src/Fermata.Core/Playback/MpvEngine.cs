@@ -72,6 +72,12 @@ public sealed unsafe class MpvEngine : IAudioEngine
             LibMpv.SetOptionString(handle, name, value);
         if (!string.IsNullOrEmpty(audioOutput))
             LibMpv.SetOptionString(handle, "ao", audioOutput);
+        // FERMATA_MPV_LOG names a file for mpv's detailed log, for troubleshooting playback.
+        if (Environment.GetEnvironmentVariable("FERMATA_MPV_LOG") is { Length: > 0 } log)
+        {
+            LibMpv.SetOptionString(handle, "log-file", log);
+            LibMpv.SetOptionString(handle, "msg-level", "all=debug");
+        }
         int status = LibMpv.Initialize(handle);
         if (status < 0)
         {
