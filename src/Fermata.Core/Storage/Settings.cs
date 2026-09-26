@@ -27,10 +27,10 @@ public sealed class Settings
     /// <summary>Restore the queue and position (paused) at startup.</summary>
     public bool ResumeSession { get; set; } = true;
 
-    /// <summary>Take the accent colour from the playing song's cover instead of the theme's gold.</summary>
+    /// <summary>Whether the accent colour comes from the playing song's cover.</summary>
     public bool AccentFromArt { get; set; } = true;
 
-    /// <summary>Draw page backdrops as patterns generated from the cover art instead of a soft blur of it.</summary>
+    /// <summary>Whether page backdrops are patterns generated from the cover art.</summary>
     public bool GeneratedBackdrop { get; set; } = true;
 
     public bool SidebarCollapsed { get; set; }

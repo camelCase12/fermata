@@ -25,10 +25,7 @@ public sealed partial class LyricLineViewModel(LyricLine line, int index) : Obse
     public partial bool IsPast { get; set; }
 }
 
-/// <summary>
-/// The now-playing view: the queue ("Up next"), lyrics and related music. Work is done only for the
-/// visible tab while the view is open; hidden, it just marks itself out of date.
-/// </summary>
+/// <summary>The view model of the now-playing view.</summary>
 public sealed partial class NowPlayingViewModel : ObservableObject
 {
     private readonly Shell shell;
@@ -198,7 +195,7 @@ public sealed partial class NowPlayingViewModel : ObservableObject
         return found;
     }
 
-    /// <summary>Clicking a synchronized line jumps to it.</summary>
+    /// <summary>Seeks to the time of a synchronized lyric line.</summary>
     public void SeekToLine(LyricLineViewModel line)
     {
         if (LyricsSynced)

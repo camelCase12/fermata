@@ -8,10 +8,7 @@
              x:DataType="lib:Track"
              Height="{StaticResource TrackRowHeight}"
              Background="Transparent">
-  <!--
-    Every state is a class on the row (library, album, artist, playing, liked) so that hover and
-    state styles combine without code: the code-behind only switches classes.
-  -->
+  <!-- Each state is a class on the row, set by the code-behind. -->
   <UserControl.Styles>
     <!-- Defaults -->
     <Style Selector="views|TrackRow Button.hover">
@@ -68,7 +65,7 @@
       <Setter Property="IsVisible" Value="True" />
     </Style>
 
-    <!-- Liked: the heart stays visible and filled -->
+    <!-- Liked songs keep a filled heart -->
     <Style Selector="views|TrackRow.liked Button#LikeButton">
       <Setter Property="Opacity" Value="1" />
       <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />

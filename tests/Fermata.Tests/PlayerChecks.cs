@@ -48,7 +48,7 @@ internal static class PlayerChecks
 
     private static void ShuffleRaces(Checks check)
     {
-        // Shuffle toggled mid-track: the preload follows the new order immediately.
+        // Toggling shuffle mid-track changes the preload immediately.
         var (player, engine, _) = Create(7);
         var tracks = QueueChecks.MakeTracks(30);
         player.Play(tracks, 0, new QueueSource("album", "A"));
@@ -57,8 +57,7 @@ internal static class PlayerChecks
         check.Equal(player.Queue.PeekNext()?.Track.Path, engine.PreloadedPath, "shuffle replaces the preload with the shuffled next");
         check.That(engine.PreloadedPath != tracks[1].Path || player.Queue.PeekNext()?.Track == tracks[1], "the unshuffled next is no longer queued in the engine");
 
-        // The race that breaks shuffle elsewhere: the engine finishes the track and starts the old
-        // preload before it hears about the shuffle toggle.
+        // The engine finishes the track and starts the old preload before it hears about the shuffle toggle.
         (player, engine, _) = Create(8);
         player.Play(tracks, 0, new QueueSource("album", "A"));
         engine.Deliver();

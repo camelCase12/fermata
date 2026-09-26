@@ -95,8 +95,7 @@ internal static class Program
     public static AppBuilder BuildAvaloniaApp()
     {
         var x11 = new X11PlatformOptions { WmClass = "fermata" };
-        // OpenGL unless FERMATA_RENDERING says otherwise (vulkan, gl or software). Measured while playing:
-        // on NVIDIA, Vulkan took 40% more memory and more CPU than GL; the software renderer takes ~4× the CPU.
+        // OpenGL, unless FERMATA_RENDERING chooses vulkan, gl or software.
         x11.RenderingMode = Environment.GetEnvironmentVariable("FERMATA_RENDERING") switch
         {
             "software" => [X11RenderingMode.Software],

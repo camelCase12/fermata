@@ -12,19 +12,19 @@ public sealed class AppPaths
         Runtime = runtime;
     }
 
-    /// <summary>Settings: <c>$XDG_CONFIG_HOME/fermata</c>.</summary>
+    /// <summary>The folder for settings, <c>$XDG_CONFIG_HOME/fermata</c>.</summary>
     public string Config { get; }
 
-    /// <summary>Playlists, likes and play history: <c>$XDG_DATA_HOME/fermata</c>.</summary>
+    /// <summary>The folder for playlists, likes and play history, <c>$XDG_DATA_HOME/fermata</c>.</summary>
     public string Data { get; }
 
-    /// <summary>Rebuildable data such as the library index and exported art: <c>$XDG_CACHE_HOME/fermata</c>.</summary>
+    /// <summary>The folder for rebuildable data such as the library index, <c>$XDG_CACHE_HOME/fermata</c>.</summary>
     public string Cache { get; }
 
-    /// <summary>The queue and position to resume: <c>$XDG_STATE_HOME/fermata</c>.</summary>
+    /// <summary>The folder for the queue and position to resume, <c>$XDG_STATE_HOME/fermata</c>.</summary>
     public string State { get; }
 
-    /// <summary>The single-instance socket: <c>$XDG_RUNTIME_DIR</c>.</summary>
+    /// <summary>The folder for the single-instance socket, <c>$XDG_RUNTIME_DIR</c>.</summary>
     public string Runtime { get; }
 
     public string SettingsFile => Path.Combine(Config, "settings.json");

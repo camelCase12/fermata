@@ -3,11 +3,11 @@ using System.Text;
 
 namespace Fermata.Integration;
 
-/// <summary>
-/// Keeps one Fermata per user. The first instance listens on a Unix socket; later launches send it
-/// their command line (files to play, or a command such as "next") and exit.
-/// </summary>
-/// <remarks>Messages are lines of UTF-8 text; the connection's end marks the end of a message.</remarks>
+/// <summary>The per-user lock that keeps one Fermata running, and the channel later launches use to reach it.</summary>
+/// <remarks>
+/// The first instance listens on a Unix socket, and later launches send it their command line. Messages
+/// are lines of UTF-8 text, and the end of the connection marks the end of a message.
+/// </remarks>
 public sealed class SingleInstance : IDisposable
 {
     private readonly Socket listener;
@@ -23,10 +23,8 @@ public sealed class SingleInstance : IDisposable
     /// <summary>Raised on a background thread with the lines another launch sent.</summary>
     public event Action<IReadOnlyList<string>>? MessageReceived;
 
-    /// <summary>
-    /// Becomes the primary instance, or hands <paramref name="lines"/> to the running one. Returns null
-    /// when the message was delivered to another instance (which should then be left to handle it).
-    /// </summary>
+    /// <summary>Becomes the primary instance, or hands <paramref name="lines"/> to the running one.</summary>
+    /// <returns>The primary instance, or null when the lines were delivered to another instance.</returns>
     public static SingleInstance? Acquire(string socketPath, IReadOnlyList<string> lines)
     {
         Directory.CreateDirectory(Path.GetDirectoryName(socketPath)!);
@@ -34,7 +32,7 @@ public sealed class SingleInstance : IDisposable
         {
             if (TrySend(socketPath, lines))
                 return null;
-            // Nobody answered: any socket file left behind belongs to an instance that has exited.
+            // Nobody answered, so any socket file left behind belongs to an instance that has exited.
             try
             {
                 File.Delete(socketPath);
@@ -54,7 +52,7 @@ public sealed class SingleInstance : IDisposable
             }
             catch (SocketException)
             {
-                // Another instance bound the socket between our attempts; send to it instead.
+                // Another instance bound the socket between these attempts, so the lines go to it.
                 listener.Dispose();
                 Thread.Sleep(50);
             }

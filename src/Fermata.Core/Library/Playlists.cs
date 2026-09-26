@@ -3,7 +3,8 @@ using Fermata.Storage;
 
 namespace Fermata.Library;
 
-/// <summary>A user playlist: an ordered list of track paths that may contain duplicates.</summary>
+/// <summary>A user playlist.</summary>
+/// <remarks>Its entries are track paths, in order, and may repeat.</remarks>
 public sealed class Playlist
 {
     internal Playlist(string id, string name, string description, DateTime created, DateTime modified, List<string> paths)
@@ -42,7 +43,9 @@ public sealed class Playlist
     public override string ToString() => Name;
 }
 
-/// <summary>A playlist read from an M3U file: the name it gives (if any) and its entries as absolute paths.</summary>
+/// <summary>A playlist read from an M3U file.</summary>
+/// <param name="Name">The name the file gives, or null.</param>
+/// <param name="Paths">The entries, as absolute paths.</param>
 public sealed record M3uPlaylist(string? Name, IReadOnlyList<string> Paths);
 
 public sealed class PlaylistDocument
@@ -54,10 +57,11 @@ public sealed class PlaylistDocument
     public List<string> Tracks { get; set; } = [];
 }
 
-/// <summary>
-/// The user's playlists, one JSON file each in <c>~/.local/share/fermata/playlists</c>.
-/// Owned by the UI thread; edits mark playlists dirty and <see cref="CaptureChanges"/> hands them to a writer.
-/// </summary>
+/// <summary>The user's playlists.</summary>
+/// <remarks>
+/// Each playlist is a JSON file in <c>~/.local/share/fermata/playlists</c>. The store is owned by the UI
+/// thread, and <see cref="CaptureChanges"/> hands pending edits to a writer.
+/// </remarks>
 public sealed class PlaylistStore
 {
     private readonly string directory;
@@ -128,7 +132,9 @@ public sealed class PlaylistStore
         ListChanged?.Invoke();
     }
 
-    /// <summary>Appends tracks; returns how many were added. Tracks already present are skipped unless <paramref name="allowDuplicates"/>.</summary>
+    /// <summary>Appends tracks to a playlist.</summary>
+    /// <remarks>Tracks already present are skipped unless <paramref name="allowDuplicates"/> is set.</remarks>
+    /// <returns>How many tracks were added.</returns>
     public int Add(Playlist playlist, IEnumerable<string> paths, bool allowDuplicates = false)
     {
         var existing = allowDuplicates ? null : new HashSet<string>(playlist.PathList, StringComparer.Ordinal);
@@ -203,10 +209,9 @@ public sealed class PlaylistStore
         }
     }
 
-    /// <summary>
-    /// Copies pending changes (on the owning thread) into an action that writes them (on any thread).
-    /// Returns null when nothing changed.
-    /// </summary>
+    /// <summary>Copies pending changes into an action that writes them.</summary>
+    /// <remarks>Call it on the owning thread. The action can run on any thread.</remarks>
+    /// <returns>The action, or null when nothing changed.</returns>
     public Action? CaptureChanges()
     {
         if (dirty.Count == 0 && deleted.Count == 0)
@@ -247,10 +252,11 @@ public sealed class PlaylistStore
         AtomicFile.WriteAllBytes(file, Encoding.UTF8.GetBytes(text.ToString()));
     }
 
-    /// <summary>
-    /// Reads an M3U or M3U8 playlist. Entries become absolute paths: relative ones are relative to the
-    /// playlist file, and file:// URLs are converted; streams and other URLs are skipped.
-    /// </summary>
+    /// <summary>Reads an M3U or M3U8 playlist.</summary>
+    /// <remarks>
+    /// Relative entries are resolved against the playlist file, and file:// URLs become paths. Streams and
+    /// other URLs are skipped.
+    /// </remarks>
     public static M3uPlaylist ReadM3u(string file)
     {
         const string NameDirective = "#PLAYLIST:";

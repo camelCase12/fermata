@@ -5,10 +5,8 @@ internal static class Adts
 {
     private static readonly int[] SampleRates = [96000, 88200, 64000, 48000, 44100, 32000, 24000, 22050, 16000, 12000, 11025, 8000, 7350];
 
-    /// <summary>
-    /// ADTS has no global header, so the duration comes from walking frame headers. Each header is
-    /// seven bytes read through the source's window, so this touches the file sequentially.
-    /// </summary>
+    /// <summary>Reads the stream properties by walking the frame headers.</summary>
+    /// <remarks>ADTS has no global header.</remarks>
     public static void Read(ByteSource source, long start, long end, AudioTags tags)
     {
         const int MaxFrames = 200_000; // about 80 minutes at 44.1 kHz; longer streams are extrapolated

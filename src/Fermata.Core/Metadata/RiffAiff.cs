@@ -3,7 +3,7 @@ using System.Text;
 
 namespace Fermata.Metadata;
 
-/// <summary>WAV (RIFF and RF64) and AIFF/AIFC files: PCM formats with chunked metadata.</summary>
+/// <summary>Reads WAV (RIFF and RF64) and AIFF/AIFC files.</summary>
 internal static class RiffAiff
 {
     public static void ReadWav(ByteSource source, AudioTags tags, TagReadOptions options)
@@ -109,7 +109,8 @@ internal static class RiffAiff
         }
     }
 
-    /// <summary>INFO strings have no declared encoding: UTF-8 when valid, Latin-1 otherwise.</summary>
+    /// <summary>Decodes an INFO string, as UTF-8 when valid and otherwise as Latin-1.</summary>
+    /// <remarks>INFO strings have no declared encoding.</remarks>
     private static string DecodeInfoText(ReadOnlySpan<byte> bytes)
     {
         int end = bytes.IndexOf((byte)0);

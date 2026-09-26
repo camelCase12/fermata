@@ -30,7 +30,7 @@ internal static class Genres
     public static string? FromIndex(int index) => (uint)index < (uint)Id3v1.Length ? Id3v1[index] : null;
 
     /// <summary>
-    /// Expands an ID3v2 TCON value: "(17)", "(17)Rock", "17", "(RX)", "(CR)" or plain text.
+    /// Expands an ID3v2 TCON value such as "(17)", "(17)Rock", "17", "(RX)", "(CR)" or plain text.
     /// </summary>
     public static List<string> ParseId3(string value)
     {

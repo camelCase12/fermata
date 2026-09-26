@@ -49,10 +49,11 @@ public static class TextFolding
         }
     }
 
-    /// <summary>
-    /// Sort key for names: folded, with a leading English article removed so that
-    /// "The Beatles" sorts under B. Digits sort before letters, as in most players.
-    /// </summary>
+    /// <summary>The sort key for a name.</summary>
+    /// <remarks>
+    /// It is the folded name without a leading English article, so "The Beatles" sorts under B. Digits
+    /// sort before letters.
+    /// </remarks>
     public static string SortKey(ReadOnlySpan<char> text)
     {
         string folded = Fold(text);
@@ -66,7 +67,8 @@ public static class TextFolding
 
     private static readonly string[] Articles = ["the "];
 
-    /// <summary>Folds one UTF-16 code unit; returns NUL when <see cref="FoldingTable.Expansion"/> applies.</summary>
+    /// <summary>Folds one UTF-16 code unit.</summary>
+    /// <returns>The folded unit, or NUL when <see cref="FoldingTable.Expansion"/> applies.</returns>
     internal static char FoldChar(char c)
     {
         if (c < 0x80)
@@ -82,7 +84,7 @@ public static class TextFolding
         return char.ToLowerInvariant(c);
     }
 
-    // Punctuation that joins parts of one word: removing it keeps "don't" and "dont" equal.
+    // Punctuation that joins parts of one word. Removing it keeps "don't" and "dont" equal.
     private static bool IsJoiner(char c) => c is '\'' or '’' or 'ʼ' or '.';
 
     private static bool IsCombiningMark(char c) =>

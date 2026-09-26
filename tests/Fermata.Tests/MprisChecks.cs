@@ -3,10 +3,7 @@ using Fermata.Integration;
 
 namespace Fermata.Tests;
 
-/// <summary>
-/// Drives the MPRIS server with playerctl — the tool behind the desktop's media keys — on a private
-/// session bus, so the check never touches the real desktop session.
-/// </summary>
+/// <summary>Checks the MPRIS server with playerctl on a private session bus.</summary>
 internal static class MprisChecks
 {
     public static void Run(Checks check)

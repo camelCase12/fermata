@@ -4,7 +4,7 @@ using Fermata.Library;
 
 namespace Fermata.Controls;
 
-/// <summary>Cover art for a collection: four covers in a 2×2 grid, or one cover when there are fewer.</summary>
+/// <summary>Cover art for a collection, as four covers in a 2×2 grid or one cover when there are fewer.</summary>
 public sealed class Mosaic : Panel
 {
     public static readonly StyledProperty<IReadOnlyList<ArtSource>?> CoversProperty =

@@ -14,7 +14,7 @@ internal static class MetadataChecks
         EncodedFixtures(check);
     }
 
-    /// <summary>ID3 layouts that common encoders never produce but real files contain.</summary>
+    /// <summary>Unusual ID3 layouts found in real files.</summary>
     private static void SyntheticId3(Checks check)
     {
         byte[] frame = Mp3Frame();
@@ -78,7 +78,7 @@ internal static class MetadataChecks
         check.Equal("Squeezed Title", tags?.Title, "compressed v2.3 frame");
         check.Equal("Zip", tags?.Artist, "frame after compressed frame");
 
-        // ID3v2.4 written with plain (non-sync-safe) frame sizes by old iTunes versions.
+        // ID3v2.4 with plain, not sync-safe, frame sizes.
         var plainSizes = new Id3Builder(4, plainFrameSizes: true)
             .Text("TIT2", new string('x', 200), 0).Text("TPE1", "After Big Frame", 0).Build();
         tags = Parse([.. plainSizes, .. frame]);
@@ -94,7 +94,7 @@ internal static class MetadataChecks
         check.Equal(1987, tags?.Year, "ID3v1 year");
 
         // Garbage and truncated input must not throw.
-        Parse([0x49, 0x44, 0x33, 4, 0, 0, 0, 0, 0x7F, 0x7F]); // a truncated tag must not throw
+        Parse([0x49, 0x44, 0x33, 4, 0, 0, 0, 0, 0x7F, 0x7F]); // A truncated tag does not throw.
         check.That(Parse(new byte[64]) is null, "zeros are not audio");
         check.That(Parse("OggS"u8.ToArray()) is null, "truncated Ogg");
         var random = new Random(5);
@@ -143,7 +143,7 @@ internal static class MetadataChecks
             ("wavpack.wv", "-c:a wavpack", false, "WavPack"),
             ("pcm.wav", "-c:a pcm_s16le", false, "PCM"),
             ("pcm.aiff", "-c:a pcm_s16be -write_id3v2 1", false, "PCM"),
-            // ffmpeg muxes cover art into WMA and MKA as a video stream rather than WM/Picture or an attachment.
+            // ffmpeg stores cover art in WMA and MKA as a video stream.
             ("wma.wma", "-c:a wmav2 -b:a 64k", false, "WMA"),
             ("opus.mka", "-c:a libopus -b:a 48k", false, "Opus"),
             ("opus.webm", "-c:a libopus -b:a 48k", false, "Opus"),

@@ -14,12 +14,11 @@ using Fermata.Storage;
 using Fermata.ViewModels;
 using Fermata.Views;
 
-// Renders Fermata's pages without a display, against a given music folder, using private XDG
-// directories so the user's own settings and library are never touched.
+// Renders Fermata's pages headlessly against a music folder, with private XDG directories.
 //
 //   dotnet run --project tests/Fermata.Ui -- --screenshots OUTPUT_DIR MUSIC_DIR
 //
-// It can also render the ambient backdrop, in both styles, for each of a list of cover images:
+// It can also render the ambient backdrop in both styles for cover images.
 //
 //   dotnet run --project tests/Fermata.Ui -- --backdrops OUTPUT_DIR IMAGE...
 string output, music = "";
@@ -95,7 +94,7 @@ foreach (var track in library.Tracks.OrderBy(_ => random.Next()).Take(40))
 services.Playlists.Create("Late night drive", library.Tracks.OrderBy(_ => random.Next()).Take(14).Select(t => t.Path));
 services.Playlists.Create("Focus", library.Tracks.Where(t => t.Genres.Contains("Ambient") || t.Genres.Contains("Classical")).Select(t => t.Path));
 
-// Screen readers: every visible button needs a name, and the seek bars are named sliders.
+// Every visible button needs an accessible name, and the seek bars must be named sliders.
 int namedButtons = 0, unnamedControls = 0;
 void CheckNames(string page)
 {
@@ -178,7 +177,7 @@ _ = shell.CreatePlaylistAsync(album.Tracks);
 Capture("16-dialog");
 (shell.Dialog as PromptDialog)?.CancelCommand.Execute(null);
 
-// Keyboard: a focused row shows the focus ring, and Page Down scrolls the page from it.
+// A focused row shows the focus ring, and Page Down scrolls the page from it.
 shell.GoSongs();
 Pump(300);
 var songList = window.GetVisualDescendants().OfType<ListBox>().First(l => l.Name == "List");

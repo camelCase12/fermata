@@ -101,7 +101,7 @@
         </DockPanel>
       </Border>
 
-      <!-- Page area, over the page's cover colours when it has art (behind the search bar too) -->
+      <!-- Page area -->
       <Grid Grid.Column="1" RowDefinitions="Auto,*">
         <controls:AmbientBackdrop Grid.RowSpan="2" Covers="{Binding Shell.Navigator.Current.Backdrop}"
                                   AlignTop="True" FadeStart="0" FadeEnd="0.8" />
@@ -121,7 +121,7 @@
             </TextBox.InnerLeftContent>
           </TextBox>
         </Grid>
-        <!-- Focusable, so leaving a text field puts focus on the page rather than nowhere. -->
+        <!-- Takes keyboard focus when a text field is left. -->
         <ContentControl Name="PageHost" Grid.Row="1" Content="{Binding Shell.Navigator.Current}" Focusable="True"
                         KeyboardNavigation.IsTabStop="False" FocusAdorner="{x:Null}" />
       </Grid>

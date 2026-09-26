@@ -1,9 +1,10 @@
 namespace Fermata.Storage;
 
-/// <summary>
-/// Coalesces saves: after <see cref="Request"/>, waits for changes to settle, captures state on the
-/// owning thread, then writes on a background thread. Writes never overlap and happen in request order.
-/// </summary>
+/// <summary>A save that waits for changes to settle before writing.</summary>
+/// <remarks>
+/// After <see cref="Request"/>, it waits for changes to settle, captures state on the owning thread and
+/// writes on a background thread. Writes never overlap and happen in request order.
+/// </remarks>
 public sealed class DeferredSave : IDisposable
 {
     private readonly Func<Action?> capture;
@@ -14,7 +15,7 @@ public sealed class DeferredSave : IDisposable
     private Task writing = Task.CompletedTask;
     private bool disposed;
 
-    /// <param name="capture">Runs on <paramref name="context"/>; returns the write to perform, or null when there is nothing to save.</param>
+    /// <param name="capture">Runs on <paramref name="context"/> and returns the write to perform, or null when there is nothing to save.</param>
     public DeferredSave(Func<Action?> capture, TimeSpan delay, SynchronizationContext context)
     {
         this.capture = capture;
@@ -26,14 +27,15 @@ public sealed class DeferredSave : IDisposable
     /// <summary>Raised on a background thread if a write fails.</summary>
     public event Action<Exception>? Failed;
 
-    /// <summary>Schedules a save; repeated requests within the delay are merged.</summary>
+    /// <summary>Schedules a save.</summary>
+    /// <remarks>Repeated requests within the delay are merged.</remarks>
     public void Request()
     {
         if (!disposed)
             timer.Change(delay, Timeout.InfiniteTimeSpan);
     }
 
-    /// <summary>Captures and writes immediately, waiting for the write to finish (for shutdown).</summary>
+    /// <summary>Captures and writes immediately, waiting for the write to finish.</summary>
     public void Flush()
     {
         timer.Change(Timeout.Infinite, Timeout.Infinite);

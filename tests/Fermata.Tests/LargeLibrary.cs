@@ -3,12 +3,8 @@ using Fermata.Library;
 
 namespace Fermata.Tests;
 
-/// <summary>
-/// Writes a large synthetic library for performance measurements: tiny MP3 files (two silent frames)
-/// with distinct ID3v2.4 tags, arranged as artist/album/track folders, with a small cover embedded in
-/// one album in five.
-/// <c>dotnet run --project tests/Fermata.Tests -- --make-large-library DIR TRACKS</c>
-/// </summary>
+/// <summary>Writes a large synthetic library of tiny tagged MP3 files.</summary>
+/// <remarks>Run with <c>dotnet run --project tests/Fermata.Tests -- --make-large-library DIR TRACKS</c>.</remarks>
 internal static class LargeLibrary
 {
     private static readonly string[] Words =
@@ -60,10 +56,8 @@ internal static class LargeLibrary
         return 0;
     }
 
-    /// <summary>
-    /// Times a first scan and a rescan with nothing changed, with the memory each allocates.
-    /// <c>dotnet run --project tests/Fermata.Tests -c Release -- --measure-scan DIR</c>
-    /// </summary>
+    /// <summary>Times a first scan and an unchanged rescan, with the memory each allocates.</summary>
+    /// <remarks>Run with <c>dotnet run --project tests/Fermata.Tests -c Release -- --measure-scan DIR</c>.</remarks>
     public static int MeasureScan(string directory)
     {
         LibrarySnapshot previous = LibrarySnapshot.Empty;

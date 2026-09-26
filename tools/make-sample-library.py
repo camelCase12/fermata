@@ -1,16 +1,12 @@
 #!/usr/bin/env python3
-"""Generate a synthetic music library for trying Fermata, screenshots and playback tests.
+"""Generates a synthetic music library for trying Fermata, screenshots and tests.
 
-Every artist, album and song is fictional. Tracks are short, gentle chords so that
-playback tests are bearable; formats and tagging styles vary deliberately so the
-library exercises each metadata reader:
-
-  * FLAC with a PICTURE block, MP3 with ID3v2.3 and ID3v2.4, AAC and ALAC in M4A,
-    Opus and Vorbis with Base64 METADATA_BLOCK_PICTURE, WavPack with APEv2,
-    WAV with RIFF INFO, AIFF with an ID3 chunk, WMA and Matroska audio.
-  * Folder art (cover.jpg) where a format cannot embed pictures.
-  * A two-disc album, a various-artists compilation, featured artists, loose singles,
-    synchronized .lrc lyrics and embedded unsynchronized lyrics.
+Every artist, album and song is fictional, and every track is a short chord. The library
+has FLAC with a PICTURE block, MP3 with ID3v2.3 and ID3v2.4, AAC and ALAC in M4A, Opus and
+Vorbis with Base64 METADATA_BLOCK_PICTURE, WavPack with APEv2, WAV with RIFF INFO, AIFF with
+an ID3 chunk, WMA and Matroska audio. It also has folder art where a format cannot embed
+pictures, a two-disc album, a various-artists compilation, featured artists, loose singles,
+synchronized .lrc lyrics and embedded unsynchronized lyrics.
 
 Usage: tools/make-sample-library.py OUTPUT_DIR [--seconds MIN MAX]
 Requires ffmpeg with libmp3lame, libopus, libvorbis and the gradients/drawtext filters.
@@ -85,8 +81,8 @@ def run(args):
 # A third colour for each cover's pattern, chosen by the cover's seed.
 ACCENTS = ['0xfff1d0', '0x7afcff', '0xff6b6b', '0xffd166', '0xa0e7e5', '0xf15bb5', '0xcaffbf', '0xffffff']
 
-# Pattern masks for ffmpeg's geq filter, from 0 to 255, on a 600-pixel square. Edges are
-# softened over a pixel or two so they do not alias.
+# Pattern masks for ffmpeg's geq filter, from 0 to 255, on a 600-pixel square, with edges
+# softened over a pixel or two.
 PATTERNS = [
     # A low sun cut by horizontal stripes.
     "255*clip(150-hypot(X-300,Y-250),0,1)*if(lt(Y,250),1,clip(mod(Y,26)-9,0,1))",
@@ -253,7 +249,7 @@ def main():
         tags = {'title': title, 'artist': artist, 'date': str(year), 'genre': genre}
         encode(singles / f'{safe(artist)} - {safe(title)}.mp3', 'mp3-v24', length(), rng.choice(roots), tags)
         count += 1
-    # An untagged file: the library falls back to its name.
+    # An untagged file, which the library names after the file.
     run(['ffmpeg', '-loglevel', 'error', '-y', '-f', 'lavfi', '-i', chord(20, 220.0), '-c:a', 'libmp3lame',
          '-q:a', '7', '-map_metadata', '-1', '-write_xing', '1', str(singles / 'Unknown Artist - Field Recording 7.mp3')])
     count += 1

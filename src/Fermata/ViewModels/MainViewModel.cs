@@ -7,7 +7,7 @@ using Fermata.ViewModels.Pages;
 
 namespace Fermata.ViewModels;
 
-/// <summary>The main window: sidebar, search, page area, player bar and overlays.</summary>
+/// <summary>The view model of the main window.</summary>
 public sealed partial class MainViewModel : ObservableObject
 {
     private readonly DispatcherTimer searchDelay;
@@ -63,7 +63,8 @@ public sealed partial class MainViewModel : ObservableObject
     [ObservableProperty] public partial Section CurrentSection { get; private set; }
     [ObservableProperty] public partial Playlist? CurrentPlaylist { get; private set; }
 
-    /// <summary>The playlist highlighted in the sidebar; choosing one opens it.</summary>
+    /// <summary>The playlist selected in the sidebar.</summary>
+    /// <remarks>Setting it opens the playlist.</remarks>
     public Playlist? SelectedPlaylist
     {
         get => CurrentPlaylist;
@@ -95,7 +96,8 @@ public sealed partial class MainViewModel : ObservableObject
 
     private string searchText = "";
 
-    /// <summary>Search as you type: results follow the text after a short pause.</summary>
+    /// <summary>The text in the search box.</summary>
+    /// <remarks>Changing it searches after a short pause.</remarks>
     public string SearchText
     {
         get => searchText;
@@ -117,7 +119,7 @@ public sealed partial class MainViewModel : ObservableObject
             Shell.Navigator.GoBack();
     }
 
-    /// <summary>Enter in the search box: search at once.</summary>
+    /// <summary>Searches for the current text at once.</summary>
     public void SubmitSearch()
     {
         searchDelay.Stop();
@@ -129,7 +131,7 @@ public sealed partial class MainViewModel : ObservableObject
         var current = Shell.Services.Playlists.Playlists;
         if (Playlists.SequenceEqual(current))
         {
-            // Same playlists; a rename needs the list to refresh its labels.
+            // Replacing each item refreshes the names of renamed playlists.
             for (int i = 0; i < Playlists.Count; i++)
                 Playlists[i] = current[i];
             return;

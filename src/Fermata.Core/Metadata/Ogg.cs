@@ -76,10 +76,8 @@ internal static class Ogg
         VorbisComment.Read(reader, tags, options);
     }
 
-    /// <summary>
-    /// The granule position of the last page of the stream: total samples (plus pre-skip for Opus).
-    /// Found by scanning the file's tail backwards for a page of the same logical stream.
-    /// </summary>
+    /// <summary>Finds the granule position of the stream's last page.</summary>
+    /// <remarks>The granule position is the total sample count, plus the pre-skip for Opus.</remarks>
     private static long LastGranule(ByteSource source, uint serial)
     {
         const int Tail = 64 * 1024;
@@ -192,7 +190,8 @@ internal static class Ogg
             return skipped;
         }
 
-        /// <summary>A lacing value below 255 ends the packet; 255 means it continues in the next segment.</summary>
+        /// <summary>Finishes the current segment, ending the packet or moving on to the next segment.</summary>
+        /// <remarks>A lacing value below 255 ends the packet; 255 means it continues in the next segment.</remarks>
         private void FinishSegment()
         {
             if (segments[segmentIndex] < 255)

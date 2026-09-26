@@ -3,15 +3,16 @@ using Fermata.Text;
 
 namespace Fermata.Library;
 
-/// <summary>One audio file and its metadata. Immutable; a rescan that sees a change creates a new instance.</summary>
+/// <summary>An audio file and its metadata.</summary>
+/// <remarks>Tracks are immutable. A rescan that sees a change creates a new instance.</remarks>
 public sealed class Track
 {
-    private string? displayArtist; // built on first use; most tracks of a large library are never shown
+    private string? displayArtist; // Built on first use.
 
     public required string Path { get; init; }
     public long FileSize { get; init; }
 
-    /// <summary>Last write time (UTC) when the file was read; with <see cref="FileSize"/> it detects changes.</summary>
+    /// <summary>The file's last write time (UTC) when it was read.</summary>
     public DateTime Modified { get; init; }
 
     /// <summary>When the file first appeared in the library (UTC).</summary>
@@ -19,7 +20,7 @@ public sealed class Track
 
     public required string Title { get; init; }
 
-    /// <summary>The artist credit as tagged; empty when unknown.</summary>
+    /// <summary>The artist credit as tagged, or empty when unknown.</summary>
     public string Artist { get; init; } = "";
 
     /// <summary>Individual performers, e.g. both names of "A feat. B".</summary>
@@ -52,13 +53,14 @@ public sealed class Track
     /// <summary>Embedded cover art location, if any.</summary>
     public ArtSource? EmbeddedArt { get; init; }
 
-    /// <summary>Groups the track into an album (see <see cref="AlbumGrouping"/>); null for tracks without an album tag.</summary>
+    /// <summary>The key of the track's album (see <see cref="AlbumGrouping"/>), or null without an album tag.</summary>
     public string? AlbumKey { get; init; }
 
     /// <summary>The performer credit as tagged, or the album artist when a track names none.</summary>
     public string Credit => Artist.Length > 0 ? Artist : AlbumArtist.Length > 0 ? AlbumArtist : UnknownArtist;
 
-    /// <summary>The credit as shown: list separators from tags ("A; B") read as "A &amp; B".</summary>
+    /// <summary>The artist credit as shown.</summary>
+    /// <remarks>List separators from tags, as in "A; B", read as "A &amp; B".</remarks>
     public string DisplayArtist => displayArtist ??= ArtistCredit.Display(Credit);
     public string Genre => Genres.Count > 0 ? Genres[0] : "";
     public string FileName => System.IO.Path.GetFileName(Path);
@@ -160,12 +162,10 @@ public sealed class Track
     }
 }
 
-/// <summary>
-/// Where to find cover art: an image file, or a picture embedded in an audio file.
-/// </summary>
+/// <summary>The location of cover art, in an image file or embedded in an audio file.</summary>
 /// <param name="Path">The image file, or the audio file containing the picture.</param>
 /// <param name="Offset">
-/// <see cref="ImageFileOffset"/> for an image file; the byte offset of the raw image inside the audio file;
+/// <see cref="ImageFileOffset"/> for an image file, the byte offset of the raw image inside an audio file,
 /// or -1 when the picture must be decoded from the tag (Base64 or unsynchronized data).
 /// </param>
 /// <param name="Length">Length of the raw image when <paramref name="Offset"/> is non-negative.</param>
@@ -178,10 +178,8 @@ public sealed record ArtSource(string Path, long Offset, int Length)
     public bool IsImageFile => Offset == ImageFileOffset;
 }
 
-/// <summary>
-/// Interns repeated metadata strings (artists, albums, genres, codecs) so that a large
-/// library holds each distinct value once. Not thread-safe; use one pool per thread.
-/// </summary>
+/// <summary>A pool that interns repeated metadata strings.</summary>
+/// <remarks>It is not thread-safe, so each thread uses its own pool.</remarks>
 public sealed class StringPool
 {
     private readonly Dictionary<string, string> strings = new(StringComparer.Ordinal);
@@ -205,7 +203,7 @@ public sealed class StringPool
             return [];
         if (values.Count == 1)
         {
-            // Most tracks have one artist and one genre: share one list per value.
+            // Lists of a single value are shared per value.
             string value = Get(values.First());
             if (!singles.TryGetValue(value, out string[]? single))
                 singles[value] = single = [value];

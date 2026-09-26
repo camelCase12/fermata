@@ -3,7 +3,7 @@ using Avalonia.Controls;
 
 namespace Fermata.Controls;
 
-/// <summary>Lays out its children in a square as wide as the available width (cover art in cards).</summary>
+/// <summary>A panel that is as tall as it is wide.</summary>
 public sealed class SquarePanel : Panel
 {
     protected override Size MeasureOverride(Size availableSize)

@@ -8,7 +8,7 @@ namespace Fermata.ViewModels.Pages;
 /// <summary>Disc header or track, for albums split into discs.</summary>
 public sealed record DiscHeader(int Disc);
 
-/// <summary>An album: header, tracks (by disc), and more by the same artist.</summary>
+/// <summary>The page of an album.</summary>
 public sealed partial class AlbumViewModel : PageViewModel
 {
     private string key;
@@ -31,7 +31,7 @@ public sealed partial class AlbumViewModel : PageViewModel
 
     public TrackListModel List { get; }
 
-    /// <summary>The album left the library (its files were removed).</summary>
+    /// <summary>Whether the album is no longer in the library.</summary>
     public bool IsGone { get; private set; }
 
     protected override void Refresh()
@@ -83,7 +83,7 @@ public sealed partial class AlbumViewModel : PageViewModel
     private void ShowFolder() => Shell.ShowInFolder(Album.Tracks[0]);
 }
 
-/// <summary>An artist: popular songs, albums, appearances on other albums.</summary>
+/// <summary>The page of an artist.</summary>
 public sealed partial class ArtistViewModel : PageViewModel
 {
     private readonly string name;
@@ -131,7 +131,8 @@ public sealed partial class ArtistViewModel : PageViewModel
         UpdateSongs();
     }
 
-    /// <summary>Most played first (then library order); five until expanded.</summary>
+    /// <summary>Updates the artist's popular songs.</summary>
+    /// <remarks>The most played come first, then library order, and five are shown until the list is expanded.</remarks>
     private void UpdateSongs()
     {
         var userData = Shell.Services.UserData;
@@ -162,7 +163,7 @@ public enum PlaylistKind
     Mix,
 }
 
-/// <summary>A user playlist, the liked songs, or a generated mix.</summary>
+/// <summary>The page of a playlist, the liked songs or a generated mix.</summary>
 public sealed partial class PlaylistViewModel : PageViewModel
 {
     private readonly Mix? mix;
@@ -293,7 +294,7 @@ public sealed partial class PlaylistViewModel : PageViewModel
             await Shell.DeletePlaylistAsync(playlist);
     }
 
-    /// <summary>Keeps a mix (or the liked songs) as an ordinary playlist.</summary>
+    /// <summary>Saves a mix or the liked songs as a playlist.</summary>
     [RelayCommand]
     private async Task SaveAsPlaylist()
     {
@@ -302,7 +303,7 @@ public sealed partial class PlaylistViewModel : PageViewModel
     }
 }
 
-/// <summary>A genre or a decade: its albums and songs.</summary>
+/// <summary>The page of a genre or a decade.</summary>
 public sealed partial class GenreViewModel : PageViewModel
 {
     private readonly string? genreName;

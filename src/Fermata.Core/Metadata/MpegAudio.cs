@@ -23,7 +23,7 @@ internal static class MpegAudio
             ? (12 * Bitrate / SampleRate + (Padding ? 1 : 0)) * 4
             : SamplesPerFrame / 8 * Bitrate / SampleRate + (Padding ? 1 : 0);
 
-        /// <summary>Offset of a Xing/Info header from the frame start: header plus side information.</summary>
+        /// <summary>The offset of a Xing or Info header from the frame start, past the header and side information.</summary>
         public int SideInfoEnd => 4 + (Version == 1 ? (Mono ? 17 : 32) : (Mono ? 9 : 17));
     }
 
@@ -58,7 +58,7 @@ internal static class MpegAudio
 
     /// <summary>
     /// Finds the first frame in [<paramref name="start"/>, <paramref name="end"/>) whose successor is also a
-    /// consistent frame header, which rules out false sync words inside junk data.
+    /// consistent frame header.
     /// </summary>
     public static long FindFirstFrame(ByteSource source, long start, long end, out FrameHeader header)
     {

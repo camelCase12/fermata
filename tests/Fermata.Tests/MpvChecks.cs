@@ -4,10 +4,7 @@ using Fermata.Playback;
 
 namespace Fermata.Tests;
 
-/// <summary>
-/// The player driving real libmpv with its null audio output (silent): gapless transitions, failed
-/// files, the end of the queue, seeking and pausing. Confirms that mpv behaves as <see cref="FakeEngine"/> assumes.
-/// </summary>
+/// <summary>Checks the player with real libmpv and its silent null audio output.</summary>
 internal static class MpvChecks
 {
     public static void Run(Checks check)
@@ -54,7 +51,7 @@ internal static class MpvChecks
 
         // Seeking, pausing and position.
         player.Play(tracks.Take(2).ToList(), 0, new QueueSource("test", "test"));
-        // Wait for real progress: the duration and position of the previous queue can still be showing.
+        // The previous queue's duration and position can still be showing, so this waits for progress.
         context.RunUntil(() => player.State == PlaybackState.Playing && engine.Position.TotalSeconds > 0.1, TimeSpan.FromSeconds(5));
         check.Near(1.2, player.Duration.TotalSeconds, 0.05, "duration measured by mpv");
         player.Pause();
@@ -64,8 +61,7 @@ internal static class MpvChecks
         check.Near(paused.TotalSeconds, player.Position.TotalSeconds, 0.02, "position holds while paused");
         player.Seek(TimeSpan.FromSeconds(0.9));
         context.RunUntil(() => Math.Abs(player.Position.TotalSeconds - 0.9) < 0.05, TimeSpan.FromSeconds(2));
-        // mpv 0.37 and older (client API before 2.3) can end a seek made while paused short of its target
-        // when playing through the null audio output these checks use.
+        // mpv before 0.38 can stop a paused seek short of its target with the null audio output.
         if (LibMpv.ClientApiVersion() >= (2u << 16 | 3u))
             check.Near(0.9, player.Position.TotalSeconds, 0.05, $"seek while paused (from {paused.TotalSeconds:0.###} s)");
         else

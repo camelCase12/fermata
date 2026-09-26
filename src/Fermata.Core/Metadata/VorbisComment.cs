@@ -128,7 +128,8 @@ internal static class VorbisComment
         return new EmbeddedPicture("image/unknown", front, -1, 0);
     }
 
-    /// <summary>The unofficial COVERART field holds a Base64 image with its type in COVERARTMIME.</summary>
+    /// <summary>Reads the unofficial COVERART field.</summary>
+    /// <remarks>COVERART holds a Base64 image, and COVERARTMIME holds its type.</remarks>
     private static void ReadLegacyCoverArt(byte[] base64, AudioTags tags, TagReadOptions options)
     {
         if (!options.HasFlag(TagReadOptions.PictureData))

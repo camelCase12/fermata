@@ -4,10 +4,8 @@ using Fermata.Metadata;
 
 namespace Fermata.Tests;
 
-/// <summary>
-/// Compares <see cref="TagReader"/> with ffprobe for every audio file below a directory:
-/// <c>dotnet run --project tests/Fermata.Tests -- --compare-ffprobe DIR</c>.
-/// </summary>
+/// <summary>Compares <see cref="TagReader"/> with ffprobe for every audio file below a directory.</summary>
+/// <remarks>Run with <c>dotnet run --project tests/Fermata.Tests -- --compare-ffprobe DIR</c>.</remarks>
 internal static class FfprobeComparison
 {
     public static int Run(string directory)

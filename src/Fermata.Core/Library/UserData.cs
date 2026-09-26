@@ -2,7 +2,7 @@ using Fermata.Text;
 
 namespace Fermata.Library;
 
-/// <summary>Per-track listening data: likes, dislikes, play and skip counts.</summary>
+/// <summary>The listening data of one track.</summary>
 public sealed class TrackStats
 {
     public int Plays { get; set; }
@@ -12,10 +12,12 @@ public sealed class TrackStats
     /// <summary>When the track was liked, or null.</summary>
     public DateTime? Liked { get; set; }
 
-    /// <summary>Disliked tracks are left out of mixes, radio and autoplay.</summary>
+    /// <summary>Whether the track is disliked.</summary>
+    /// <remarks>Disliked tracks are left out of mixes, radio and autoplay.</remarks>
     public bool Disliked { get; set; }
 
-    /// <summary>Folded "title / artist / album", used to follow the file if it is renamed or moved.</summary>
+    /// <summary>The track's folded "title / artist / album".</summary>
+    /// <remarks>It identifies the file after it is renamed or moved.</remarks>
     public string? Identity { get; set; }
 
     internal bool IsEmpty => Plays == 0 && Skips == 0 && Liked is null && !Disliked;
@@ -31,10 +33,8 @@ public sealed class UserDataDocument
     public List<PlayRecord> History { get; set; } = [];
 }
 
-/// <summary>
-/// Likes, play counts and history, keyed by file path so they survive rescans.
-/// Owned by the UI thread; <see cref="ToDocument"/> copies state for saving on another thread.
-/// </summary>
+/// <summary>Likes, play counts and history, keyed by file path.</summary>
+/// <remarks>It is owned by the UI thread. <see cref="ToDocument"/> copies the state for saving on another thread.</remarks>
 public sealed class UserData
 {
     public const int HistoryLimit = 5000;
@@ -104,7 +104,7 @@ public sealed class UserData
         stats.LastPlayed = at;
         history.Add(new PlayRecord(path, at));
         if (history.Count > HistoryLimit + 500)
-            history.RemoveRange(0, history.Count - HistoryLimit); // trim in batches, not on every play
+            history.RemoveRange(0, history.Count - HistoryLimit); // Trims in batches.
         Commit(path, stats);
     }
 
@@ -116,7 +116,8 @@ public sealed class UserData
         Commit(path, stats);
     }
 
-    /// <summary>Forgets the listening history; play counts, likes and skips remain.</summary>
+    /// <summary>Forgets the listening history.</summary>
+    /// <remarks>Play counts, likes and skips remain.</remarks>
     public void ClearHistory()
     {
         if (history.Count == 0)
@@ -125,18 +126,19 @@ public sealed class UserData
         Changed?.Invoke();
     }
 
-    /// <summary>Removes all plays of a track from history (used when the user removes it from "Recently played").</summary>
+    /// <summary>Removes all plays of a track from history.</summary>
     public void ForgetHistory(string path)
     {
         if (history.RemoveAll(record => record.Path == path) > 0)
             Changed?.Invoke();
     }
 
-    /// <summary>
-    /// Carries data over to renamed or moved files: when a path with data has vanished and exactly one
-    /// track without data has the same title, artist and album, the data follows the file.
-    /// Returns the renames (old path → new path) so playlists can follow too.
-    /// </summary>
+    /// <summary>Carries data over to renamed or moved files.</summary>
+    /// <remarks>
+    /// When a path with data has vanished and exactly one track without data has the same title, artist and
+    /// album, the data moves to that track.
+    /// </remarks>
+    /// <returns>The renames, from old path to new path.</returns>
     public IReadOnlyDictionary<string, string> Relink(LibrarySnapshot library)
     {
         var orphans = tracks.Where(pair => pair.Value.Identity is not null && library.FindTrack(pair.Key) is null).ToList();

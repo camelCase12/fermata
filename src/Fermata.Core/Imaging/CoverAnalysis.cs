@@ -117,9 +117,8 @@ public static class CoverAnalysis
             if (score > bestScore)
                 (accent, bestScore) = (blob.Color, score);
         }
-        // Pixels without a family (greys, near-black, near-white and stray hues) make two neutral families,
-        // one dark and one light, so black and white are not averaged into grey. A neutral family is left
-        // out when it covers very little of the cover.
+        // Pixels without a family make two neutral families, one dark and one light. A neutral family that
+        // covers very little of the cover is left out.
         foreach (bool light in new[] { false, true })
         {
             if (Neutral(colors, families, light, size) is { } neutral && (neutral.Weight >= 0.015 || blobs.Count == 0))
@@ -200,8 +199,7 @@ public static class CoverAnalysis
     /// <summary>Describes the pixels of one family as a blob.</summary>
     /// <remarks>
     /// The family's lightness and hue are the chroma-weighted means of the pixels within
-    /// <see cref="FamilyWidth"/> of its peak hue, and its chroma is their 80th percentile, so the colour
-    /// is one the cover really shows rather than an average diluted by duller pixels.
+    /// <see cref="FamilyWidth"/> of its peak hue, and its chroma is their 80th percentile.
     /// </remarks>
     private static ColorBlob? Family(Oklab[] colors, double[] weights, int[] families, int family, double hue, int size)
     {

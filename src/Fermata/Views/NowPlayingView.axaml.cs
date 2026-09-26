@@ -18,7 +18,7 @@ public partial class NowPlayingView : UserControl
     public NowPlayingView()
     {
         InitializeComponent();
-        // Every click counts, like a button's (Tapped would turn a quick second click into a double tap).
+        // Tapped treats a quick second click as a double tap, so the release is handled instead.
         Cover.PointerReleased += (_, e) =>
         {
             if (e.InitialPressMouseButton == MouseButton.Left && new Rect(Cover.Bounds.Size).Contains(e.GetPosition(Cover)))

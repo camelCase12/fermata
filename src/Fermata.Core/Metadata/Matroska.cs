@@ -3,8 +3,11 @@ using System.Text;
 
 namespace Fermata.Metadata;
 
-/// <summary>Matroska audio and WebM (MKA, WEBM): track format, duration, tags and cover attachments.</summary>
-/// <remarks>Specification: RFC 9559 (Matroska) and https://www.matroska.org/technical/tagging.html.</remarks>
+/// <summary>Reads Matroska audio and WebM files (MKA, WEBM).</summary>
+/// <remarks>
+/// The track format, duration, tags and cover attachments are read. Specification: RFC 9559 (Matroska)
+/// and https://www.matroska.org/technical/tagging.html.
+/// </remarks>
 internal static class Matroska
 {
     private const uint Ebml = 0x1A45DFA3, Segment = 0x18538067, SeekHead = 0x114D9B74, Seek = 0x4DBB, SeekId = 0x53AB,

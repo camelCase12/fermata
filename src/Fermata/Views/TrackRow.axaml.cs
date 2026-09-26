@@ -7,10 +7,7 @@ using Fermata.ViewModels;
 
 namespace Fermata.Views;
 
-/// <summary>
-/// One song in a list. Rows are recycled as the list scrolls; each keeps its "playing" and "liked"
-/// classes current by listening only while it is on screen.
-/// </summary>
+/// <summary>One song in a list.</summary>
 public partial class TrackRow : UserControl
 {
     private Track? track;
@@ -112,7 +109,7 @@ public partial class TrackRow : UserControl
         SetColumns(Columns.ColumnDefinitions, style);
     }
 
-    /// <summary>Lays out a row, or the column titles above rows: leading cell, title, artist, album, like, duration, menu.</summary>
+    /// <summary>Lays out a row, or the column titles above rows.</summary>
     public static void SetColumns(ColumnDefinitions columns, TrackListStyle style)
     {
         var column = new GridLength(3, GridUnitType.Star);

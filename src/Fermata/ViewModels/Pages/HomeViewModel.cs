@@ -15,7 +15,7 @@ public sealed class HomeSectionViewModel(HomeSection section)
     public bool IsCards => Kind != HomeSectionKind.Tracks;
 }
 
-/// <summary>Home: quick picks, recent albums, mixes and discoveries, built from the library and history.</summary>
+/// <summary>The Home page.</summary>
 public sealed partial class HomeViewModel(Shell shell) : PageViewModel(shell)
 {
     private int build;
@@ -42,7 +42,7 @@ public sealed partial class HomeViewModel(Shell shell) : PageViewModel(shell)
             IsLoading = Shell.Services.Library.IsScanning;
             return;
         }
-        // History is read on the UI thread; the feed is computed from a copy.
+        // The user data belongs to the UI thread, so the feed is built from a copy.
         var copy = UserData.FromDocument(userData.ToDocument());
         var sections = await Task.Run(() => HomeFeed.Build(library, copy));
         if (request != build)
@@ -53,7 +53,6 @@ public sealed partial class HomeViewModel(Shell shell) : PageViewModel(shell)
 
     protected override void OnActivated()
     {
-        // Listening changes what home suggests; rebuild when coming back after a while.
         if (DateTime.UtcNow - lastRefresh > TimeSpan.FromMinutes(10))
         {
             lastRefresh = DateTime.UtcNow;

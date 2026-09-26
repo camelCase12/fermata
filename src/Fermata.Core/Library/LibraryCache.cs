@@ -3,11 +3,11 @@ using Fermata.Storage;
 
 namespace Fermata.Library;
 
-/// <summary>
-/// A compact binary copy of the library, so startup shows the library before any folder is scanned.
-/// Repeated strings (artists, albums, folders) are stored once in a string table.
-/// </summary>
-/// <remarks>The cache is disposable: a missing, stale or unreadable file only means a full scan.</remarks>
+/// <summary>A binary copy of the library, read at startup.</summary>
+/// <remarks>
+/// Repeated strings are stored once in a string table. A missing, stale or unreadable cache only means
+/// a full scan.
+/// </remarks>
 public static class LibraryCache
 {
     private static ReadOnlySpan<byte> Magic => "FERMATA-LIBRARY\n"u8;
@@ -103,7 +103,8 @@ public static class LibraryCache
         });
     }
 
-    /// <summary>Loads the cache, keeping tracks beneath <paramref name="roots"/>. Returns null if the file is missing or unusable.</summary>
+    /// <summary>Loads the cache, keeping tracks beneath <paramref name="roots"/>.</summary>
+    /// <returns>The cached library, or null when the file is missing or unusable.</returns>
     public static LibrarySnapshot? Load(string path, IReadOnlyList<string> roots)
     {
         try

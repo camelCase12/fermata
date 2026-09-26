@@ -7,11 +7,7 @@ using Fermata.ViewModels;
 
 namespace Fermata.Views;
 
-/// <summary>
-/// A virtualized list of songs inside a scrolling page. Double-click or Enter plays from the song;
-/// the context menu acts on the selection; Delete removes the selection from a playlist. Songs can be
-/// dragged to a playlist in the sidebar, and within a playlist to reorder it.
-/// </summary>
+/// <summary>A virtualized list of songs inside a scrolling page.</summary>
 public partial class TrackList : UserControl
 {
     public TrackList()
@@ -42,7 +38,7 @@ public partial class TrackList : UserControl
 
     public void PlayRow(TrackRow row) => Model?.PlayAt(IndexOf(row));
 
-    /// <summary>The songs a row's menu acts on: see <see cref="SongsAt"/>.</summary>
+    /// <summary>The songs a row's menu acts on.</summary>
     public IReadOnlyList<Track> TracksForMenu(TrackRow row) => SongsAt(IndexOf(row));
 
     /// <summary>The selected songs when the row is part of a multiple selection; otherwise just the row's song.</summary>

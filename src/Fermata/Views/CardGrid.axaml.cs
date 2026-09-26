@@ -6,11 +6,7 @@ namespace Fermata.Views;
 /// <summary>One row of cards in a <see cref="CardGrid"/>.</summary>
 public sealed record CardRow(IReadOnlyList<object> Items, int Columns);
 
-/// <summary>
-/// A virtualized grid of cards. The items are cut into rows of as many columns as fit, and the rows
-/// are virtualized like any list, so a library with thousands of albums only creates the visible cards.
-/// Rows are rebuilt only when the number of columns changes, not on every pixel of a resize.
-/// </summary>
+/// <summary>A virtualized grid of cards.</summary>
 public partial class CardGrid : UserControl
 {
     public static readonly StyledProperty<IReadOnlyList<object>?> ItemsProperty =

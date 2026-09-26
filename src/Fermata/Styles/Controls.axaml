@@ -2,7 +2,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
   <Styles.Resources>
     <ResourceDictionary>
-      <!-- Round, transparent button for a single icon (player controls, row actions, toolbars). -->
+      <!-- A round, transparent button for a single icon. -->
       <ControlTheme x:Key="IconButton" TargetType="Button">
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
@@ -41,7 +41,7 @@
         </Style>
       </ControlTheme>
 
-      <!-- Two-state icon button (shuffle, repeat, like): accent when on. -->
+      <!-- A two-state icon button, in the accent colour when on. -->
       <ControlTheme x:Key="IconToggle" TargetType="ToggleButton">
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
@@ -74,7 +74,7 @@
         </Style>
       </ControlTheme>
 
-      <!-- Rounded text button; add class "accent" for the primary action. -->
+      <!-- A rounded text button. The class "accent" marks the primary action. -->
       <ControlTheme x:Key="PillButton" TargetType="Button">
         <Setter Property="Background" Value="{DynamicResource FillBrush}" />
         <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
@@ -121,7 +121,7 @@
         </Style>
       </ControlTheme>
 
-      <!-- Text that navigates (artist and album names): underlined on hover like a web link. -->
+      <!-- Text that navigates, underlined on hover. -->
       <ControlTheme x:Key="LinkButton" TargetType="Button">
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
@@ -145,7 +145,7 @@
         </Style>
       </ControlTheme>
 
-      <!-- Sidebar entry: icon and label, highlighted when it is the current section. -->
+      <!-- A sidebar entry, highlighted when it is the current section. -->
       <ControlTheme x:Key="NavButton" TargetType="RadioButton">
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
@@ -181,7 +181,7 @@
         </Style>
       </ControlTheme>
 
-      <!-- Filter/tab chip. -->
+      <!-- A filter or tab chip. -->
       <ControlTheme x:Key="ChipButton" TargetType="RadioButton">
         <Setter Property="Background" Value="{DynamicResource SubtleFillBrush}" />
         <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
@@ -214,7 +214,7 @@
     </ResourceDictionary>
   </Styles.Resources>
 
-  <!-- Keyboard focus rings are rounded like the controls; themes above set rings that match their shapes. -->
+  <!-- Keyboard focus rings. -->
   <Style Selector="AdornerLayer">
     <Setter Property="DefaultFocusAdorner">
       <FocusAdornerTemplate>
@@ -223,18 +223,13 @@
     </Setter>
   </Style>
 
-  <!--
-    Tooltips sit above their button (or below it when there is no room), never at the pointer: a tooltip
-    is its own window, and one placed under the pointer (as at the bottom of a fullscreen window) takes
-    the pointer from the button, which loses its hover state until the tooltip closes again.
-  -->
+  <!-- Tooltips open above their button. A tooltip under the pointer takes the pointer from the button. -->
   <Style Selector=":is(Button)">
     <Setter Property="ToolTip.Placement" Value="Top" />
     <Setter Property="ToolTip.VerticalOffset" Value="-6" />
   </Style>
 
-  <!-- A button with only an icon has no text for screen readers, so its tooltip names it. A name set on
-       the button itself takes precedence, and buttons with text are named by their text. -->
+  <!-- Names each button for screen readers after its tooltip, unless the button sets a name itself. -->
   <Style Selector=":is(Button)">
     <Setter Property="AutomationProperties.Name" Value="{Binding $self.(ToolTip.Tip)}" />
   </Style>
@@ -281,7 +276,7 @@
     <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
   </Style>
 
-  <!-- Search and text entry: rounded and dark. -->
+  <!-- Text fields. -->
   <Style Selector="TextBox.field">
     <Setter Property="Background" Value="{DynamicResource FillBrush}" />
     <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
@@ -302,16 +297,13 @@
     <Setter Property="BorderThickness" Value="1" />
   </Style>
 
-  <!-- Lists of tracks and queue entries: flat rows with hover and selection washes. -->
+  <!-- Rows in lists of tracks and queue entries. -->
   <Style Selector="ListBox.rows">
     <Setter Property="Background" Value="Transparent" />
     <Setter Property="BorderThickness" Value="0" />
     <Setter Property="Padding" Value="0" />
   </Style>
-  <!--
-    A list inside a scrolling page has no scroll viewer of its own: the page scrolls it (and its
-    virtualization follows the page's viewport), and Page Up/Down reach the page.
-  -->
+  <!-- A list inside a scrolling page, without a scroll viewer of its own. -->
   <Style Selector="ListBox.inline">
     <Setter Property="Template">
       <ControlTemplate>
@@ -325,7 +317,7 @@
     <Setter Property="MinHeight" Value="0" />
     <Setter Property="CornerRadius" Value="6" />
     <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-    <!-- Rows touch, so their ring sits inside. -->
+    <!-- The focus ring sits inside the row. -->
     <Setter Property="FocusAdorner">
       <FocusAdornerTemplate>
         <Border BorderThickness="2" BorderBrush="{DynamicResource FocusRingBrush}" CornerRadius="6" />
@@ -349,14 +341,13 @@
     <Setter Property="Background" Value="{DynamicResource SelectedBrush}" />
   </Style>
 
-  <!-- Drop-downs have the text fields' shape. -->
+  <!-- Drop-downs, shaped like the text fields. -->
   <Style Selector="ComboBox">
     <Setter Property="CornerRadius" Value="10" />
     <Setter Property="MinHeight" Value="38" />
   </Style>
 
-  <!-- Dragging rows: the row being dragged fades, a line marks where it will land, and a playlist
-       that would take the songs lights up. -->
+  <!-- Rows being dragged, the drop marker, and a playlist that would take the songs. -->
   <Style Selector="ListBox.rows ListBoxItem.dragging">
     <Setter Property="Opacity" Value="0.4" />
   </Style>
@@ -369,7 +360,7 @@
     <Setter Property="Background" Value="{DynamicResource DropTargetBrush}" />
   </Style>
 
-  <!-- Coloured genre and decade tiles. -->
+  <!-- Genre and decade tiles. -->
   <Style Selector="Button.tile">
     <Setter Property="Margin" Value="0,0,14,14" />
     <Setter Property="CornerRadius" Value="10" />
@@ -388,7 +379,7 @@
     <Setter Property="Opacity" Value="0.88" />
   </Style>
 
-  <!-- Compact clickable song tiles (quick picks, related songs). -->
+  <!-- Compact song tiles. -->
   <Style Selector="Border.pick:pointerover">
     <Setter Property="Background" Value="{DynamicResource HoverBrush}" />
   </Style>
@@ -422,11 +413,7 @@
     <Setter Property="FontSize" Value="12" />
   </Style>
 
-  <!--
-    Icons are drawn on their 24×24 design grid and scaled as a whole. (Fluent fits each icon's outline to
-    its box instead, which throws away the grid's optical centring: a heart sits a little low on the
-    grid to look centred, a play triangle a little right, and every icon ends up a different size.)
-  -->
+  <!-- Icons, drawn on their 24×24 design grid and scaled as a whole. -->
   <Style Selector="PathIcon">
     <Setter Property="Width" Value="24" />
     <Setter Property="Height" Value="24" />

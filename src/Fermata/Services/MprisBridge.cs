@@ -7,10 +7,10 @@ using Fermata.Playback;
 
 namespace Fermata.Services;
 
-/// <summary>
-/// Connects the player to MPRIS: publishes what is playing (with cover art exported to a file that
-/// notification daemons and status bars can read) and carries out media-key commands.
-/// </summary>
+/// <summary>The connection between the player and MPRIS.</summary>
+/// <remarks>
+/// It publishes what is playing, with cover art exported to a file, and carries out media-key commands.
+/// </remarks>
 public sealed class MprisBridge : IMprisTarget, IDisposable
 {
     private readonly AppServices services;
@@ -56,7 +56,8 @@ public sealed class MprisBridge : IMprisTarget, IDisposable
         Publish();
     }
 
-    /// <summary>MPRIS clients need a URL: image files are referenced directly, embedded pictures are written to the cache.</summary>
+    /// <summary>Sets the URL of the playing track's cover art.</summary>
+    /// <remarks>Image files are referenced directly, and embedded pictures are written to the cache.</remarks>
     private void ExportArt(ArtSource art)
     {
         if (art.IsImageFile)

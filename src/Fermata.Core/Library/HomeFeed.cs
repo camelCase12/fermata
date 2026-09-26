@@ -87,7 +87,8 @@ public static class HomeFeed
         return sections;
     }
 
-    /// <summary>Play frequency weighted by recency: each play counts half as much for every two weeks of age.</summary>
+    /// <summary>Play frequency weighted by recency.</summary>
+    /// <remarks>Each play counts half as much for every two weeks of age.</remarks>
     private static Dictionary<string, double> Frecency(UserData userData, DateTime now)
     {
         var scores = new Dictionary<string, double>(StringComparer.Ordinal);
@@ -99,7 +100,8 @@ public static class HomeFeed
         return scores;
     }
 
-    /// <summary>Favourites mixed with similar tracks you play less, or a sample of the library for new listeners.</summary>
+    /// <summary>Chooses the quick picks.</summary>
+    /// <remarks>They mix favourites with similar tracks played less often, or sample the library when there is no history.</remarks>
     private static List<object> QuickPicks(LibrarySnapshot library, UserData userData, Recommender recommender,
         Dictionary<string, double> frecency, Random random)
     {
@@ -122,7 +124,7 @@ public static class HomeFeed
             if (!recent.Contains(track.Path) && seen.Add(track.Path))
                 picks.Add(track);
         }
-        // Interleave favourites and discoveries instead of listing all favourites first.
+        // Favourites and discoveries alternate.
         return picks.OrderBy(_ => random.Next()).Cast<object>().ToList();
     }
 

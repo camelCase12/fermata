@@ -2,10 +2,7 @@ using Fermata.Text;
 
 namespace Fermata.Library;
 
-/// <summary>
-/// An immutable, fully indexed view of the library. A scan builds a new snapshot off the UI thread;
-/// the UI swaps its reference in one assignment, so readers never observe a half-updated index.
-/// </summary>
+/// <summary>An immutable, fully indexed view of the library.</summary>
 public sealed class LibrarySnapshot
 {
     private static long lastVersion;
@@ -43,7 +40,7 @@ public sealed class LibrarySnapshot
         albums.Sort(CompareAlbums);
         Albums = albums;
 
-        // Tracks in library order: albums in album order, then loose tracks by artist and title.
+        // Tracks in library order, which is albums in album order and then loose tracks by artist and title.
         var ordered = new List<Track>(byPath.Count);
         foreach (var album in albums)
             ordered.AddRange(album.Tracks);
@@ -70,7 +67,7 @@ public sealed class LibrarySnapshot
     public static LibrarySnapshot Build(IReadOnlyCollection<Track> tracks, IReadOnlyDictionary<string, string> folderImages) =>
         new(tracks, folderImages);
 
-    /// <summary>Increases with every build; lets views notice that the library changed.</summary>
+    /// <summary>A number that increases with every build.</summary>
     public long Version { get; }
 
     /// <summary>All tracks, grouped by album in album order, followed by tracks without an album.</summary>
@@ -94,7 +91,8 @@ public sealed class LibrarySnapshot
     public Artist? FindArtist(string name) => artistsByKey.GetValueOrDefault(TextFolding.Fold(name));
     public Genre? FindGenre(string name) => genresByKey.GetValueOrDefault(TextFolding.Fold(name));
 
-    /// <summary>Cover art for a track: its embedded picture, else its album's cover, else its folder's image.</summary>
+    /// <summary>The cover art for a track.</summary>
+    /// <remarks>This is its embedded picture, else its album's cover, else its folder's image.</remarks>
     public ArtSource? ArtOf(Track track) =>
         track.EmbeddedArt ?? AlbumOf(track)?.Art ?? (folderImages.TryGetValue(track.Directory, out string? image) ? ArtSource.ImageFile(image) : null);
 
@@ -129,10 +127,11 @@ public sealed class LibrarySnapshot
         return result;
     }
 
-    /// <summary>
-    /// Artists are keyed by folded name, so "Björk" and "Bjork" are one artist. Album artists own
-    /// albums; performers credited on another artist's album "appear on" it.
-    /// </summary>
+    /// <summary>Builds the library's artists.</summary>
+    /// <remarks>
+    /// Artists are keyed by folded name, so "Björk" and "Bjork" are one artist. Album artists own albums,
+    /// and performers credited on another artist's album appear on it.
+    /// </remarks>
     private static (IReadOnlyList<Artist>, Dictionary<string, Artist>) BuildArtists(List<Track> tracks, List<Album> albums)
     {
         var builders = new Dictionary<string, ArtistBuilder>(StringComparer.Ordinal);

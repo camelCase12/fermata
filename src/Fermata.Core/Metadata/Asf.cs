@@ -138,7 +138,7 @@ internal static class Asf
         }
     }
 
-    /// <summary>Metadata and Metadata Library objects: records with 32-bit lengths, which can hold large pictures.</summary>
+    /// <summary>Reads the records of a Metadata or Metadata Library object.</summary>
     private static void ReadMetadataRecords(ByteSource source, long position, long end, AudioTags tags, TagReadOptions options)
     {
         Span<byte> record = stackalloc byte[12];
@@ -191,7 +191,11 @@ internal static class Asf
             TagFields.Apply(tags, name, value, options);
     }
 
-    /// <summary>WM/Picture: type(1), data length(4), MIME (UTF-16, NUL), description (UTF-16, NUL), image.</summary>
+    /// <summary>Reads a WM/Picture value.</summary>
+    /// <remarks>
+    /// The value holds the picture type (1 byte), the data length (4 bytes), the MIME type and the
+    /// description (both UTF-16 with a NUL terminator), and then the image.
+    /// </remarks>
     private static void ReadPicture(ByteSource source, long start, int length, AudioTags tags, TagReadOptions options)
     {
         int prefixLength = Math.Min(length, 1024);

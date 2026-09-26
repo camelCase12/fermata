@@ -16,14 +16,10 @@ public sealed record SearchResults(
     public bool IsEmpty => Tracks.Count == 0 && Albums.Count == 0 && Artists.Count == 0 && Genres.Count == 0;
 }
 
-/// <summary>
-/// Accent- and case-insensitive search over a library snapshot. Every word of the query must occur
-/// in the item (as a prefix of a word, or inside one); matches at word starts, in titles, and on
-/// popular tracks rank higher.
-/// </summary>
+/// <summary>Accent- and case-insensitive search over a library snapshot.</summary>
 /// <remarks>
-/// The index stores one folded string per item ("title\nartist\nalbum"), so a query is a few vectorized
-/// substring scans; tens of thousands of tracks take a few milliseconds.
+/// Every word of the query must occur in an item, at the start of a word or inside one. Matches at word
+/// starts, in titles and on popular tracks rank higher.
 /// </remarks>
 public sealed class SearchIndex
 {
@@ -85,7 +81,7 @@ public sealed class SearchIndex
                 top = item;
             }
         }
-        // An exact name beats a partial one; artists and albums win ties because they lead to more music.
+        // An exact name ranks above a partial one, and artists and albums win ties.
         if (artists.Count > 0)
             Consider(library.Artists[artists[0].Index], artists[0].Score + 1.0);
         if (albums.Count > 0)
@@ -141,7 +137,7 @@ public sealed class SearchIndex
             if ((i & 4095) == 0)
                 cancellation.ThrowIfCancellationRequested();
             string text = texts[i];
-            // Cheap rejection first: every token must occur somewhere.
+            // Every token must occur somewhere in the item.
             bool all = true;
             foreach (string token in tokens)
             {
@@ -160,11 +156,12 @@ public sealed class SearchIndex
         return matches;
     }
 
-    /// <summary>
-    /// Scores a candidate: fields are separated by '\n' in order of importance (title, artist, album).
-    /// Word-start matches count fully, inner matches partly; a field equal to or beginning with the whole
-    /// query earns a bonus.
-    /// </summary>
+    /// <summary>Scores a candidate against the query.</summary>
+    /// <remarks>
+    /// The fields of <paramref name="text"/> are separated by '\n' in order of importance, which is
+    /// title, artist and album. Word-start matches count fully and inner matches partly, and a field equal
+    /// to or beginning with the whole query earns a bonus.
+    /// </remarks>
     internal static double Score(string text, string[] tokens, string query)
     {
         double score = 0;

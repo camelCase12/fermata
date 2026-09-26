@@ -12,10 +12,11 @@ public sealed record ScanResult(LibrarySnapshot Snapshot, int Added, int Updated
     public bool Changed => Added + Updated + Removed > 0;
 }
 
-/// <summary>
-/// Builds a library from music folders. Files whose size and modification time match the previous
-/// snapshot are reused without being opened; only new or changed files are parsed, in parallel.
-/// </summary>
+/// <summary>Builds a library snapshot from music folders.</summary>
+/// <remarks>
+/// Files whose size and modification time match the previous snapshot are reused without being read.
+/// New and changed files are read in parallel.
+/// </remarks>
 public static class LibraryScanner
 {
     private static readonly string[] CoverNames = ["cover", "folder", "front", "album", "albumart", "albumartlarge", "thumb"];
@@ -91,7 +92,7 @@ public static class LibraryScanner
                 tracks.Add(track);
         }
 
-        // Nothing changed (the usual rescan): keep the previous snapshot and its indexes.
+        // When nothing changed, the previous snapshot and its indexes are kept.
         if (toRead.Count == 0 && tracks.Count == previous.Tracks.Count && SameImages(images, previous.FolderImages))
         {
             progress?.Report(new ScanProgress(files.Count, 0, 0, false));
@@ -151,8 +152,7 @@ public static class LibraryScanner
                 Walk(subdirectory, depth + 1);
         }
 
-        // Runs for every directory entry, so it avoids allocating for files it skips or already knows:
-        // an unchanged file is matched to its track by a path built on the stack.
+        // Runs for every directory entry and does not allocate for files it skips or already knows.
         Entry Classify(ref FileSystemEntry entry)
         {
             var name = entry.FileName;
@@ -202,7 +202,7 @@ public static class LibraryScanner
         return true;
     }
 
-    /// <summary>Resolves a symbolic link to a folder, so each real folder is visited once.</summary>
+    /// <summary>Resolves a symbolic link to a folder.</summary>
     private static string Resolve(string path)
     {
         try
@@ -215,10 +215,8 @@ public static class LibraryScanner
         }
     }
 
-    /// <summary>
-    /// When a file joined the library: its birth time where the file system records one (copying an
-    /// album creates new files even when modification times are preserved), else its modification time.
-    /// </summary>
+    /// <summary>When a file joined the library.</summary>
+    /// <remarks>This is its birth time where the file system records one, else its modification time.</remarks>
     private static DateTime AddedTime(string path, DateTime modified)
     {
         try
@@ -233,7 +231,8 @@ public static class LibraryScanner
         }
     }
 
-    /// <summary>Lower is better: "cover" beats "folder" beats "front"…; other names rank last.</summary>
+    /// <summary>Ranks a folder image by its name, lower first.</summary>
+    /// <remarks>"cover" ranks before "folder", which ranks before "front", and other names rank last.</remarks>
     private static int CoverRank(ReadOnlySpan<char> name)
     {
         for (int i = 0; i < CoverNames.Length; i++)

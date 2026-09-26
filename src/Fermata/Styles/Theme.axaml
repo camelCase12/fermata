@@ -1,9 +1,6 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-  <!--
-    Fermata's palette: near-black surfaces in steps of elevation, three levels of text, and one warm
-    gold accent. Every colour used by the views comes from here.
-  -->
+  <!-- Fermata's palette. The views take every colour from here. -->
   <Color x:Key="BackgroundColor">#0D0D10</Color>
   <Color x:Key="SidebarColor">#111115</Color>
   <Color x:Key="SurfaceColor">#17171C</Color>
@@ -35,31 +32,30 @@
   <SolidColorBrush x:Key="AccentPressedBrush" Color="{StaticResource AccentPressedColor}" />
   <SolidColorBrush x:Key="AccentForegroundBrush" Color="{StaticResource AccentForegroundColor}" />
   <SolidColorBrush x:Key="DangerBrush" Color="{StaticResource DangerColor}" />
-  <!-- Translucent white layers read correctly on every surface. -->
+  <!-- Translucent white layers. -->
   <SolidColorBrush x:Key="HoverBrush" Color="{StaticResource HoverColor}" Opacity="0.07" />
   <SolidColorBrush x:Key="PressedBrush" Color="{StaticResource HoverColor}" Opacity="0.12" />
   <SolidColorBrush x:Key="SelectedBrush" Color="{StaticResource HoverColor}" Opacity="0.10" />
   <SolidColorBrush x:Key="SubtleFillBrush" Color="{StaticResource HoverColor}" Opacity="0.05" />
-  <!-- Fields and secondary buttons are washes too, so they sit as well on a cover-coloured backdrop as
-       on the plain background (where they look like the opaque raised surface). -->
+  <!-- Fills for fields and secondary buttons. -->
   <SolidColorBrush x:Key="FillBrush" Color="{StaticResource HoverColor}" Opacity="0.08" />
   <SolidColorBrush x:Key="FillHoverBrush" Color="{StaticResource HoverColor}" Opacity="0.12" />
   <SolidColorBrush x:Key="FillPressedBrush" Color="{StaticResource HoverColor}" Opacity="0.16" />
   <SolidColorBrush x:Key="ScrimBrush" Color="#000000" Opacity="0.55" />
-  <!-- Darkening over cover art, under play buttons and the playing indicator. -->
+  <!-- Shades over cover art, under play buttons and the playing indicator. -->
   <SolidColorBrush x:Key="ShadeBrush" Color="{StaticResource ShadeColor}" />
   <SolidColorBrush x:Key="ShadeStrongBrush" Color="#000000" Opacity="0.7" />
-  <!-- Text over the now-playing gradient, whose colour comes from the cover. -->
+  <!-- Text over the Now Playing backdrop. -->
   <SolidColorBrush x:Key="OnTintPrimaryBrush" Color="#FFFFFF" />
   <SolidColorBrush x:Key="OnTintSecondaryBrush" Color="#FFFFFF" Opacity="0.8" />
   <SolidColorBrush x:Key="OnTintTertiaryBrush" Color="#FFFFFF" Opacity="0.5" />
   <SolidColorBrush x:Key="OnTintFaintBrush" Color="#FFFFFF" Opacity="0.3" />
   <!-- A playlist in the sidebar under songs being dragged. -->
   <SolidColorBrush x:Key="DropTargetBrush" Color="{StaticResource AccentColor}" Opacity="0.22" />
-  <!-- Keyboard focus: the same gold ring as a focused text field. -->
+  <!-- The keyboard focus ring. -->
   <SolidColorBrush x:Key="FocusRingBrush" Color="{StaticResource AccentColor}" />
 
-  <!-- Map Fluent's accent onto ours so built-in controls (text selection, focus, sliders) agree. -->
+  <!-- Fluent's accent colours, set to Fermata's accent. -->
   <Color x:Key="SystemAccentColor">#F2B43C</Color>
   <Color x:Key="SystemAccentColorLight1">#F7C867</Color>
   <Color x:Key="SystemAccentColorLight2">#FAD68A</Color>
@@ -72,7 +68,7 @@
   <BoxShadows x:Key="CoverShadow">0 24 60 0 #99000000</BoxShadows>
   <BoxShadows x:Key="DialogShadow">0 16 48 0 #99000000</BoxShadows>
 
-  <!-- Fluent's drop-downs, restyled to match the text fields. -->
+  <!-- Fluent's drop-downs, styled like the text fields. -->
   <StaticResource x:Key="ComboBoxBackground" ResourceKey="FillBrush" />
   <StaticResource x:Key="ComboBoxBackgroundPointerOver" ResourceKey="FillHoverBrush" />
   <StaticResource x:Key="ComboBoxBackgroundPressed" ResourceKey="FillPressedBrush" />

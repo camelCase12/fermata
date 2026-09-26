@@ -6,12 +6,7 @@ using Fermata.Playback;
 
 namespace Fermata.ViewModels;
 
-/// <summary>State and commands of the player bar and the now-playing view.</summary>
-/// <remarks>
-/// The position is polled only while playing and visible, at the rate at which the progress bar can
-/// move by a whole pixel (bounded to 25 per second and at least once a second); paused or hidden,
-/// nothing runs.
-/// </remarks>
+/// <summary>The state and commands of the player bar and the now-playing view.</summary>
 public sealed partial class PlayerViewModel : ObservableObject
 {
     private readonly Shell shell;
@@ -48,7 +43,7 @@ public sealed partial class PlayerViewModel : ObservableObject
     public Shell Shell => shell;
 
     [ObservableProperty] public partial Track? Track { get; private set; }
-    /// <summary>Something is loaded; transport buttons are disabled until then.</summary>
+    /// <summary>Whether a track is loaded.</summary>
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(PlayPauseCommand), nameof(NextCommand), nameof(PreviousCommand), nameof(ToggleNowPlayingCommand))]
     public partial bool HasTrack { get; private set; }
@@ -71,13 +66,13 @@ public sealed partial class PlayerViewModel : ObservableObject
 
     public string? EngineMessage => player.EngineUnavailableReason;
 
-    /// <summary>Position of the playing track, read on demand.</summary>
+    /// <summary>The position in the playing track.</summary>
     public TimeSpan Position => player.Position;
 
-    /// <summary>Raised whenever the position is sampled (for synchronized lyrics).</summary>
+    /// <summary>Raised whenever the position is sampled.</summary>
     public event Action<TimeSpan>? PositionSampled;
 
-    /// <summary>The window reports whether it is visible; nothing is polled while it is not.</summary>
+    /// <summary>Tells the view model whether the window is visible.</summary>
     public void SetWindowVisible(bool visible)
     {
         windowVisible = visible;
@@ -86,7 +81,7 @@ public sealed partial class PlayerViewModel : ObservableObject
             UpdatePosition();
     }
 
-    /// <summary>The widest visible progress bar reports its width so updates match its resolution.</summary>
+    /// <summary>Tells the view model the width of the widest visible progress bar.</summary>
     public void SetProgressWidth(double width)
     {
         if (width > 0 && Math.Abs(width - progressWidth) > 1)
@@ -157,7 +152,7 @@ public sealed partial class PlayerViewModel : ObservableObject
             positionTimer.Stop();
             return;
         }
-        // One pixel of progress, within 40 ms – 1 s.
+        // The timer ticks once per pixel of progress, at most every 40 ms and at least every second.
         double perPixel = Duration.TotalMilliseconds / Math.Max(100, progressWidth);
         positionTimer.Interval = TimeSpan.FromMilliseconds(Math.Clamp(perPixel, 40, 1000));
         if (!positionTimer.IsEnabled)
@@ -245,7 +240,7 @@ public sealed partial class PlayerViewModel : ObservableObject
         }
     }
 
-    /// <summary>Seeks to a fraction of the track (from the progress bar).</summary>
+    /// <summary>Seeks to a fraction of the track.</summary>
     public void SeekTo(double fraction)
     {
         if (Duration > TimeSpan.Zero)
@@ -254,7 +249,7 @@ public sealed partial class PlayerViewModel : ObservableObject
 
     public void SeekBy(TimeSpan offset) => player.Seek(player.Position + offset);
 
-    /// <summary>Sets the volume from the volume bar (unmuting).</summary>
+    /// <summary>Sets the volume and unmutes.</summary>
     public void SetVolume(double volume)
     {
         player.Muted = false;

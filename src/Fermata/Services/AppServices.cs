@@ -4,10 +4,11 @@ using Fermata.Storage;
 
 namespace Fermata.Services;
 
-/// <summary>
-/// Creates and connects Fermata's long-lived parts, and saves their state. Everything here is owned by
-/// the UI thread; saving captures state there and writes it on a background thread.
-/// </summary>
+/// <summary>Fermata's long-lived services.</summary>
+/// <remarks>
+/// They are owned by the UI thread. Saving captures state on the UI thread and writes it on a background
+/// thread.
+/// </remarks>
 public sealed class AppServices : IDisposable
 {
     private readonly DeferredSave settingsSave;
@@ -37,7 +38,7 @@ public sealed class AppServices : IDisposable
         Library = new MusicLibrary(paths, context);
         Art = new ArtCache();
 
-        // FERMATA_AUDIO_OUTPUT=null plays silently (useful for testing without speakers).
+        // FERMATA_AUDIO_OUTPUT chooses mpv's audio output, and "null" plays silently.
         string? output = Environment.GetEnvironmentVariable("FERMATA_AUDIO_OUTPUT");
         IAudioEngine engine = new MpvEngine(context, audioOutput: string.IsNullOrEmpty(output) ? null : output);
         Player = new Player(engine, new PlayQueue(), UserData)
@@ -88,7 +89,7 @@ public sealed class AppServices : IDisposable
     public Player Player { get; }
     public ArtCache Art { get; }
 
-    /// <summary>Colours the accent after the playing cover; set by the app once its theme is loaded.</summary>
+    /// <summary>The dynamic accent colour, set once the theme is loaded.</summary>
     public DynamicAccent? Accent { get; set; }
 
     /// <summary>Raised when a setting that changes how cover art colours the app is changed.</summary>
@@ -96,7 +97,8 @@ public sealed class AppServices : IDisposable
 
     public void RaiseAppearanceChanged() => AppearanceChanged?.Invoke();
 
-    /// <summary>Starts the library: the cached index first, then a scan, then watching for changes.</summary>
+    /// <summary>Starts the library.</summary>
+    /// <remarks>It loads the cached index, then scans the music folders, then watches them for changes.</remarks>
     public async Task StartLibraryAsync()
     {
         if (await Library.LoadCacheAsync(Settings.MusicFolders))
@@ -118,7 +120,7 @@ public sealed class AppServices : IDisposable
 
     public void SaveSettings() => settingsSave.Request();
 
-    /// <summary>Shuffle and repeat are remembered between sessions.</summary>
+    /// <summary>Copies the queue's shuffle and repeat modes into the settings.</summary>
     private void SyncModeSettings()
     {
         var queue = Player.Queue;

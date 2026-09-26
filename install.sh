@@ -29,7 +29,7 @@ refresh_launchers() {
     fi
 }
 
-# Earlier versions installed the launcher entry and icons under the name "fermata".
+# Removes the launcher entry and icons under both the app ID and the name "fermata".
 remove_launcher_files() {
     for name in fermata "$id"; do
         rm -f -- "$applications/$name.desktop" "$icons/scalable/apps/$name.svg"

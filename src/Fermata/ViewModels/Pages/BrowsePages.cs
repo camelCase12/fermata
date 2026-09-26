@@ -10,7 +10,7 @@ namespace Fermata.ViewModels.Pages;
 /// <summary>A coloured tile for a genre or a decade.</summary>
 public sealed record BrowseTile(string Title, string Subtitle, IBrush Background, Genre? Genre, int Decade);
 
-/// <summary>Explore: genres, decades, and charts from your own listening.</summary>
+/// <summary>The Explore page.</summary>
 public sealed partial class ExploreViewModel : PageViewModel
 {
     public ExploreViewModel(Shell shell) : base(shell)
@@ -40,7 +40,7 @@ public sealed partial class ExploreViewModel : PageViewModel
         HasTopSongs = TopSongs.Tracks.Count > 0;
     }
 
-    /// <summary>A stable, pleasant gradient per name: hue from a hash, fixed saturation and lightness.</summary>
+    /// <summary>Makes the gradient of a tile from its name.</summary>
     public static IBrush TileBrush(string name)
     {
         uint hash = 2166136261;
@@ -103,7 +103,7 @@ public sealed partial class SearchViewModel : PageViewModel
         string query = Query;
         var index = await Shell.Services.Library.GetSearchIndexAsync();
         var userData = Shell.Services.UserData;
-        // The index is immutable; play counts are copied so ranking can run in the background.
+        // The user data belongs to the UI thread, so ranking in the background uses a copy.
         var ranking = UserData.FromDocument(userData.ToDocument());
         var results = await Task.Run(() => index.Search(query, ranking));
         if (current != request)
@@ -161,7 +161,7 @@ public sealed partial class SearchViewModel : PageViewModel
 
 public sealed record HistoryGroup(string Title, TrackListModel List);
 
-/// <summary>Recently played, newest first, grouped by day.</summary>
+/// <summary>The Recently played page.</summary>
 public sealed partial class HistoryViewModel(Shell shell) : PageViewModel(shell)
 {
     private const int Shown = 400;
@@ -202,7 +202,7 @@ public sealed partial class HistoryViewModel(Shell shell) : PageViewModel(shell)
 
 public sealed record ShortcutRow(string Keys, string Action);
 
-/// <summary>Library folders, playback options, shortcuts and version information.</summary>
+/// <summary>The Settings page.</summary>
 public sealed partial class SettingsViewModel : PageViewModel
 {
     public SettingsViewModel(Shell shell) : base(shell)

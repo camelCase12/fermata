@@ -77,7 +77,7 @@ internal static unsafe partial class LibMpv
         public int PlaylistInsertNumEntries;
     }
 
-    /// <summary>A value of any type; the union is read according to <see cref="Format"/>.</summary>
+    /// <summary>A value of any type, read according to <see cref="Format"/>.</summary>
     [StructLayout(LayoutKind.Sequential)]
     public struct Node
     {
@@ -156,7 +156,8 @@ internal static unsafe partial class LibMpv
 
     public static string Describe(int error) => Marshal.PtrToStringUTF8((nint)ErrorString(error)) ?? $"error {error}";
 
-    /// <summary>Runs a command given as strings; returns the result node (caller frees it) and the status.</summary>
+    /// <summary>Runs a command given as strings.</summary>
+    /// <returns>The result node, which the caller frees, and the status.</returns>
     public static int Run(nint handle, ReadOnlySpan<string> args, Node* result = null)
     {
         // Marshal the NUL-terminated argument vector on the stack for short arguments.

@@ -2,16 +2,17 @@ using Fermata.Playback;
 
 namespace Fermata.Tests;
 
-/// <summary>
-/// Mimics mpv as Fermata drives it: a playlist with a current position, ids per item, and events that
-/// arrive later than the state change that caused them. Tests move the engine forward
-/// (<see cref="FinishCurrent"/>) and deliver events (<see cref="Deliver"/>) separately, so listener
-/// actions can land in between, as they do in the real application.
-/// </summary>
+/// <summary>An in-memory stand-in for mpv in player tests.</summary>
 /// <remarks>
-/// Like mpv: played items stay in the playlist until cleared; "playlist-clear" keeps only the playing
-/// item; appending while idle does not start playback; and after an item ends the engine moves to the
-/// following item by itself or goes idle.
+/// <para>
+/// Tests move the engine forward with <see cref="FinishCurrent"/> and deliver its events with
+/// <see cref="Deliver"/>, separately.
+/// </para>
+/// <para>
+/// As in mpv, played items stay in the playlist until it is cleared, "playlist-clear" keeps only the
+/// playing item, appending while idle does not start playback, and an item that ends is followed by the
+/// next one or by idle.
+/// </para>
 /// </remarks>
 internal sealed class FakeEngine : IAudioEngine
 {

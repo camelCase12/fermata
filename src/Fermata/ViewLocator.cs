@@ -8,10 +8,8 @@ using Fermata.Views.Pages;
 
 namespace Fermata;
 
-/// <summary>
-/// Chooses the view for a page or dialog. Page views are kept alive with their view models, so going
-/// back returns to the page exactly as it was left (scroll position and selection included).
-/// </summary>
+/// <summary>Chooses the view for a page or dialog.</summary>
+/// <remarks>Page views are kept alive with their view models.</remarks>
 public sealed class ViewLocator : IDataTemplate
 {
     private readonly ConditionalWeakTable<PageViewModel, Control> pages = [];

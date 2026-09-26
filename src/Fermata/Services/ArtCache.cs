@@ -7,19 +7,11 @@ using SkiaSharp;
 
 namespace Fermata.Services;
 
-/// <summary>
-/// Decodes cover art off the UI thread at the size it is displayed, and keeps recently used images.
-/// </summary>
+/// <summary>A cache of cover art decoded at the size it is shown.</summary>
 /// <remarks>
-/// <para>
-/// Images are handed out as <see cref="ArtLease"/>s. An image stays in memory while any lease is
-/// held; released images are kept, least recently used first, up to a byte budget, so scrolling back
-/// through a list shows covers instantly without letting memory grow with the size of the library.
-/// </para>
-/// <para>
-/// Sizes are rounded up to a few buckets so a cover shown in several places at similar sizes is
-/// decoded once. The cache is used from the UI thread only; decoding runs on a few background workers.
-/// </para>
+/// Images are handed out as <see cref="ArtLease"/>s. An image stays in memory while any lease is held,
+/// and released images are kept, least recently used first, up to a byte budget. Sizes are rounded up
+/// to a few buckets. The cache is used from the UI thread only, and decoding runs on background workers.
 /// </remarks>
 public sealed class ArtCache
 {
@@ -65,10 +57,11 @@ public sealed class ArtCache
         return null;
     }
 
-    /// <summary>
-    /// Delivers a lease to <paramref name="done"/> on the UI thread (null if the image cannot be read).
-    /// The receiver must dispose the lease when it no longer shows the image.
-    /// </summary>
+    /// <summary>Requests a lease on an image.</summary>
+    /// <remarks>
+    /// The lease is delivered to <paramref name="done"/> on the UI thread, and is null if the image cannot
+    /// be read. The receiver must dispose it when it no longer shows the image.
+    /// </remarks>
     public void Request(ArtSource source, int size, Action<ArtLease?> done)
     {
         var key = new Key(source, size);
@@ -178,8 +171,7 @@ public sealed class ArtCache
         }
         if (bytes is null || bytes.Length == 0)
             return null;
-        // Covers are drawn cropped to a square, so the shorter side must reach the display size: wide
-        // images (such as video thumbnails) are decoded by height, others by width.
+        // Covers are cropped to a square, so the shorter side is decoded at the display size.
         using var stream = new MemoryStream(bytes, writable: false);
         return IsWide(bytes)
             ? Bitmap.DecodeToHeight(stream, size, BitmapInterpolationMode.MediumQuality)
@@ -319,7 +311,8 @@ public sealed class ArtCache
 }
 
 
-/// <summary>A decoded cover in use; dispose it when the image is no longer shown.</summary>
+/// <summary>A decoded cover in use.</summary>
+/// <remarks>Dispose it when the image is no longer shown.</remarks>
 public sealed class ArtLease : IDisposable
 {
     private ArtCache? cache;

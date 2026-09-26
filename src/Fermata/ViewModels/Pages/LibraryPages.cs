@@ -31,7 +31,7 @@ public enum AlbumSort
 /// <summary>An entry of a sort menu.</summary>
 public sealed record SortChoice(Enum Value, string Label);
 
-/// <summary>A page with a filter box. Filtering follows typing after a short pause.</summary>
+/// <summary>A page with a filter box.</summary>
 public abstract partial class FilteredPageViewModel : PageViewModel
 {
     private readonly DispatcherTimer delay;
@@ -55,7 +55,7 @@ public abstract partial class FilteredPageViewModel : PageViewModel
         delay.Start();
     }
 
-    /// <summary>Runs the filter against the current library's search index (built once per library version).</summary>
+    /// <summary>Gets the current library's search index.</summary>
     protected async Task<SearchIndex> IndexAsync() => await Shell.Services.Library.GetSearchIndexAsync();
 }
 
@@ -110,7 +110,7 @@ public sealed partial class SongsViewModel : FilteredPageViewModel
         var sort = Sort;
         string filter = Filter;
         var userData = Shell.Services.UserData;
-        // Play counts are read here, on the UI thread, then sorting runs in the background.
+        // Play counts are read on the UI thread, which owns the user data, before sorting in the background.
         Dictionary<string, int>? plays = sort == SongSort.Plays ? userData.Tracks.ToDictionary(p => p.Key, p => p.Value.Plays) : null;
         var index = filter.Length > 0 ? await IndexAsync() : null;
         var tracks = await Task.Run(() => SortTracks(index is null ? [.. library.Tracks] : index.FilterTracks(filter), sort, plays));
@@ -145,7 +145,7 @@ public sealed partial class SongsViewModel : FilteredPageViewModel
         }
     }
 
-    /// <summary>Sorts by a string key computed once per item (not once per comparison); ties keep library order.</summary>
+    /// <summary>Sorts tracks by a string key, keeping library order for ties.</summary>
     private static List<Track> OrderByKey(List<Track> tracks, Func<Track, string> key)
     {
         var keys = new string[tracks.Count];

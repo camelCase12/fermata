@@ -1,15 +1,15 @@
 namespace Fermata.Playback;
 
-/// <summary>
-/// Decodes and plays audio files. Items are identified by the id returned when they are handed to
-/// the engine, so late events about replaced items can be recognized and ignored.
-/// </summary>
-/// <remarks>Methods are called, and events raised, on the owner's thread (the UI thread).</remarks>
+/// <summary>An audio player that decodes and plays files.</summary>
+/// <remarks>
+/// Items are identified by the id returned when they are handed to the engine, and events carry that
+/// id. Methods are called, and events raised, on the owner's thread.
+/// </remarks>
 public interface IAudioEngine : IDisposable
 {
     event Action<EngineEvent>? EventRaised;
 
-    /// <summary>False when no audio backend could be loaded; see <see cref="UnavailableReason"/>.</summary>
+    /// <summary>Whether an audio backend could be loaded. See <see cref="UnavailableReason"/>.</summary>
     bool IsAvailable { get; }
 
     string? UnavailableReason { get; }
@@ -56,10 +56,10 @@ public enum EndReason
 
 public abstract record EngineEvent;
 
-/// <summary>The engine began an item: one it was told to play, or a preloaded one following the previous item.</summary>
+/// <summary>The engine began an item, either one it was told to play or a preloaded one after the previous item.</summary>
 public sealed record ItemStarted(long Id) : EngineEvent;
 
-/// <summary>An item was opened; its duration as measured from the stream.</summary>
+/// <summary>An item was opened, with its duration as measured from the stream.</summary>
 public sealed record ItemLoaded(long Id, TimeSpan Duration) : EngineEvent;
 
 public sealed record ItemEnded(long Id, EndReason Reason, string? Error) : EngineEvent;
@@ -69,7 +69,7 @@ public sealed record PauseChanged(bool Paused) : EngineEvent;
 /// <summary>Playback resumed after a seek or a start.</summary>
 public sealed record PlaybackRestarted : EngineEvent;
 
-/// <summary>The engine has nothing left to play: an item ended with no item after it.</summary>
+/// <summary>The engine has nothing left to play, because an item ended with no item after it.</summary>
 public sealed record EngineIdle : EngineEvent;
 
 public sealed record DevicesChanged : EngineEvent;

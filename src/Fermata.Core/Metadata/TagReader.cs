@@ -29,7 +29,7 @@ public static class TagReader
         }
         catch (InvalidDataException)
         {
-            // A damaged structure after the useful parts is common; keep what was found.
+            // A structure damaged after the useful parts keeps what was already read.
             if (tags.Codec.Length == 0 && tags.Title is null)
                 return null;
         }
@@ -126,7 +126,7 @@ public static class TagReader
     private static bool ReadTaggedStream(ByteSource source, AudioTags tags, TagReadOptions options)
     {
         long start = 0;
-        // Several consecutive ID3v2 tags occur in files that were re-tagged by careless tools.
+        // Some files carry several consecutive ID3v2 tags.
         for (int i = 0; i < 4; i++)
         {
             long size = Id3v2.Read(source, start, tags, options);

@@ -2,7 +2,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace Fermata.ViewModels;
 
-/// <summary>Page history with back and forward, like a browser.</summary>
+/// <summary>The page history, with back and forward.</summary>
 public sealed partial class Navigator : ObservableObject
 {
     private const int HistoryLimit = 50;
@@ -61,7 +61,7 @@ public sealed partial class Navigator : ObservableObject
         Show(page);
     }
 
-    /// <summary>Drops pages that no longer make sense (a deleted playlist, a vanished album) from the history.</summary>
+    /// <summary>Removes the pages that match <paramref name="predicate"/> from the history.</summary>
     public void Forget(Func<PageViewModel, bool> predicate)
     {
         back.RemoveAll(p => predicate(p));

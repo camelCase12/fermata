@@ -1,9 +1,10 @@
 namespace Fermata.Storage;
 
-/// <summary>
-/// Writes files so that readers (and a crash) see either the old or the new contents, never a
-/// partial file: data goes to a sibling temporary file, is flushed to disk, then renamed over the target.
-/// </summary>
+/// <summary>Writes files atomically.</summary>
+/// <remarks>
+/// Data goes to a sibling temporary file, is flushed to disk and is then renamed over the target, so
+/// readers see either the old or the new contents.
+/// </remarks>
 public static class AtomicFile
 {
     public static void Write(string path, Action<Stream> write)

@@ -3,8 +3,11 @@ using System.Text;
 
 namespace Fermata.Metadata;
 
-/// <summary>Native FLAC files: STREAMINFO, VORBIS_COMMENT and PICTURE metadata blocks.</summary>
-/// <remarks>Specification: https://xiph.org/flac/format.html (RFC 9639).</remarks>
+/// <summary>Reads native FLAC files.</summary>
+/// <remarks>
+/// The STREAMINFO, VORBIS_COMMENT and PICTURE metadata blocks are read. Specification:
+/// https://xiph.org/flac/format.html (RFC 9639).
+/// </remarks>
 internal static class Flac
 {
     private const int StreamInfo = 0, VorbisCommentBlock = 4, Picture = 6;
@@ -64,7 +67,7 @@ internal static class Flac
 
     private static void ReadPicture(ByteSource source, long body, int length, AudioTags tags, TagReadOptions options)
     {
-        // Only the fixed fields and strings are needed to locate the image, so avoid reading the image itself.
+        // Only the fixed fields and strings are read; the image itself stays in the file.
         int prefixLength = Math.Min(length, 64 * 1024);
         byte[] prefix = source.ReadArray(body, prefixLength);
         if (!ParsePictureBlock(prefix, out string mime, out bool front, out int dataOffset, out int dataLength, declaredOnly: true))

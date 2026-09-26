@@ -46,7 +46,7 @@ public sealed record MprisMetadata(
     int UseCount,
     double? Rating);
 
-/// <summary>Commands from MPRIS clients (media keys via playerctl, desktop widgets), run on the UI thread.</summary>
+/// <summary>Commands from MPRIS clients, run on the UI thread.</summary>
 public interface IMprisTarget
 {
     void Raise();
@@ -70,13 +70,11 @@ public interface IMprisTarget
     void OpenUri(string uri);
 }
 
-/// <summary>
-/// Publishes the player on the session bus as <c>org.mpris.MediaPlayer2.fermata</c>, so media keys
-/// (through playerctl), notification centres and status bars can show and control playback.
-/// </summary>
+/// <summary>The MPRIS server that publishes the player on the session bus.</summary>
 /// <remarks>
-/// Specification: https://specifications.freedesktop.org/mpris-spec/latest/. Property reads are served
-/// from an immutable <see cref="MprisState"/> on the bus thread; commands are posted to the UI thread.
+/// Specification: https://specifications.freedesktop.org/mpris-spec/latest/. The bus name is
+/// <c>org.mpris.MediaPlayer2.fermata</c>. Property reads are served from an immutable
+/// <see cref="MprisState"/> on the bus thread, and commands are posted to the UI thread.
 /// </remarks>
 public sealed class MprisServer : IDisposable
 {
@@ -103,7 +101,8 @@ public sealed class MprisServer : IDisposable
     /// <summary>The bus name acquired, once connected.</summary>
     public string? BusName { get; private set; }
 
-    /// <summary>Connects and claims the bus name. Returns false (and stays inert) when no session bus is available.</summary>
+    /// <summary>Connects and claims the bus name.</summary>
+    /// <returns>False when no session bus is available, in which case the server does nothing.</returns>
     public async Task<bool> StartAsync()
     {
         string? address = DBusAddress.Session;
@@ -115,7 +114,7 @@ public sealed class MprisServer : IDisposable
             await connection.ConnectAsync().ConfigureAwait(false);
             connection.AddMethodHandler(new Handler(this));
             string name = "org.mpris.MediaPlayer2.fermata";
-            // A second instance (which should not normally exist) registers under an instance-specific name.
+            // A second instance registers under an instance-specific name.
             if (!await connection.TryRequestNameAsync(name, RequestNameOptions.None).ConfigureAwait(false))
             {
                 name += ".instance" + Environment.ProcessId;
@@ -126,7 +125,7 @@ public sealed class MprisServer : IDisposable
         }
         catch (Exception)
         {
-            // MPRIS is an optional integration: without a usable session bus the player simply isn't published.
+            // Without a usable session bus the player is not published.
             connection?.Dispose();
             connection = null;
             return false;
@@ -172,7 +171,8 @@ public sealed class MprisServer : IDisposable
         connection.TrySendMessage(writer.CreateMessage());
     }
 
-    /// <summary>Tells clients the position jumped (seek or restart), since Position itself is not announced.</summary>
+    /// <summary>Tells clients that the position jumped.</summary>
+    /// <remarks>Position changes are not otherwise announced.</remarks>
     public void EmitSeeked(TimeSpan position)
     {
         if (connection is null)
@@ -405,7 +405,7 @@ public sealed class MprisServer : IDisposable
                             server.Post(() => target.SetVolume(volume));
                             break;
                         case "Rate" or "Fullscreen":
-                            break; // fixed; ignoring the request is what the specification asks
+                            break; // The specification says to ignore requests to change these.
                         default:
                             context.ReplyError("org.freedesktop.DBus.Error.PropertyReadOnly", $"{@interface}.{name} cannot be set");
                             return;

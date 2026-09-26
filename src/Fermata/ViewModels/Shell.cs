@@ -7,10 +7,7 @@ using Fermata.ViewModels.Pages;
 
 namespace Fermata.ViewModels;
 
-/// <summary>
-/// The actions available everywhere in the app: navigation, playback, likes and playlists. Pages,
-/// menus and cards call these so that each behaves the same wherever it is started from.
-/// </summary>
+/// <summary>The actions available throughout the app.</summary>
 public sealed partial class Shell : ObservableObject
 {
     private HomeViewModel? home;
@@ -27,7 +24,6 @@ public sealed partial class Shell : ObservableObject
         services.Library.SnapshotChanged += _ =>
         {
             Navigator.Current?.LibraryChanged();
-            // Pages for albums or artists that disappeared are dropped from the history.
             Navigator.Forget(page => page is AlbumViewModel { IsGone: true } or ArtistViewModel { IsGone: true });
         };
         services.Playlists.ListChanged += () =>
@@ -107,7 +103,7 @@ public sealed partial class Shell : ObservableObject
 
     private SearchViewModel? search;
 
-    /// <summary>Shows results for <paramref name="query"/>, reusing the search page while typing.</summary>
+    /// <summary>Shows the search results for <paramref name="query"/>.</summary>
     public void Search(string query)
     {
         IsNowPlayingOpen = false;
@@ -161,7 +157,7 @@ public sealed partial class Shell : ObservableObject
         Toasts.Show(tracks.Count == 1 ? $"Added “{tracks[0].Title}” to the queue" : $"Added {Formats.Count(tracks.Count, "song")} to the queue");
     }
 
-    /// <summary>A station around one track: it plays first, similar music follows.</summary>
+    /// <summary>Starts a radio station from a track.</summary>
     public void StartRadio(Track seed)
     {
         var tracks = new Recommender(Library, Services.UserData).Radio(seed);
@@ -230,7 +226,8 @@ public sealed partial class Shell : ObservableObject
             () => Services.Playlists.RemoveAt(playlist, Enumerable.Range(before, added)));
     }
 
-    /// <summary>Creates a playlist from each M3U file, named as the file names it or after the file.</summary>
+    /// <summary>Creates a playlist from each M3U file.</summary>
+    /// <remarks>Each playlist takes the name its file gives, or else the file's name.</remarks>
     public void ImportPlaylists(IReadOnlyList<string> files)
     {
         Playlist? imported = null;

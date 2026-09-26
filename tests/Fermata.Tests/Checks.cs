@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 
 namespace Fermata.Tests;
 
-/// <summary>A minimal assertion collector: every failure is reported, and the run fails if any occurred.</summary>
+/// <summary>A collector of check results that reports every failure.</summary>
 internal sealed class Checks
 {
     private readonly List<string> failures = [];

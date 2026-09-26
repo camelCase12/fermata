@@ -13,12 +13,11 @@ namespace Fermata.Controls;
 /// <summary>Songs being dragged, with the list and row they come from.</summary>
 public sealed record DraggedSongs(IReadOnlyList<Track> Tracks, ListBox Source, int Index);
 
-/// <summary>
-/// Lets the rows of a list be dragged: to other targets (a playlist in the sidebar takes songs) and,
-/// when the list allows it, within the list to reorder it. Over its own list, a line shows where the
-/// row will land, and the list scrolls while the pointer is near its top or bottom edge. Alt+↑ and
-/// Alt+↓ move the selected row, for reordering without a mouse.
-/// </summary>
+/// <summary>Drag and drop for the rows of a list.</summary>
+/// <remarks>
+/// Rows can be dropped on other targets and, when the list allows it, moved within the list. Alt+↑ and
+/// Alt+↓ move the selected row.
+/// </remarks>
 public sealed class RowDragging
 {
     public static readonly DataFormat<DraggedSongs> Format = DataFormat.CreateInProcessFormat<DraggedSongs>("fermata-songs");
@@ -52,8 +51,7 @@ public sealed class RowDragging
         // Tunnelling, because the list itself takes arrow keys to move the selection.
         list.AddHandler(InputElement.KeyDownEvent, OnMoveKey, RoutingStrategies.Tunnel);
         DragDrop.SetAllowDrop(list, true);
-        // Drag events come from the part of a row under the pointer: entering a new part may be the
-        // last event before a drop, so it updates the marker like moving does.
+        // Entering a new part of a row may be the last event before a drop, so it updates the marker too.
         list.AddHandler(DragDrop.DragEnterEvent, OnDragOver);
         list.AddHandler(DragDrop.DragOverEvent, OnDragOver);
         list.AddHandler(DragDrop.DragLeaveEvent, OnDragLeave);
@@ -137,7 +135,8 @@ public sealed class RowDragging
         ShowMarker(e.GetPosition(list));
     }
 
-    /// <summary>Moving from one row to the next also raises this; only leaving the list ends the hover.</summary>
+    /// <summary>Ends the hover when the pointer leaves the list.</summary>
+    /// <remarks>Moving from one row to the next also raises this event.</remarks>
     private void OnDragLeave(object? sender, DragEventArgs e)
     {
         if (!new Rect(list.Bounds.Size).Contains(e.GetPosition(list)))
@@ -183,10 +182,7 @@ public sealed class RowDragging
         }, DispatcherPriority.Background);
     }
 
-    /// <summary>
-    /// The row under a point of the list. Drag events come from whatever part of a row is under the
-    /// pointer (and leaving one part for another raises a leave), so drop targets find rows by position.
-    /// </summary>
+    /// <summary>The row under a point of the list.</summary>
     public static ListBoxItem? ContainerAt(ListBox list, Point point)
     {
         foreach (var container in list.GetRealizedContainers())
@@ -203,10 +199,8 @@ public sealed class RowDragging
     private bool IsOwnReorder(DragEventArgs e) =>
         e.DataTransfer.TryGetValue(Format) is { } songs && songs.Source == list && canReorder();
 
-    /// <summary>
-    /// Where a row dropped at <paramref name="point"/> lands: before the row under the pointer, or after
-    /// it past its middle, or after the last row below the end of the list. Returns -1 elsewhere.
-    /// </summary>
+    /// <summary>Where a row dropped at <paramref name="point"/> lands.</summary>
+    /// <returns>The index the row takes, or -1 when the point is not over the list.</returns>
     private int InsertionIndex(Point point, out double lineY)
     {
         lineY = 0;
@@ -259,7 +253,7 @@ public sealed class RowDragging
             layer.Children.Remove(marker);
     }
 
-    /// <summary>Pixels to scroll this tick: faster the closer the pointer is to the edge.</summary>
+    /// <summary>The pixels to scroll this tick, more the closer the pointer is to the edge.</summary>
     private double EdgeStep()
     {
         if (scroller is null)

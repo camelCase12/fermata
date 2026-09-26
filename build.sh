@@ -4,8 +4,8 @@
 #   ./build.sh         build bin/fermata/fermata
 #   ./build.sh test    build, then run the checks in tests/Fermata.Tests
 #
-# The .NET SDK's home and package cache default to /tmp so a build leaves nothing in ~;
-# FERMATA_DOTNET_HOME and FERMATA_NUGET_PACKAGES move them.
+# The .NET SDK's home and package cache default to /tmp. FERMATA_DOTNET_HOME and
+# FERMATA_NUGET_PACKAGES move them.
 set -euo pipefail
 cd "$(dirname "$0")"
 export DOTNET_CLI_HOME="${FERMATA_DOTNET_HOME:-/tmp/fermata-dotnet}"

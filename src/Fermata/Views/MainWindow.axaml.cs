@@ -66,7 +66,7 @@ public partial class MainWindow : Window
         Model.Shell.Services.SaveSettings();
     }
 
-    /// <summary>Brings the window forward (another launch, or MPRIS Raise).</summary>
+    /// <summary>Brings the window forward.</summary>
     public void Raise()
     {
         if (WindowState == WindowState.Minimized)
@@ -191,10 +191,7 @@ public partial class MainWindow : Window
         }
     }
 
-    /// <summary>
-    /// A key used as a shortcut is not also delivered on release: a focused button (say Next, after
-    /// being clicked) would otherwise act on Space as well.
-    /// </summary>
+    /// <summary>Stops a key used as a shortcut from reaching a focused control when it is released.</summary>
     private void OnShortcutReleased(object? sender, KeyEventArgs e)
     {
         if (e.Key != shortcutKey)
@@ -203,21 +200,21 @@ public partial class MainWindow : Window
         e.Handled = true;
     }
 
-    /// <summary>Keyboard navigation leaves the search box, so single-key shortcuts work on the new page.</summary>
+    /// <summary>Navigates after leaving the search box.</summary>
     private void Navigate(Action navigate)
     {
         LeaveSearchBox();
         navigate();
     }
 
-    /// <summary>Moves keyboard focus from the search box to the page, so single-key shortcuts work again.</summary>
+    /// <summary>Moves keyboard focus from the search box to the page.</summary>
     private void LeaveSearchBox()
     {
         if (SearchBox.IsKeyboardFocusWithin)
             PageHost.Focus();
     }
 
-    /// <summary>Single-key shortcuts, active whenever no text field has focus.</summary>
+    /// <summary>Handles a single-key shortcut.</summary>
     private static bool HandlePlainKey(Key key, MainViewModel model)
     {
         var player = model.Player;
@@ -274,10 +271,7 @@ public partial class MainWindow : Window
         }
     }
 
-    /// <summary>
-    /// The back and forward buttons of a mouse navigate pages. Clicking outside a text field leaves it,
-    /// as on the web, so single-key shortcuts work again.
-    /// </summary>
+    /// <summary>Handles the mouse's back and forward buttons, and leaves a text field when clicking outside it.</summary>
     private void OnAnyPointerPressed(object? sender, PointerPressedEventArgs e)
     {
         if (FocusManager?.GetFocusedElement() is TextBox field && Model.Shell.Dialog is null
@@ -301,10 +295,7 @@ public partial class MainWindow : Window
     private void OnDragOver(object? sender, DragEventArgs e) =>
         e.DragEffects = e.DataTransfer.Contains(DataFormat.File) ? DragDropEffects.Copy : DragDropEffects.None;
 
-    /// <summary>
-    /// Songs dragged from a list onto a playlist in the sidebar are added to it. Drag events come from
-    /// whichever part of a row is under the pointer, so the row is found from the pointer's position.
-    /// </summary>
+    /// <summary>Highlights the sidebar playlist under songs being dragged.</summary>
     private void OnPlaylistDragOver(object? sender, DragEventArgs e)
     {
         var item = PlaylistDropTarget(e);
@@ -313,7 +304,8 @@ public partial class MainWindow : Window
         e.Handled = true;
     }
 
-    /// <summary>Moving between the parts of a row also raises this; only leaving the list clears the highlight.</summary>
+    /// <summary>Clears the highlight when the drag leaves the playlist list.</summary>
+    /// <remarks>Moving between the parts of a row also raises this event.</remarks>
     private void OnPlaylistDragLeave(object? sender, DragEventArgs e)
     {
         if (!new Rect(PlaylistList.Bounds.Size).Contains(e.GetPosition(PlaylistList)))
@@ -342,7 +334,7 @@ public partial class MainWindow : Window
         dropTarget?.Classes.Add("drop");
     }
 
-    /// <summary>Dropping files or folders from a file manager plays them.</summary>
+    /// <summary>Plays files and folders dropped from a file manager.</summary>
     private void OnDrop(object? sender, DragEventArgs e)
     {
         var files = e.DataTransfer.TryGetFiles();

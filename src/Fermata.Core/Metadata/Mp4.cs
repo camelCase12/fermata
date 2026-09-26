@@ -3,8 +3,11 @@ using System.Text;
 
 namespace Fermata.Metadata;
 
-/// <summary>MPEG-4 audio (M4A, M4B, MP4): iTunes-style metadata items and the sound track's format.</summary>
-/// <remarks>Box layout per ISO/IEC 14496-12; metadata items per Apple's QuickTime File Format documentation.</remarks>
+/// <summary>Reads MPEG-4 audio files (M4A, M4B, MP4).</summary>
+/// <remarks>
+/// The iTunes-style metadata items and the sound track's format are read. Box layout per ISO/IEC 14496-12;
+/// metadata items per Apple's QuickTime File Format documentation.
+/// </remarks>
 internal static class Mp4
 {
     private readonly record struct Box(uint Type, long Start, long DataStart, long End);
@@ -81,7 +84,8 @@ internal static class Mp4
         return hdlr.End - hdlr.DataStart >= 12 && source.Read(hdlr.DataStart, data) == 12 ? FourCC(data[8..]) : 0;
     }
 
-    /// <summary>Duration from mvhd or mdhd: version, flags, times, then timescale and duration.</summary>
+    /// <summary>Reads the duration from an mvhd or mdhd box.</summary>
+    /// <remarks>The box holds the version, flags and times, then the timescale and duration.</remarks>
     private static double ReadMediaDuration(ByteSource source, Box box)
     {
         Span<byte> data = stackalloc byte[32];
@@ -108,7 +112,8 @@ internal static class Mp4
         return (double)duration / timescale;
     }
 
-    /// <summary>Fragmented files (DASH downloads) keep their length in mvex/mehd, in the movie timescale.</summary>
+    /// <summary>Reads the duration of a fragmented file from its mvex/mehd box.</summary>
+    /// <remarks>The duration is in the movie timescale.</remarks>
     private static double ReadFragmentDuration(ByteSource source, Box mehd, Box movie)
     {
         if (FindChild(source, movie.DataStart, movie.End, Mvhd) is not { } mvhd)
@@ -352,7 +357,8 @@ internal static class Mp4
         }
     }
 
-    /// <summary>Freeform items ("----") carry a mean (namespace), a name and data, e.g. MusicBrainz identifiers.</summary>
+    /// <summary>Reads a freeform item ("----").</summary>
+    /// <remarks>A freeform item carries a mean (namespace), a name and data, such as MusicBrainz identifiers.</remarks>
     private static void ReadFreeform(ByteSource source, Box item, AudioTags tags, TagReadOptions options)
     {
         string? name = null;

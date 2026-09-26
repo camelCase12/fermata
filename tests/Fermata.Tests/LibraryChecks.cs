@@ -185,7 +185,7 @@ internal static class LibraryChecks
         var paths = library.Tracks.Take(3).Select(t => t.Path).ToList();
         var playlist = store.Create("Trip", paths);
 
-        // Beside the music, entries are written relative to the playlist, so the folder can move.
+        // Beside the music, entries are written relative to the playlist.
         string beside = Path.Combine(root, "Trip.m3u8");
         PlaylistStore.ExportM3u(playlist, library, beside);
         string text = File.ReadAllText(beside);
@@ -201,7 +201,8 @@ internal static class LibraryChecks
         check.That(PlaylistStore.ReadM3u(away).Paths.SequenceEqual(paths), "absolute entries read back as the original paths");
         File.Delete(beside);
 
-        // What other players write: a byte order mark, CRLF, comments, streams, file URLs, backslashes.
+        // A playlist as other players write them, with a byte order mark, CRLF line ends, comments,
+        // streams, file URLs and backslashes.
         string first = library.Tracks.First(t => t.Title == "Opening").Path;
         string foreign = Path.Combine(root, "foreign.m3u");
         File.WriteAllText(foreign, "\uFEFF#EXTM3U\r\n#EXTINF:1,Stream\r\nhttp://radio.example/stream\r\n"

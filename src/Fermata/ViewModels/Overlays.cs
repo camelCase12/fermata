@@ -16,7 +16,7 @@ public sealed partial class Toast(string message, string? actionLabel, Action? a
     private void RunAction() => action?.Invoke();
 }
 
-/// <summary>Shows one toast at a time; a new one replaces the current one.</summary>
+/// <summary>Shows toasts, one at a time.</summary>
 public sealed partial class ToastService : ObservableObject
 {
     private readonly DispatcherTimer timer;
@@ -50,7 +50,7 @@ public sealed partial class ToastService : ObservableObject
     }
 }
 
-/// <summary>An in-window dialog: a question with a text field, a confirmation, or information.</summary>
+/// <summary>A dialog shown inside the window.</summary>
 public abstract partial class DialogViewModel : ObservableObject
 {
     public required string Title { get; init; }

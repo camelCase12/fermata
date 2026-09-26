@@ -1,6 +1,5 @@
 // Moves, clicks, drags and scrolls the pointer of a wlroots compositor through its virtual pointer
-// protocol, for driving Fermata in tools/isolated-session.sh. Unlike XTEST motion, which XWayland
-// ignores, this moves the compositor's own cursor, so X11 clients see real hovering and dragging.
+// protocol, for driving Fermata in tools/isolated-session.sh.
 //
 //   pointer move X Y
 //   pointer hover X Y MS               rest there for MS milliseconds, moving a pixel back and forth

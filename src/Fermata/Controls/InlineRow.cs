@@ -3,11 +3,7 @@ using Avalonia.Controls;
 
 namespace Fermata.Controls;
 
-/// <summary>
-/// Lays children out left to right, giving each only the width still left, so text in later children
-/// trims with an ellipsis. (A horizontal StackPanel offers unlimited width, so its text runs past its
-/// edge and under whatever sits beside it.)
-/// </summary>
+/// <summary>A panel that lays its children out left to right, giving each only the width still left.</summary>
 public sealed class InlineRow : Panel
 {
     protected override Size MeasureOverride(Size availableSize)

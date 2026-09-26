@@ -7,14 +7,11 @@ using Fermata.Services;
 
 namespace Fermata.Controls;
 
-/// <summary>
-/// Cover art that loads in the background at the size it is shown. Until the image arrives (or when
-/// there is none) it draws a gradient placeholder whose colours derive from the art's identity, so
-/// placeholders are stable and distinguishable rather than a wall of identical grey squares.
-/// </summary>
+/// <summary>Cover art that loads in the background at the size it is shown.</summary>
 /// <remarks>
-/// Rows in virtualized lists are recycled: when <see cref="Source"/> changes, the previous image is
-/// released at once, and a load that completes for an earlier source is discarded.
+/// Until the image arrives, or when there is none, a gradient placeholder derived from the art's identity
+/// is drawn. When <see cref="Source"/> changes, the previous image is released at once, and a load that
+/// completes for an earlier source is discarded.
 /// </remarks>
 public sealed class CoverArt : Control
 {
@@ -93,7 +90,7 @@ public sealed class CoverArt : Control
     protected override void OnSizeChanged(SizeChangedEventArgs e)
     {
         base.OnSizeChanged(e);
-        // A much larger size (a resized now-playing view) deserves a sharper decode.
+        // A much larger size gets a sharper decode.
         if (lease is not null && PixelSize() > requestedSize)
         {
             ReleaseImage();

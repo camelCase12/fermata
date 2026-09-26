@@ -13,7 +13,8 @@ internal static class LosslessFormats
     private static readonly int[] WavPackRates =
         [6000, 8000, 9600, 11025, 12000, 16000, 22050, 24000, 32000, 44100, 48000, 64000, 88200, 96000, 192000];
 
-    /// <summary>WavPack block header ("wvpk"). Specification: https://www.wavpack.com/WavPack5FileFormat.pdf</summary>
+    /// <summary>Reads a WavPack block header ("wvpk").</summary>
+    /// <remarks>Specification: https://www.wavpack.com/WavPack5FileFormat.pdf</remarks>
     public static void ReadWavPack(ByteSource source, AudioTags tags, long audioEnd)
     {
         Span<byte> header = stackalloc byte[32];
@@ -32,7 +33,7 @@ internal static class LosslessFormats
         SetDuration(tags, totalSamples, audioEnd);
     }
 
-    /// <summary>Monkey's Audio ("MAC "), both the current descriptor layout (3.98+) and the older one.</summary>
+    /// <summary>Reads a Monkey's Audio header ("MAC "), in the current descriptor layout (3.98+) or the older one.</summary>
     public static void ReadMonkeysAudio(ByteSource source, AudioTags tags, long audioEnd)
     {
         tags.Codec = "Monkey's Audio";
@@ -70,7 +71,7 @@ internal static class LosslessFormats
             SetDuration(tags, (long)(totalFrames - 1) * blocksPerFrame + finalFrameBlocks, audioEnd);
     }
 
-    /// <summary>True Audio ("TTA1"): format, channels, bits, sample rate, sample count.</summary>
+    /// <summary>Reads a True Audio header ("TTA1").</summary>
     public static void ReadTta(ByteSource source, long start, AudioTags tags, long audioEnd)
     {
         Span<byte> header = stackalloc byte[18];
@@ -83,7 +84,7 @@ internal static class LosslessFormats
         SetDuration(tags, BinaryPrimitives.ReadUInt32LittleEndian(header[14..]), audioEnd);
     }
 
-    /// <summary>Musepack stream version 7 ("MP+") and 8 ("MPCK").</summary>
+    /// <summary>Reads a Musepack stream of version 7 ("MP+") or 8 ("MPCK").</summary>
     public static void ReadMusepack(ByteSource source, AudioTags tags, long audioEnd)
     {
         tags.Codec = "Musepack";
@@ -140,10 +141,11 @@ internal static class LosslessFormats
         return value;
     }
 
-    /// <summary>
-    /// Sony DSD stream files: a "DSD " chunk pointing to an ID3v2 tag at the end, then "fmt ".
+    /// <summary>Reads a Sony DSD stream file.</summary>
+    /// <remarks>
+    /// The file starts with a "DSD " chunk that points to an ID3v2 tag at the end, followed by "fmt ".
     /// Specification: https://dsd-guide.com/sites/default/files/white-papers/DSFFileFormatSpec_E.pdf
-    /// </summary>
+    /// </remarks>
     public static void ReadDsf(ByteSource source, AudioTags tags, TagReadOptions options)
     {
         Span<byte> data = stackalloc byte[80];

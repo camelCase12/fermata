@@ -85,13 +85,13 @@ internal static class QueueChecks
         check.That(queue.Current == playing, "turning shuffle off keeps the playing entry");
         check.Equal(queue.QueuedOrder.ToList().IndexOf(playing!), queue.CurrentIndex, "and continues from it in queued order");
 
-        // Shuffle play from nothing: a random start, every entry once.
+        // Shuffle play from nothing starts at random and plays every entry once.
         queue.SetShuffle(true);
         queue.Replace(tracks, -1, null);
         check.Equal(0, queue.CurrentIndex, "shuffle play starts at the first shuffled entry");
         check.Equal(20, queue.Entries.Distinct().Count(), "every entry appears once");
 
-        // Repeat-all cycles: each is a full permutation and never starts with the entry that just ended.
+        // Each repeat-all cycle is a full permutation that never starts with the entry that just ended.
         queue.Repeat = RepeatMode.All;
         QueueEntry? previousLast = null;
         bool predictions = true;
@@ -155,7 +155,7 @@ internal static class QueueChecks
         check.Equal(queue.CurrentIndex, restored.CurrentIndex, "restored current index");
     }
 
-    /// <summary>Random operations must preserve the queue's invariants and its promise that peek predicts advance.</summary>
+    /// <summary>Random operations must preserve the queue's invariants.</summary>
     private static void Fuzz(Checks check)
     {
         var random = new Random(12345);

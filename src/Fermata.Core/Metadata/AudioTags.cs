@@ -13,10 +13,11 @@ public sealed class AudioTags
     /// <summary>The artist credit exactly as tagged, e.g. "Daft Punk feat. Pharrell Williams".</summary>
     public string? Artist { get; set; }
 
-    /// <summary>
-    /// Individual performers: explicit ARTISTS values, the separate values of a multi-valued
-    /// artist field, or names split from the credit ("A feat. B"). Completed by <see cref="Complete"/>.
-    /// </summary>
+    /// <summary>The individual performers.</summary>
+    /// <remarks>
+    /// They come from explicit ARTISTS values, the separate values of a multi-valued artist field, or
+    /// names split from the credit ("A feat. B"), and are completed by <see cref="Complete"/>.
+    /// </remarks>
     public List<string> ArtistNames { get; } = [];
 
     /// <summary>Raw values of the artist field when a format stores several.</summary>

@@ -48,7 +48,7 @@ internal static class CrashLog
         }
         catch
         {
-            // A crash handler must not throw. Without a log the crash still ends the process as before.
+            // A crash handler must not throw.
             return null;
         }
     }

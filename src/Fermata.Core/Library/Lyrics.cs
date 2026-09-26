@@ -18,7 +18,7 @@ public sealed class Lyrics
     public IReadOnlyList<LyricLine> Lines { get; }
     public bool IsSynced { get; }
 
-    /// <summary>Where the lyrics came from: "file.lrc" or "embedded".</summary>
+    /// <summary>Where the lyrics came from, either "file.lrc" or "embedded".</summary>
     public string Source { get; }
 
     /// <summary>Index of the line sung at <paramref name="position"/>, or -1 before the first line.</summary>
@@ -43,10 +43,12 @@ public sealed class Lyrics
         return found;
     }
 
-    /// <summary>
-    /// Finds lyrics for a track: an .lrc file beside it, then lyrics embedded in its tags,
-    /// then a .txt file beside it. Returns null when there are none.
-    /// </summary>
+    /// <summary>Finds the lyrics of a track.</summary>
+    /// <remarks>
+    /// An .lrc file beside the track comes first, then lyrics embedded in its tags, then a .txt file
+    /// beside it.
+    /// </remarks>
+    /// <returns>The lyrics, or null when there are none.</returns>
     public static Lyrics? Load(Track track)
     {
         string directory = track.Directory;

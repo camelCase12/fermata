@@ -4,10 +4,11 @@ using Microsoft.Win32.SafeHandles;
 
 namespace Fermata.Metadata;
 
-/// <summary>
-/// Random-access bytes for tag parsing: a file, or an in-memory copy of a tag that had to be
-/// decoded first (for example an unsynchronized ID3v2 tag).
-/// </summary>
+/// <summary>Random-access bytes for tag parsing.</summary>
+/// <remarks>
+/// A source is a file, or an in-memory copy of a tag that had to be decoded first, such as an
+/// unsynchronized ID3v2 tag.
+/// </remarks>
 internal abstract class ByteSource
 {
     public abstract long Length { get; }
@@ -46,10 +47,8 @@ internal abstract class ByteSource
     }
 }
 
-/// <summary>
-/// A file read with positioned reads. Small reads are served from a window so walking headers,
-/// frames and boxes costs few system calls; large reads bypass the window.
-/// </summary>
+/// <summary>A file read with positioned reads.</summary>
+/// <remarks>Small reads are served from a window, and large reads bypass it.</remarks>
 internal sealed class FileByteSource : ByteSource, IDisposable
 {
     private const int WindowSize = 16 * 1024;
@@ -123,7 +122,7 @@ internal sealed class MemoryByteSource(ReadOnlyMemory<byte> data) : ByteSource
 
 internal static class TagLimits
 {
-    /// <summary>Largest single text or picture field accepted from a file (corrupt sizes are rejected, not allocated).</summary>
+    /// <summary>The largest single text or picture field accepted from a file.</summary>
     public const int MaxFieldBytes = 64 * 1024 * 1024;
 
     /// <summary>Largest text field read eagerly; longer ones are skipped unless they are lyrics or pictures.</summary>

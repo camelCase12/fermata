@@ -2,8 +2,8 @@ namespace Fermata.Text;
 
 /// <summary>Splits artist credits such as "Daft Punk feat. Pharrell Williams" into performer names.</summary>
 /// <remarks>
-/// Only unambiguous separators are used. Ampersands and commas are kept because they are part of
-/// many single names ("Simon &amp; Garfunkel", "Earth, Wind &amp; Fire").
+/// Only unambiguous separators split a credit. Ampersands and commas do not, as in
+/// "Simon &amp; Garfunkel" and "Earth, Wind &amp; Fire".
 /// </remarks>
 public static class ArtistCredit
 {
@@ -13,10 +13,11 @@ public static class ArtistCredit
         " (feat. ", " (ft. ", " [feat. ",
     ];
 
-    /// <summary>
-    /// How a credit reads on screen: as written ("A feat. B", "Earth, Wind &amp; Fire"), except that the
-    /// separators tags use for lists ("A; B", "A / B") read as a list: "A &amp; B", "A, B &amp; C".
-    /// </summary>
+    /// <summary>How a credit reads on screen.</summary>
+    /// <remarks>
+    /// A credit reads as written, as in "A feat. B", except that list separators from tags, as in "A; B"
+    /// and "A / B", read as a list such as "A &amp; B" or "A, B &amp; C".
+    /// </remarks>
     public static string Display(string credit)
     {
         if (!credit.Contains("; ", StringComparison.Ordinal) && !credit.Contains(" / ", StringComparison.Ordinal))

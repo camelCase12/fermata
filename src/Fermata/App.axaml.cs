@@ -58,7 +58,7 @@ public partial class App : Application
             if (Instance is { } instance)
                 instance.MessageReceived += lines => Dispatcher.UIThread.Post(() => HandleRequests(lines, window));
             HandleTerminationSignals(desktop);
-            // Every shutdown ends here. Closing the main window skips ShutdownRequested, so saves are flushed here.
+            // Every shutdown ends here, including closing the main window, which does not raise ShutdownRequested.
             desktop.Exit += (_, _) =>
             {
                 services.Shutdown();
@@ -73,10 +73,8 @@ public partial class App : Application
         base.OnFrameworkInitializationCompleted();
     }
 
-    /// <summary>
-    /// SIGTERM (logging out, kill) and SIGINT (Ctrl+C in a terminal) close Fermata the normal way, so the
-    /// queue, position and window size are saved. A second signal exits at once.
-    /// </summary>
+    /// <summary>Closes Fermata normally on SIGTERM and SIGINT.</summary>
+    /// <remarks>A second signal exits at once.</remarks>
     private void HandleTerminationSignals(IClassicDesktopStyleApplicationLifetime desktop)
     {
         int received = 0;
@@ -101,7 +99,7 @@ public partial class App : Application
             HandleRequests(StartupRequests, null);
     }
 
-    /// <summary>Requests from another launch: files to play, commands, or just raising the window.</summary>
+    /// <summary>Carries out requests sent by another launch.</summary>
     private static void HandleRequests(IReadOnlyList<string> lines, MainWindow? window)
     {
         if (Services is not { } services || Shell is not { } shell)
@@ -172,7 +170,8 @@ public partial class App : Application
             shell.Play(tracks, 0, new QueueSource("files", SourceTitle(paths, tracks)));
     }
 
-    /// <summary>What opened files play from: their album when they share one, else the folder or the number of files.</summary>
+    /// <summary>The name of the source that opened files play from.</summary>
+    /// <returns>The album the files share, else their folder, else the number of files.</returns>
     private static string SourceTitle(IReadOnlyList<string> paths, IReadOnlyList<Track> tracks)
     {
         if (tracks.Count == 1)

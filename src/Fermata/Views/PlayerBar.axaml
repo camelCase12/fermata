@@ -22,8 +22,7 @@
 
   <Border Background="{DynamicResource SidebarBrush}" BorderBrush="{DynamicResource DividerBrush}" BorderThickness="0,1,0,0">
     <Grid RowDefinitions="14,*" Height="92">
-      <!-- Progress along the top; thickens under the pointer. It stays inside the bar, so the handle is
-           never cut off at the bar's edge and progress ticks never redraw the page above. -->
+      <!-- Progress along the top of the bar -->
       <controls:SeekBar Name="Progress" AutomationProperties.Name="Position" Value="{Binding Progress}" Thickness="3" Height="14"
                         FillBrush="{DynamicResource AccentBrush}" IsEnabled="{Binding HasTrack}" />
       <Canvas Name="HoverLayer" IsHitTestVisible="False" ClipToBounds="False">

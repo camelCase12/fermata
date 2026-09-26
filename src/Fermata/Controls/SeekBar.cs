@@ -6,14 +6,7 @@ using Avalonia.Media;
 
 namespace Fermata.Controls;
 
-/// <summary>
-/// A thin horizontal bar for playback progress and volume: click or drag to set a value. It thickens
-/// and shows a handle under the pointer.
-/// </summary>
-/// <remarks>
-/// Progress arrives many times per second while playing, so the bar only redraws when the fill would
-/// move by at least one physical pixel.
-/// </remarks>
+/// <summary>A thin horizontal bar for playback progress and volume, set by clicking or dragging.</summary>
 public sealed class SeekBar : Control
 {
     public static readonly StyledProperty<double> ValueProperty =
@@ -28,7 +21,7 @@ public sealed class SeekBar : Control
     public static readonly StyledProperty<double> ThicknessProperty =
         AvaloniaProperty.Register<SeekBar, double>(nameof(Thickness), 3);
 
-    /// <summary>Always show the handle (the volume bar), not only on hover.</summary>
+    /// <summary>Whether the handle is always shown, not only on hover.</summary>
     public static readonly StyledProperty<bool> AlwaysShowHandleProperty =
         AvaloniaProperty.Register<SeekBar, bool>(nameof(AlwaysShowHandle));
 
@@ -88,7 +81,7 @@ public sealed class SeekBar : Control
     /// <summary>Raised when the user releases the bar at a new value.</summary>
     public event EventHandler<double>? ValueCommitted;
 
-    /// <summary>Raised continuously while dragging (the volume bar applies it live).</summary>
+    /// <summary>Raised continuously while dragging.</summary>
     public event EventHandler<double>? ValueDragged;
 
     private double Shown => dragging ? dragValue : Math.Clamp(Value, 0, 1);
@@ -199,7 +192,7 @@ public sealed class SeekBar : Control
         double y = (bounds.Height - thickness) / 2;
         var track = new Rect(0, y, bounds.Width, thickness);
         var radius = thickness / 2;
-        // Transparent hit area across the whole height, so the thin bar is easy to grab.
+        // The transparent fill makes the whole height respond to the pointer.
         context.FillRectangle(Brushes.Transparent, bounds);
         if (TrackBrush is { } trackBrush)
             context.DrawRectangle(trackBrush, null, new RoundedRect(track, radius));

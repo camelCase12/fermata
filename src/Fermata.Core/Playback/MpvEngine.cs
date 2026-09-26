@@ -4,17 +4,15 @@ using System.Runtime.InteropServices;
 
 namespace Fermata.Playback;
 
-/// <summary>
-/// Audio playback through libmpv: every format FFmpeg decodes, gapless transitions, ReplayGain and
-/// PipeWire/PulseAudio/ALSA output. Video, scripts, user configuration and input handling are disabled.
-/// </summary>
+/// <summary>The audio engine that plays through libmpv.</summary>
 /// <remarks>
-/// mpv reports events through a wakeup callback on one of its own threads. The callback only posts a
-/// drain to the owner's <see cref="SynchronizationContext"/>, so all state changes and all
-/// <see cref="EventRaised"/> handlers run on the owner's thread.
+/// Video, scripts, user configuration and input handling are disabled. mpv reports events through a
+/// wakeup callback on one of its own threads, and the callback posts a drain to the owner's
+/// <see cref="SynchronizationContext"/>, so state changes and <see cref="EventRaised"/> handlers run on
+/// the owner's thread.
 /// <para>
-/// Gapless playback uses mpv's internal playlist, which Fermata keeps at no more than two items: the
-/// current one and the preloaded next one. Each item is identified by mpv's playlist entry id.
+/// mpv's internal playlist holds at most two items, the current one and the preloaded next one. Each item
+/// is identified by mpv's playlist entry id.
 /// </para>
 /// </remarks>
 public sealed unsafe class MpvEngine : IAudioEngine
@@ -29,9 +27,9 @@ public sealed unsafe class MpvEngine : IAudioEngine
     private long currentId = -1;
     private IReadOnlyList<AudioDevice> devices = [];
 
-    /// <param name="context">Where events are raised: the owner's thread.</param>
+    /// <param name="context">The owner's thread, where events are raised.</param>
     /// <param name="clientName">Application name shown by PipeWire/PulseAudio.</param>
-    /// <param name="audioOutput">mpv audio output driver; "null" plays silently (tests).</param>
+    /// <param name="audioOutput">The mpv audio output driver. "null" plays silently.</param>
     public MpvEngine(SynchronizationContext context, string clientName = "Fermata", string? audioOutput = null)
     {
         this.context = context;
@@ -59,15 +57,14 @@ public sealed unsafe class MpvEngine : IAudioEngine
             ("vid", "no"), ("video", "no"), ("audio-display", "no"), ("sub-auto", "no"), ("audio-file-auto", "no"),
             ("cover-art-auto", "no"), ("input-default-bindings", "no"), ("input-builtin-bindings", "no"),
             ("input-vo-keyboard", "no"), ("keep-open", "no"),
-            // mpv's own scripts (on-screen controller, console, stats…) each run a Lua interpreter on
-            // a thread of their own; a library player needs none of them.
+            // mpv's own scripts, such as the on-screen controller and the console, are not loaded.
             ("load-scripts", "no"), ("ytdl", "no"), ("osc", "no"), ("load-stats-overlay", "no"),
             ("load-console", "no"), ("load-select", "no"), ("load-positioning", "no"), ("load-commands", "no"),
             ("load-context-menu", "no"), ("load-auto-profiles", "no"),
             ("gapless-audio", "weak"), ("prefetch-playlist", "yes"), ("volume-max", "100"),
             ("audio-client-name", clientName), ("replaygain-clip", "no"), ("replaygain-fallback", "0"),
         ];
-        // Options unknown to an older mpv are skipped; they only switch off features.
+        // An older mpv skips options it does not know. They only switch features off.
         foreach (var (name, value) in options)
             LibMpv.SetOptionString(handle, name, value);
         if (!string.IsNullOrEmpty(audioOutput))
@@ -179,7 +176,6 @@ public sealed unsafe class MpvEngine : IAudioEngine
 
     public void Seek(TimeSpan position)
     {
-        // "exact" asks for the precise position on every mpv version, instead of the nearest seek point.
         if (handle != 0)
             LibMpv.Run(handle, ["seek", position.TotalSeconds.ToString("0.###", CultureInfo.InvariantCulture), "absolute+exact"]);
     }
@@ -210,7 +206,7 @@ public sealed unsafe class MpvEngine : IAudioEngine
 
     private void Drain()
     {
-        // Clear the flag first: a wakeup that arrives while draining schedules another drain.
+        // The flag is cleared first, so a wakeup that arrives while draining schedules another drain.
         Volatile.Write(ref drainPending, 0);
         while (handle != 0)
         {
@@ -324,7 +320,7 @@ public sealed unsafe class MpvEngine : IAudioEngine
     }
 }
 
-/// <summary>Stands in when no audio backend is available, so the library remains usable.</summary>
+/// <summary>The engine used when no audio backend is available.</summary>
 public sealed class UnavailableEngine(string reason) : IAudioEngine
 {
     public event Action<EngineEvent>? EventRaised { add { } remove { } }

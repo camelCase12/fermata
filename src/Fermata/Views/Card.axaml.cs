@@ -7,10 +7,7 @@ using Fermata.ViewModels;
 
 namespace Fermata.Views;
 
-/// <summary>
-/// A tile for an album, artist, mix or playlist: cover, name and a short description. Clicking opens
-/// it; the play button on hover plays it; right-click offers queue and playlist actions.
-/// </summary>
+/// <summary>A tile for an album, artist, mix or playlist.</summary>
 public partial class Card : UserControl
 {
     public Card()

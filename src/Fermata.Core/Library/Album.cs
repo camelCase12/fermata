@@ -2,7 +2,8 @@ using Fermata.Text;
 
 namespace Fermata.Library;
 
-/// <summary>A release: tracks sharing an album title and folder, in disc and track order.</summary>
+/// <summary>An album in the library.</summary>
+/// <remarks>Its tracks share an album title and folder, and are in disc and track order.</remarks>
 public sealed class Album
 {
     public const string VariousArtists = "Various Artists";
@@ -52,14 +53,14 @@ public sealed class Album
     public IReadOnlyList<Track> Tracks { get; }
     public TimeSpan Duration { get; }
 
-    /// <summary>The newest addition among its tracks, so a newly completed album counts as new.</summary>
+    /// <summary>When the album's most recently added track was added.</summary>
     public DateTime Added { get; }
 
     public int DiscCount { get; }
     public string Directory { get; }
     public ArtSource? Art { get; }
 
-    /// <summary>Folded sort keys; compilations sort after named artists.</summary>
+    /// <summary>The folded sort keys. Compilations sort after named artists.</summary>
     public string SortTitle { get; }
     public string SortArtist { get; }
 
@@ -76,10 +77,11 @@ public sealed class Album
         return result;
     }
 
-    /// <summary>
-    /// The tagged album artist when one exists; otherwise the shared performer; otherwise
-    /// the album is a compilation by various artists.
-    /// </summary>
+    /// <summary>Decides the album artist and whether the album is a compilation.</summary>
+    /// <remarks>
+    /// The artist is the tagged album artist, else the performer all tracks share. Without either, the
+    /// album is a compilation by various artists.
+    /// </remarks>
     private static (string Artist, bool Compilation) DecideArtist(List<Track> tracks)
     {
         string? tagged = MostCommon(tracks, t => t.AlbumArtist);
@@ -141,7 +143,7 @@ public sealed class Album
     }
 }
 
-/// <summary>A performer, with their own albums, other releases they appear on, and all their tracks.</summary>
+/// <summary>A performer in the library.</summary>
 public sealed class Artist
 {
     internal Artist(string name, List<Album> albums, List<Album> appearsOn, List<Track> tracks)

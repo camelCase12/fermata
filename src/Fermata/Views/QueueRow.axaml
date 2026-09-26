@@ -26,7 +26,7 @@
     <Style Selector="views|QueueRow.current Border#PlayingOverlay">
       <Setter Property="IsVisible" Value="True" />
     </Style>
-    <!-- Played entries keep readable text: a dimmer title and faded art mark them. -->
+    <!-- Played entries. -->
     <Style Selector="views|QueueRow.played TextBlock#Title">
       <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
       <Setter Property="FontWeight" Value="Normal" />
@@ -42,7 +42,7 @@
     </Style>
   </UserControl.Styles>
   <DockPanel>
-  <!-- Marks where the songs you chose end and the songs autoplay added begin. -->
+  <!-- The divider above the first entry added by autoplay. -->
   <Border Name="AutoplayDivider" DockPanel.Dock="Top" Padding="10,14,10,6">
     <Grid ColumnDefinitions="Auto,*">
       <TextBlock Text="Added by autoplay" Classes="caption" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />

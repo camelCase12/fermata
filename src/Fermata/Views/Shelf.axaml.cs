@@ -3,7 +3,7 @@ using Avalonia.Controls;
 
 namespace Fermata.Views;
 
-/// <summary>A titled, horizontally scrolling row of cards with arrow buttons (home and detail pages).</summary>
+/// <summary>A titled, horizontally scrolling row of cards.</summary>
 public partial class Shelf : UserControl
 {
     public static readonly StyledProperty<string?> TitleProperty = AvaloniaProperty.Register<Shelf, string?>(nameof(Title));
@@ -55,7 +55,7 @@ public partial class Shelf : UserControl
         }
     }
 
-    /// <summary>Scrolls by most of a page, so the last visible card stays in view as the new first one.</summary>
+    /// <summary>Scrolls so that the last visible card becomes the first.</summary>
     private void ScrollBy(int direction)
     {
         double step = Math.Max(196, Scroller.Viewport.Width - 196);

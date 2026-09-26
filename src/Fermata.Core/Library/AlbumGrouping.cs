@@ -3,14 +3,10 @@ using Fermata.Text;
 
 namespace Fermata.Library;
 
-/// <summary>
-/// Decides which tracks form an album: the same album title in the same album folder
-/// (disc folders such as "CD2" count as their parent), refined by a MusicBrainz release ID.
-/// </summary>
+/// <summary>Decides which tracks form an album.</summary>
 /// <remarks>
-/// Grouping by folder keeps two copies of an album (FLAC and MP3, say) apart and keeps unrelated
-/// albums that share a generic title ("Greatest Hits") apart, while tags that differ between tracks
-/// of one release (a featured artist, a missing album artist) cannot split it.
+/// Tracks form one album when they share an album title and an album folder, where a disc folder such as
+/// "CD2" counts as its parent. A MusicBrainz release ID refines the grouping.
 /// </remarks>
 public static class AlbumGrouping
 {
@@ -26,7 +22,7 @@ public static class AlbumGrouping
         return key.ToString();
     }
 
-    /// <summary>The folder that holds an album: the file's folder, or its parent for disc folders.</summary>
+    /// <summary>The folder that holds a file's album, which is the file's folder or, for a disc folder, its parent.</summary>
     public static string AlbumDirectory(string path)
     {
         string directory = Path.GetDirectoryName(path) ?? "";

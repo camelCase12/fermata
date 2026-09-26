@@ -6,9 +6,8 @@
 //   xinput wheel X Y N          scroll N notches down (negative: up) with the pointer at X Y
 //   xinput key KEYSYM [N]       press a key N times (e.g. Page_Down, space, ctrl+End)
 //
-// XWayland quirks: it ignores synthesized pointer motion (the pointer stays where the session
-// put it, the centre of the screen), and it drops the first synthesized key event after a window
-// maps, so press a harmless key (xinput key Shift_L) before the first real shortcut.
+// XWayland ignores synthesized pointer motion, and drops the first synthesized key event after a
+// window maps, so send a harmless key (xinput key Shift_L) before the first real shortcut.
 #include <X11/Xlib.h>
 #include <X11/extensions/XTest.h>
 #include <stdio.h>

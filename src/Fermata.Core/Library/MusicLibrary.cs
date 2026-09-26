@@ -2,11 +2,11 @@ using Fermata.Storage;
 
 namespace Fermata.Library;
 
-/// <summary>
-/// Owns the library for the application: loads the cached index at startup, scans music folders in
-/// the background, watches them for changes, and publishes each new <see cref="LibrarySnapshot"/>
-/// on the owner's thread.
-/// </summary>
+/// <summary>The application's music library.</summary>
+/// <remarks>
+/// It loads the cached index at startup, scans the music folders in the background, watches them for
+/// changes, and publishes each new <see cref="LibrarySnapshot"/> on the owner's thread.
+/// </remarks>
 public sealed class MusicLibrary : IDisposable
 {
     private readonly AppPaths paths;
@@ -44,7 +44,8 @@ public sealed class MusicLibrary : IDisposable
     /// <summary>Raised on the owner's thread when a scan fails.</summary>
     public event Action<Exception>? ScanFailed;
 
-    /// <summary>Loads the cached index (off the calling thread) and publishes it; returns false when there is no usable cache.</summary>
+    /// <summary>Loads the cached index off the calling thread and publishes it.</summary>
+    /// <returns>False when there is no usable cache.</returns>
     public async Task<bool> LoadCacheAsync(IReadOnlyList<string> musicFolders)
     {
         folders = Normalize(musicFolders);
@@ -132,7 +133,8 @@ public sealed class MusicLibrary : IDisposable
             }
             catch (Exception error) when (error is IOException or ArgumentException or UnauthorizedAccessException)
             {
-                // Too many folders for the inotify limit, or unreadable: rescans still happen on request.
+                // Folders beyond the inotify limit, or unreadable ones, are not watched. Rescans still
+                // happen on request.
             }
         }
     }
@@ -154,7 +156,7 @@ public sealed class MusicLibrary : IDisposable
         RequestRescan();
     }
 
-    /// <summary>Waits for a quiet period so copying an album triggers one scan, not hundreds.</summary>
+    /// <summary>Schedules a rescan after a quiet period.</summary>
     private void RequestRescan() => rescanTimer.Change(TimeSpan.FromSeconds(2), Timeout.InfiniteTimeSpan);
 
     /// <summary>The search index for the current snapshot, built once per snapshot off the UI thread.</summary>
@@ -178,12 +180,7 @@ public sealed class MusicLibrary : IDisposable
             ReleaseMemorySoon();
     }
 
-    /// <summary>
-    /// Building or loading a large index leaves the previous one, and the work that made it, behind as
-    /// garbage. One compacting collection shortly afterwards (a pause of some tens of milliseconds)
-    /// returns that memory to the system, instead of the process staying at its peak size until
-    /// allocation pressure happens to trigger a full collection.
-    /// </summary>
+    /// <summary>Compacts the heap shortly after a large index is built or loaded.</summary>
     private void ReleaseMemorySoon()
     {
         if (Interlocked.Exchange(ref releaseScheduled, 1) == 1)

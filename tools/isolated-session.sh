@@ -1,9 +1,7 @@
 #!/usr/bin/env bash
-# Runs a command in a private, headless graphical session: a headless sway compositor with
-# XWayland, a private D-Bus session bus and private XDG directories. Nothing reaches the real
-# desktop, audio output defaults to silence (FERMATA_AUDIO_OUTPUT=null), and the user's Fermata
-# settings and library are untouched. Inside, DISPLAY points at XWayland and WAYLAND_DISPLAY at
-# sway, so `grim` can take screenshots.
+# Runs a command in a private headless sway session with XWayland, its own D-Bus session bus and
+# XDG directories, and silent audio (FERMATA_AUDIO_OUTPUT=null). Inside, DISPLAY points at XWayland
+# and WAYLAND_DISPLAY at sway.
 #
 #   tools/isolated-session.sh COMMAND [ARGS…]
 #

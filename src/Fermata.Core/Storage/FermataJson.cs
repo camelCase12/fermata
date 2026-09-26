@@ -4,7 +4,7 @@ using Fermata.Library;
 
 namespace Fermata.Storage;
 
-/// <summary>Source-generated JSON for everything Fermata saves (no reflection, so NativeAOT-safe).</summary>
+/// <summary>Source-generated JSON serialization for everything Fermata saves.</summary>
 [JsonSourceGenerationOptions(
     WriteIndented = true,
     PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase,
@@ -64,8 +64,7 @@ public sealed partial class FermataJson : JsonSerializerContext
         }
         catch (Exception error) when (error is IOException or UnauthorizedAccessException)
         {
-            // The file stays where it is. Saving uses a rename in the same folder, which fails for the
-            // same reasons, so the unreadable file is not replaced either.
+            // The file could not be renamed and stays where it is.
             return new(null, path);
         }
     }

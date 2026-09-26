@@ -38,7 +38,7 @@ public partial class SearchView : UserControl
             ShowTopResult();
     }
 
-    /// <summary>The top result can be a song, album or artist; each describes itself differently.</summary>
+    /// <summary>Shows the top result, which can be a song, album or artist.</summary>
     private void ShowTopResult()
     {
         var library = App.Shell?.Library;

@@ -7,10 +7,10 @@ namespace Fermata.Library;
 /// Builds radio stations, autoplay continuations and mixes from the local library and listening history.
 /// </summary>
 /// <remarks>
-/// Similarity comes from shared artists, album artists and genres and from release years; liked and
-/// often-played tracks are favoured, disliked ones never chosen, and recently played or often skipped
-/// ones held back. Candidates are then drawn at random in proportion to their score, with limits per
-/// artist and album, so a station feels varied rather than sorted.
+/// Similarity comes from shared artists, album artists and genres and from release years. Liked and
+/// often-played tracks are favoured, disliked ones are never chosen, and recently played or often
+/// skipped ones are held back. Candidates are drawn at random in proportion to their score, with limits
+/// per artist and album.
 /// </remarks>
 public sealed class Recommender
 {
@@ -25,7 +25,7 @@ public sealed class Recommender
         this.random = random ?? Random.Shared;
     }
 
-    /// <summary>A station around one track: the track first, then similar ones.</summary>
+    /// <summary>A station around one track, which plays first, followed by similar ones.</summary>
     public List<Track> Radio(Track seed, int count = 50)
     {
         var result = new List<Track>(count) { seed };
@@ -38,7 +38,6 @@ public sealed class Recommender
     {
         if (seeds.Count == 0)
             return [];
-        // A handful of representative seeds keeps scoring cheap for large collections.
         var sample = seeds.Count <= 8 ? seeds : seeds.OrderBy(_ => random.Next()).Take(8).ToList();
         return Draw(sample, count, exclude: new HashSet<string>());
     }

@@ -9,7 +9,7 @@ permissions:
 
 jobs:
   release:
-    # The oldest supported Ubuntu, so the executable runs on distributions with an older glibc.
+    # The oldest supported Ubuntu, for the widest glibc compatibility.
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v5

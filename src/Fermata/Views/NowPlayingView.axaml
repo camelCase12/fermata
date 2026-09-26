@@ -41,7 +41,7 @@
   </UserControl.Styles>
 
   <Grid Background="{DynamicResource BackgroundBrush}">
-    <!-- The cover's colours, dimmed and dithered, behind everything; a little darker towards the bottom. -->
+    <!-- The cover's colours behind everything. -->
     <controls:AmbientBackdrop Covers="{Binding Player.Art, Converter={x:Static views:Converters.OneCover}}"
                               FadeStart="0.3" FadeEnd="1" FadeAmount="0.55" />
     <Grid ColumnDefinitions="*,460" RowDefinitions="Auto,*" Margin="28,16,28,20">
@@ -51,8 +51,7 @@
 
       <!-- Art and title -->
       <Grid Grid.Row="1" RowDefinitions="*,Auto" Margin="20,0,48,0">
-        <!-- Not clipped: the Viewbox would otherwise cut the shadow off at the cover's square edge, leaving
-             only the bits inside the rounded corners (which then looked square). -->
+        <!-- Not clipped, so the cover's shadow shows. -->
         <Viewbox Stretch="Uniform" MaxWidth="620" MaxHeight="620" VerticalAlignment="Center" ClipToBounds="False">
           <Border Name="Cover" Width="620" Height="620" CornerRadius="12" BoxShadow="{StaticResource CoverShadow}" Cursor="Hand">
             <controls:CoverArt Source="{Binding Player.Art}" PlaceholderKey="{Binding Player.Title}" Radius="12" />

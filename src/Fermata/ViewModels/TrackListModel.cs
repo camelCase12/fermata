@@ -17,10 +17,7 @@ public enum TrackListStyle
     Artist,
 }
 
-/// <summary>
-/// A list of tracks and where they came from. Playing from it queues the whole list, starting at the
-/// chosen track, so Next continues through the list the listener was looking at.
-/// </summary>
+/// <summary>A list of tracks and the source they are played from.</summary>
 public sealed partial class TrackListModel(Shell shell, QueueSource source, TrackListStyle style = TrackListStyle.Library) : ObservableObject
 {
     public Shell Shell { get; } = shell;
@@ -31,20 +28,18 @@ public sealed partial class TrackListModel(Shell shell, QueueSource source, Trac
     [ObservableProperty]
     public partial IReadOnlyList<Track> Tracks { get; set; } = [];
 
-    /// <summary>The playlist shown, which enables removing and reordering entries.</summary>
+    /// <summary>The playlist shown, when the list is one.</summary>
     public Playlist? Playlist { get; init; }
 
-    /// <summary>
-    /// For a playlist, the position in the playlist of each listed track. They differ when a playlist
-    /// names files that are no longer in the library, which are not listed.
-    /// </summary>
+    /// <summary>The position in the playlist of each listed track.</summary>
+    /// <remarks>Files that are no longer in the library are not listed, so the positions can skip.</remarks>
     public IReadOnlyList<int>? PlaylistIndices { get; set; }
 
-    /// <summary>Reordering by dragging is only meaningful for a playlist shown in its own order.</summary>
+    /// <summary>Whether the tracks can be reordered by dragging.</summary>
     [ObservableProperty]
     public partial bool CanReorder { get; set; }
 
-    /// <summary>Column titles are shown above covers and columns, not above an album's numbered list.</summary>
+    /// <summary>Whether column titles are shown.</summary>
     public bool ShowHeader => Style != TrackListStyle.Album;
 
     public void PlayAt(int index)

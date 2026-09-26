@@ -3,23 +3,18 @@ using Fermata.Library;
 
 namespace Fermata.Playback;
 
-/// <summary>
-/// Plays the <see cref="PlayQueue"/> through an <see cref="IAudioEngine"/>. The queue decides what
-/// plays; the player keeps the engine in step with it and turns engine events into queue movement.
-/// </summary>
+/// <summary>Plays the <see cref="PlayQueue"/> through an <see cref="IAudioEngine"/>.</summary>
 /// <remarks>
 /// <para>
-/// Every item handed to the engine is remembered with its engine id, both the playing item and the
-/// one preloaded for gapless playback. When the listener edits the queue, toggles shuffle or changes
-/// repeat, the preloaded item is replaced at once, so the engine always holds the entry the queue
-/// says comes next.
+/// The queue decides what plays, and the player keeps the engine in step with it. The player remembers
+/// the engine ids of the playing item and of the item preloaded for gapless playback, and replaces the
+/// preloaded item whenever the queue's next entry changes.
 /// </para>
 /// <para>
-/// The engine runs independently and may already have moved on to the preloaded item when a queue
-/// edit arrives. Its events therefore carry ids: an event for an item that is no longer relevant is
-/// ignored, and a preloaded item that starts after the queue changed is reconciled with the queue
-/// (<see cref="PlayQueue.AdvanceTo"/>) instead of being trusted blindly. Everything runs on one
-/// thread, so no two decisions interleave.
+/// The engine runs independently and can start the preloaded item before a queue edit reaches it.
+/// Events for items that are no longer relevant are ignored, and a preloaded item that starts after the
+/// queue changed is reconciled with the queue through <see cref="PlayQueue.AdvanceTo"/>. Everything runs
+/// on one thread.
 /// </para>
 /// </remarks>
 public sealed class Player : IDisposable
@@ -32,15 +27,14 @@ public sealed class Player : IDisposable
     private readonly Stopwatch listening = new();
     private EngineItem? playing;
     private EngineItem? preloaded;
-    // Preloads replaced after a queue edit. The engine may already have started one of them just before
-    // the replacement reached it; its start is then reconciled with the queue rather than ignored.
+    // Preloads replaced after a queue edit, which the engine may already have started.
     private readonly List<EngineItem> superseded = [];
     private const int SupersededLimit = 4;
     private int suppressSync;
     private TimeSpan resumePosition;
     private int consecutiveFailures;
-    // The playing item finished with an item preloaded; the engine should start it next. If the engine
-    // goes idle instead (a preload that arrived a moment after the end), the player advances explicitly.
+    // The playing item finished with an item preloaded, which the engine should start next. If the engine
+    // goes idle instead, the player advances explicitly.
     private bool awaitingPreloadStart;
     private bool autoplay;
     private double volume = 0.8;
@@ -63,7 +57,7 @@ public sealed class Player : IDisposable
     public QueueEntry? CurrentEntry => Queue.Current;
     public Track? CurrentTrack => Queue.Current?.Track;
 
-    /// <summary>Length of the current track: measured by the engine once loaded, otherwise from its tags.</summary>
+    /// <summary>The length of the current track, as measured by the engine once loaded, else from its tags.</summary>
     public TimeSpan Duration { get; private set; }
 
     public TimeSpan Position => playing is null ? resumePosition : engine.Position;
@@ -372,8 +366,8 @@ public sealed class Player : IDisposable
             case ItemEnded ended when ended.Id == playing?.Id:
                 OnItemEnded(ended);
                 break;
-            // PauseChanged only echoes the player's own requests; its state is authoritative, and
-            // reacting to late echoes would flicker the controls after quick play/pause toggles.
+            // PauseChanged is not handled. It only echoes the player's own requests, and the player's state
+            // is authoritative.
             case PlaybackRestarted:
                 consecutiveFailures = 0;
                 break;
@@ -393,10 +387,9 @@ public sealed class Player : IDisposable
         if (next is null)
             return; // a replaced item reporting late
 
-        // The engine moved on to a preloaded item by itself. If it was superseded by a queue edit that
-        // arrived a moment too late, the queue adopts it (AdvanceTo) and the preload is resynchronized.
-        // Engine ids increase, so items handed over before this one are behind the engine and can never
-        // start; later ones may still follow it (they were appended while it was already playing).
+        // The engine moved on to a preloaded item by itself. A superseded item is adopted by the queue
+        // through AdvanceTo, and the preload is resynchronized. Engine ids increase, so items handed over
+        // before this one can never start, while later ones may still follow it.
         superseded.RemoveAll(item => item.Id <= id);
         awaitingPreloadStart = false;
         FinishListening(completed: true);
@@ -416,7 +409,7 @@ public sealed class Player : IDisposable
         }
         if (!adopted)
         {
-            // The entry was removed after it was preloaded: continue with whatever follows now.
+            // The entry was removed after it was preloaded, so playback continues with whatever follows now.
             AdvanceExplicitly(Queue.Next());
             return;
         }
@@ -434,8 +427,7 @@ public sealed class Player : IDisposable
             return;
         if (ended.Reason == EndReason.Failed)
         {
-            // Skip the broken file explicitly (Next, so repeat-one cannot loop on it). Whether the engine
-            // would have continued by itself depends on timing, so it is not relied upon.
+            // The broken file is skipped with Next, so that repeat-one cannot loop on it.
             consecutiveFailures++;
             PlaybackFailed?.Invoke($"Couldn't play “{playing!.Entry.Track.Title}”: {ended.Error}");
             FinishListening(completed: false);
@@ -458,10 +450,8 @@ public sealed class Player : IDisposable
         AdvanceExplicitly(Queue.Advance());
     }
 
-    /// <summary>
-    /// Forgets every item handed to the engine. Called whenever the engine's playlist is discarded
-    /// (stop, replace), so that late events about those items are recognized as stale.
-    /// </summary>
+    /// <summary>Forgets every item handed to the engine.</summary>
+    /// <remarks>Call it whenever the engine's playlist is discarded. Late events about those items are then ignored.</remarks>
     private void ForgetEngineItems()
     {
         playing = preloaded = null;
@@ -478,7 +468,7 @@ public sealed class Player : IDisposable
             LoadCurrent(TimeSpan.Zero, play: true);
     }
 
-    /// <summary>The queue ran out: stop, and rewind to its first entry so Play starts it again.</summary>
+    /// <summary>Stops at the end of the queue and rewinds to its first entry.</summary>
     private void EndOfQueue()
     {
         engine.Stop();
@@ -492,7 +482,7 @@ public sealed class Player : IDisposable
         Seeked?.Invoke();
     }
 
-    /// <summary>When autoplay is on and the last entry is playing, appends similar tracks so playback continues gaplessly.</summary>
+    /// <summary>Appends similar tracks when autoplay is on and the last entry is playing.</summary>
     private void ExtendWithAutoplayIfNeeded()
     {
         if (!autoplay || AutoplaySource is null || Queue.Repeat != RepeatMode.Off || Queue.Current is null
@@ -533,10 +523,11 @@ public sealed class Player : IDisposable
             listening.Start();
     }
 
-    /// <summary>
-    /// Counts a play once a track has been heard for half its length or four minutes (whichever is
-    /// shorter), the common scrobbling rule; leaving earlier than that counts as a skip.
-    /// </summary>
+    /// <summary>Records the end of listening to the current track as a play or a skip.</summary>
+    /// <remarks>
+    /// A track heard for half its length or four minutes, whichever is shorter, counts as a play. Leaving
+    /// earlier counts as a skip.
+    /// </remarks>
     private void FinishListening(bool completed, bool skipped = false, QueueEntry? entry = null)
     {
         entry ??= listened;

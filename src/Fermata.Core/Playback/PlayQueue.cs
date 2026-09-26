@@ -42,21 +42,17 @@ public enum QueueChange
     Mode = 4,
 }
 
-/// <summary>
-/// The play queue with shuffle and repeat. Every decision about what plays next is made here, on one
-/// thread, from one source of truth: the entry list in play order.
-/// </summary>
+/// <summary>The play queue, with shuffle and repeat.</summary>
 /// <remarks>
 /// <para>
-/// The queue keeps two orders over the same entries: <c>linear</c>, the order they were queued in,
-/// and — while shuffle is on — <c>shuffled</c>, the order they will play in. <see cref="Entries"/>
-/// is always the order that actually plays, so what the listener sees is what they hear.
+/// The queue keeps two orders over the same entries, <c>linear</c> in the order they were queued and,
+/// while shuffle is on, <c>shuffled</c> in the order they play. <see cref="Entries"/> is the order that
+/// plays.
 /// </para>
 /// <para>
-/// Turning shuffle on keeps everything up to the current entry in place and shuffles only what is
-/// left, so songs already heard are not queued again. Turning it off continues from the current
-/// entry in the original order. With repeat-all, each new cycle is a fresh permutation whose first
-/// entry differs from the last one played.
+/// Turning shuffle on keeps everything up to the current entry in place and shuffles the rest. Turning
+/// it off continues from the current entry in the original order. With repeat-all, each new cycle is a
+/// fresh permutation whose first entry differs from the last one played.
 /// </para>
 /// </remarks>
 public sealed class PlayQueue
@@ -258,12 +254,12 @@ public sealed class PlayQueue
         return true;
     }
 
-    /// <summary>
-    /// Records that <paramref name="entry"/> started playing by itself after the current one (gapless
-    /// preloading). Normally it is the next entry. If the queue changed while the player was already
-    /// switching, the entry is moved up to follow the current one, so nothing that was waiting is skipped.
-    /// Returns false if the entry is no longer queued.
-    /// </summary>
+    /// <summary>Records that <paramref name="entry"/> started playing by itself after the current one.</summary>
+    /// <remarks>
+    /// Normally it is the next entry. If the queue changed while the player was switching, the entry is
+    /// moved up to follow the current one.
+    /// </remarks>
+    /// <returns>False if the entry is no longer queued.</returns>
     public bool AdvanceTo(QueueEntry entry)
     {
         if (entry == Current)
@@ -286,7 +282,7 @@ public sealed class PlayQueue
             Next();
             return true;
         }
-        // The engine is ahead of a queue edit: bring the entry right after the current one.
+        // The engine is ahead of a queue edit, so the entry moves to right after the current one.
         var list = (shuffled ?? linear);
         list.RemoveAt(index);
         if (index < current)
@@ -308,7 +304,7 @@ public sealed class PlayQueue
         if (shuffled is not null)
         {
             shuffled.InsertRange(current + 1, entries);
-            // In the unshuffled order too, so turning shuffle off keeps them next.
+            // They also follow the current entry in the unshuffled order.
             int linearIndex = playing is null ? 0 : linear.IndexOf(playing) + 1;
             linear.InsertRange(linearIndex, entries);
         }
@@ -332,10 +328,9 @@ public sealed class PlayQueue
         Notify(QueueChange.Entries);
     }
 
-    /// <summary>
-    /// Removes entries. If the current entry is removed, the following entry becomes current
-    /// (or the previous one at the end); the result reports whether that happened.
-    /// </summary>
+    /// <summary>Removes entries.</summary>
+    /// <remarks>If the current entry is removed, the following entry becomes current, or the previous one at the end.</remarks>
+    /// <returns>Whether the current entry was removed.</returns>
     public bool Remove(IReadOnlyCollection<QueueEntry> entries)
     {
         if (entries.Count == 0)
@@ -409,7 +404,7 @@ public sealed class PlayQueue
     public int IndexOf(QueueEntry entry)
     {
         var entries = Entries;
-        // The current entry and its neighbours are by far the most common lookups.
+        // The current entry and its neighbours are checked first.
         if (current >= 0)
         {
             for (int i = Math.Max(0, current - 1); i < Math.Min(entries.Count, current + 3); i++)

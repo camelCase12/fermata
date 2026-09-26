@@ -136,10 +136,11 @@ internal static class Id3v2
             return next;
         }
 
-        /// <summary>
-        /// ID3v2.4 frame sizes are sync-safe, but some encoders wrote plain 32-bit sizes. When the
-        /// sync-safe reading does not land on a plausible next frame and the plain one does, use the plain one.
-        /// </summary>
+        /// <summary>Reads an ID3v2.4 frame size.</summary>
+        /// <remarks>
+        /// ID3v2.4 frame sizes are sync-safe, but some encoders write plain 32-bit sizes. The plain reading is
+        /// used when the sync-safe one does not land on a plausible next frame and the plain one does.
+        /// </remarks>
         private long FrameSize24(long position, long end, ReadOnlySpan<byte> sizeBytes)
         {
             uint plain = BinaryPrimitives.ReadUInt32BigEndian(sizeBytes);
@@ -234,8 +235,8 @@ internal static class Id3v2
 
         private bool IsFrontCoverAt(long contentStart, long contentLength)
         {
-            // Best effort for frames we are not decoding (compressed frames yield false): the type byte
-            // follows the MIME string, or the three-letter image format in ID3v2.2.
+            // The picture type byte follows the MIME string, or the three-letter image format in ID3v2.2.
+            // Compressed frames are not decoded and give false.
             Span<byte> prefix = stackalloc byte[64];
             int read = body.Read(contentStart, prefix[..(int)Math.Min(64, contentLength)]);
             if (version == 2)
@@ -246,7 +247,6 @@ internal static class Id3v2
 
         private void ReadPictureInPlace(long contentStart, long contentLength)
         {
-            // The header before the image is short, except for a rare long description.
             byte[] prefix = ArrayPool<byte>.Shared.Rent((int)Math.Min(contentLength, 4096));
             string mime;
             byte type;

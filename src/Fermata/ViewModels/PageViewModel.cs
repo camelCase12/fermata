@@ -3,7 +3,7 @@ using Fermata.Library;
 
 namespace Fermata.ViewModels;
 
-/// <summary>Sidebar destinations; pages report which one they belong to so it can be highlighted.</summary>
+/// <summary>A section of the sidebar.</summary>
 public enum Section
 {
     None,
@@ -18,7 +18,7 @@ public enum Section
     Settings,
 }
 
-/// <summary>A page shown in the main area. Pages refresh themselves when the library changes.</summary>
+/// <summary>A page shown in the main area.</summary>
 public abstract partial class PageViewModel : ObservableObject
 {
     protected PageViewModel(Shell shell)
@@ -30,13 +30,14 @@ public abstract partial class PageViewModel : ObservableObject
 
     public virtual Section Section => Section.None;
 
-    /// <summary>Covers the page's ambient backdrop is made from: empty for pages without art of their own.</summary>
+    /// <summary>The covers the page's ambient backdrop is made from, or none.</summary>
     [ObservableProperty] public partial IReadOnlyList<ArtSource> Backdrop { get; protected set; } = [];
 
     /// <summary>Library version this page last built its content from.</summary>
     private long builtFor = -1;
 
-    /// <summary>Called when the page becomes visible; rebuilds content if the library changed meanwhile.</summary>
+    /// <summary>Prepares the page to be shown.</summary>
+    /// <remarks>The content is rebuilt if the library changed since it was built.</remarks>
     public void Activate()
     {
         long version = Shell.Services.Library.Snapshot.Version;
@@ -48,7 +49,7 @@ public abstract partial class PageViewModel : ObservableObject
         OnActivated();
     }
 
-    /// <summary>The library changed while the page is visible.</summary>
+    /// <summary>Rebuilds the page after the library changed while it is shown.</summary>
     public void LibraryChanged()
     {
         builtFor = Shell.Services.Library.Snapshot.Version;
