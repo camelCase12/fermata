@@ -71,15 +71,11 @@ public partial class QueueRow : UserControl
     private void Update()
     {
         var queue = App.Services?.Player.Queue;
-        bool current = entry is not null && queue?.Current == entry;
-        Classes.Set("current", current);
-        // Entries before the current one have played (or were skipped). The row's position in the list
-        // is its position in the queue, which avoids searching the queue for every visible row.
-        int index = this.FindAncestorOfType<ListBoxItem>() is { } container && container.FindAncestorOfType<ListBox>() is { } list
-            ? list.IndexFromContainer(container)
-            : -1;
-        Classes.Set("played", !current && queue is not null && index >= 0 && index < queue.CurrentIndex);
-        Classes.Set("first-autoplay", entry is { IsAutoplay: true } && queue is not null && index >= 0 && index < queue.Count
+        int index = entry is not null && queue is not null ? queue.IndexOf(entry) : -1;
+        int currentIndex = queue?.CurrentIndex ?? -1;
+        Classes.Set("current", index >= 0 && index == currentIndex);
+        Classes.Set("played", index >= 0 && index < currentIndex);
+        Classes.Set("first-autoplay", queue is not null && entry is { IsAutoplay: true } && index >= 0
             && (index == 0 || !queue.Entries[index - 1].IsAutoplay));
     }
 }
