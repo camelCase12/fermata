@@ -16,7 +16,7 @@
     </Style>
   </UserControl.Styles>
   <ScrollViewer HorizontalScrollBarVisibility="Disabled">
-    <StackPanel Margin="32,10,32,40" Spacing="22" MaxWidth="860" HorizontalAlignment="Left">
+    <StackPanel Margin="32,10,32,40" Spacing="22" MaxWidth="860" HorizontalAlignment="Stretch">
       <TextBlock Text="Settings" Classes="h1" />
 
       <Border Classes="section">

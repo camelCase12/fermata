@@ -12,8 +12,8 @@
   <Color x:Key="HoverColor">#FFFFFF</Color>
   <Color x:Key="DividerColor">#25252C</Color>
   <Color x:Key="TextPrimaryColor">#F3F3F5</Color>
-  <Color x:Key="TextSecondaryColor">#A4A4AF</Color>
-  <Color x:Key="TextTertiaryColor">#6F6F7B</Color>
+  <Color x:Key="TextSecondaryColor">#ADADB8</Color>
+  <Color x:Key="TextTertiaryColor">#8A8A96</Color>
   <Color x:Key="AccentColor">#F2B43C</Color>
   <Color x:Key="AccentHoverColor">#F7C867</Color>
   <Color x:Key="AccentPressedColor">#D89D26</Color>

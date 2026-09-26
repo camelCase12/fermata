@@ -115,7 +115,7 @@ public sealed partial class NowPlayingViewModel : ObservableObject
                 CurrentIndex = queue.CurrentIndex;
                 int upcoming = Math.Max(0, queue.Count - queue.CurrentIndex - 1);
                 var remaining = TimeSpan.FromTicks(queue.Entries.Skip(queue.CurrentIndex + 1).Sum(e => e.Track.Duration.Ticks));
-                UpNextSummary = upcoming == 0 ? "Nothing after this" : $"{Formats.Count(upcoming, "song")} · {Formats.LongDuration(remaining)}";
+                UpNextSummary = upcoming == 0 ? "Nothing up next" : $"{upcoming} up next · {Formats.LongDuration(remaining)}";
                 break;
             case NowPlayingTab.Lyrics when lyricsStale:
                 lyricsStale = false;

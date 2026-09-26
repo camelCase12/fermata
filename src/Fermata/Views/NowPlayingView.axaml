@@ -87,10 +87,10 @@
         <Grid Grid.Row="1" RowDefinitions="Auto,*,Auto" IsVisible="{Binding IsUpNext}" Margin="0,18,0,0">
           <Grid ColumnDefinitions="*,Auto" Margin="4,0,4,10">
             <StackPanel>
-              <TextBlock Classes="caption">
+              <TextBlock Classes="caption" Foreground="{DynamicResource TextSecondaryBrush}">
                 <Run Text="Playing from " /><Run Text="{Binding Player.SourceText}" FontWeight="SemiBold" />
               </TextBlock>
-              <TextBlock Text="{Binding UpNextSummary}" Classes="caption" />
+              <TextBlock Text="{Binding UpNextSummary}" Classes="caption" Foreground="{DynamicResource TextSecondaryBrush}" />
             </StackPanel>
             <ToggleSwitch Grid.Column="1" IsChecked="{Binding Autoplay}" OnContent="Autoplay" OffContent="Autoplay"
                           ToolTip.Tip="Keep playing similar music when the queue ends" />
@@ -125,7 +125,7 @@
         <!-- Related -->
         <ScrollViewer Grid.Row="1" IsVisible="{Binding IsRelated}" Margin="0,18,0,0" HorizontalScrollBarVisibility="Disabled">
           <StackPanel Spacing="10">
-            <TextBlock Text="Similar songs from your library" Classes="caption" Margin="4,0" />
+            <TextBlock Text="Similar songs from your library" Classes="caption" Foreground="{DynamicResource TextSecondaryBrush}" Margin="4,0" />
             <ItemsControl Name="RelatedList" ItemsSource="{Binding Related}">
               <ItemsControl.ItemTemplate>
                 <DataTemplate DataType="lib:Track">

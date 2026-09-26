@@ -6,7 +6,7 @@
              xmlns:controls="using:Fermata.Controls"
              x:Class="Fermata.Views.QueueRow"
              x:DataType="playback:QueueEntry"
-             Height="58" Background="Transparent">
+             Background="Transparent">
   <UserControl.Styles>
     <Style Selector="views|QueueRow Button#RemoveButton, views|QueueRow Border#PlayingOverlay">
       <Setter Property="IsVisible" Value="False" />
@@ -26,11 +26,30 @@
     <Style Selector="views|QueueRow.current Border#PlayingOverlay">
       <Setter Property="IsVisible" Value="True" />
     </Style>
-    <Style Selector="views|QueueRow.played">
-      <Setter Property="Opacity" Value="0.55" />
+    <!-- Played entries keep readable text: a dimmer title and faded art mark them. -->
+    <Style Selector="views|QueueRow.played TextBlock#Title">
+      <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
+      <Setter Property="FontWeight" Value="Normal" />
+    </Style>
+    <Style Selector="views|QueueRow.played controls|CoverArt#Art">
+      <Setter Property="Opacity" Value="0.45" />
+    </Style>
+    <Style Selector="views|QueueRow Border#AutoplayDivider">
+      <Setter Property="IsVisible" Value="False" />
+    </Style>
+    <Style Selector="views|QueueRow.first-autoplay Border#AutoplayDivider">
+      <Setter Property="IsVisible" Value="True" />
     </Style>
   </UserControl.Styles>
-  <Grid ColumnDefinitions="46,*,Auto" Margin="6,0">
+  <DockPanel>
+  <!-- Marks where the songs you chose end and the songs autoplay added begin. -->
+  <Border Name="AutoplayDivider" DockPanel.Dock="Top" Padding="10,14,10,6">
+    <Grid ColumnDefinitions="Auto,*">
+      <TextBlock Text="Added by autoplay" Classes="caption" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
+      <Border Grid.Column="1" Height="1" Background="{DynamicResource DividerBrush}" Margin="10,0,0,0" VerticalAlignment="Center" />
+    </Grid>
+  </Border>
+  <Grid ColumnDefinitions="46,*,Auto" Margin="6,0" Height="58">
     <Panel Width="44" Height="44">
       <controls:CoverArt Name="Art" Width="44" Height="44" Radius="4" />
       <Border Name="PlayingOverlay" Background="{DynamicResource ShadeStrongBrush}" CornerRadius="4">
@@ -49,4 +68,5 @@
       </Button>
     </Panel>
   </Grid>
+  </DockPanel>
 </UserControl>

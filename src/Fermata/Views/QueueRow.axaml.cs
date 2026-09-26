@@ -5,7 +5,10 @@ using Fermata.Playback;
 
 namespace Fermata.Views;
 
-/// <summary>An entry in "Up next": the playing entry is highlighted and entries already played are dimmed.</summary>
+/// <summary>
+/// An entry in "Up next". The playing entry is highlighted, entries already played are dimmed, and the
+/// first entry added by autoplay has a divider above it.
+/// </summary>
 public partial class QueueRow : UserControl
 {
     private QueueEntry? entry;
@@ -79,5 +82,7 @@ public partial class QueueRow : UserControl
             ? list.IndexFromContainer(container)
             : -1;
         Classes.Set("played", !current && queue is not null && index >= 0 && index < queue.CurrentIndex);
+        Classes.Set("first-autoplay", entry is { IsAutoplay: true } && queue is not null && index >= 0 && index < queue.Count
+            && (index == 0 || !queue.Entries[index - 1].IsAutoplay));
     }
 }
