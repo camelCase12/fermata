@@ -12,6 +12,7 @@ internal static class StorageChecks
         try
         {
             CheckLoad(check, root);
+            CheckVersions(check, root);
             CheckPlaylists(check, root);
         }
         finally
@@ -47,6 +48,39 @@ internal static class StorageChecks
 
         FermataJson.Save(broken, new Settings(), type);
         check.That(File.Exists(expected) && File.Exists(expected + "-2"), "saving afterwards does not touch the set-aside files");
+    }
+
+    private static void CheckVersions(Checks check, string root)
+    {
+        var type = FermataJson.Default.Settings;
+        string file = Path.Combine(root, "versions.json");
+
+        FermataJson.Save(file, new Settings(), type);
+        check.That(File.ReadAllText(file).Contains($"\"version\": {Settings.CurrentVersion}", StringComparison.Ordinal), "saved files record their version");
+
+        File.WriteAllText(file, "{ \"volume\": 0.3 }");
+        var unversioned = FermataJson.LoadOrSetAside(file, type);
+        check.That(unversioned.Value is { Volume: 0.3 } value && value.Version == Settings.CurrentVersion && !unversioned.IsNewer,
+            "a file without a version loads and takes the current one");
+
+        File.WriteAllText(file, $"{{ \"version\": {Settings.CurrentVersion + 1}, \"volume\": 0.4, \"later\": true }}");
+        var newer = FermataJson.LoadOrSetAside(file, type);
+        check.That(newer.Value?.Volume == 0.4 && newer.IsNewer && newer.SetAside is null && File.Exists(file),
+            "a file from a newer version is read, marked, and left in place");
+        check.That(FermataJson.Load(file, FermataJson.Default.SessionState) is null, "a newer session is not restored");
+
+        string playlists = Path.Combine(root, "newer-playlists");
+        Directory.CreateDirectory(playlists);
+        string playlistFile = Path.Combine(playlists, "later.json");
+        File.WriteAllText(playlistFile, $"{{ \"version\": {PlaylistDocument.CurrentVersion + 1}, \"name\": \"Later\", \"tracks\": [] }}");
+        string before = File.ReadAllText(playlistFile);
+        var store = new PlaylistStore(playlists);
+        store.Load();
+        var later = store.Playlists.Single();
+        store.Rename(later, "Renamed", "");
+        store.CaptureChanges()?.Invoke();
+        check.That(store.FromNewerVersion.Contains(later.Id) && File.ReadAllText(playlistFile) == before,
+            "a playlist from a newer version is shown but its file is never rewritten");
     }
 
     private static void CheckPlaylists(Checks check, string root)

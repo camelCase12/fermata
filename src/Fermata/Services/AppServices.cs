@@ -13,6 +13,7 @@ public sealed class AppServices : IDisposable
 {
     private readonly DeferredSave settingsSave;
     private readonly DeferredSave userDataSave;
+    private readonly bool settingsFromNewerVersion, userDataFromNewerVersion;
     private readonly DeferredSave playlistsSave;
     private readonly DeferredSave sessionSave;
 
@@ -31,6 +32,16 @@ public sealed class AppServices : IDisposable
             unreadable.Add(new("settings", settingsFile));
         if (userData.SetAside is { } userDataFile)
             unreadable.Add(new("likes and history", userDataFile));
+        settingsFromNewerVersion = saved.IsNewer;
+        userDataFromNewerVersion = userData.IsNewer;
+        var newer = new List<string>();
+        if (saved.IsNewer)
+            newer.Add("settings");
+        if (userData.IsNewer)
+            newer.Add("likes and history");
+        if (Playlists.FromNewerVersion.Count > 0)
+            newer.Add(Playlists.FromNewerVersion.Count == 1 ? "a playlist" : $"{Playlists.FromNewerVersion.Count} playlists");
+        FromNewerVersion = newer;
         unreadable.AddRange(Playlists.Unreadable.Select(file => new UnreadableFile("a playlist", file)));
         Unreadable = unreadable;
         foreach (var file in unreadable)
@@ -79,6 +90,9 @@ public sealed class AppServices : IDisposable
 
     /// <summary>The saved files that could not be read at startup.</summary>
     public IReadOnlyList<UnreadableFile> Unreadable { get; }
+
+    /// <summary>What was saved by a newer Fermata, such as "settings" or "2 playlists", and is not saved over.</summary>
+    public IReadOnlyList<string> FromNewerVersion { get; }
 
     /// <summary>True when no settings existed: the library folder was guessed and should be confirmed.</summary>
     public bool IsFirstRun { get; }
@@ -141,12 +155,16 @@ public sealed class AppServices : IDisposable
 
     private Action? CaptureSettings()
     {
+        if (settingsFromNewerVersion)
+            return null;
         var copy = Settings.Clone();
         return () => FermataJson.Save(Paths.SettingsFile, copy, FermataJson.Default.Settings);
     }
 
     private Action? CaptureUserData()
     {
+        if (userDataFromNewerVersion)
+            return null;
         var document = UserData.ToDocument();
         return () => FermataJson.Save(Paths.UserDataFile, document, FermataJson.Default.UserDataDocument);
     }

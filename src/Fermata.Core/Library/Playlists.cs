@@ -48,8 +48,10 @@ public sealed class Playlist
 /// <param name="Paths">The entries, as absolute paths.</param>
 public sealed record M3uPlaylist(string? Name, IReadOnlyList<string> Paths);
 
-public sealed class PlaylistDocument
+public sealed class PlaylistDocument : IVersionedFile
 {
+    public static int CurrentVersion => 1;
+    public int Version { get; set; } = CurrentVersion;
     public string Name { get; set; } = "";
     public string Description { get; set; } = "";
     public DateTime Created { get; set; }
@@ -90,20 +92,28 @@ public sealed class PlaylistStore
     public IReadOnlyList<string> Unreadable => unreadable;
     private readonly List<string> unreadable = [];
 
+    /// <summary>The ids of playlists whose files come from a newer Fermata, which are never written.</summary>
+    public IReadOnlyCollection<string> FromNewerVersion => fromNewerVersion;
+    private readonly HashSet<string> fromNewerVersion = [];
+
     public void Load()
     {
         playlists.Clear();
         unreadable.Clear();
+        fromNewerVersion.Clear();
         if (!Directory.Exists(directory))
             return;
         foreach (string file in Directory.GetFiles(directory, "*.json"))
         {
-            var (document, setAside) = FermataJson.LoadOrSetAside(file, FermataJson.Default.PlaylistDocument);
+            var (document, setAside, isNewer) = FermataJson.LoadOrSetAside(file, FermataJson.Default.PlaylistDocument);
             if (setAside is not null)
                 unreadable.Add(setAside);
             if (document is null)
                 continue;
-            playlists.Add(new Playlist(Path.GetFileNameWithoutExtension(file), document.Name, document.Description,
+            string id = Path.GetFileNameWithoutExtension(file);
+            if (isNewer)
+                fromNewerVersion.Add(id);
+            playlists.Add(new Playlist(id, document.Name, document.Description,
                 document.Created, document.Modified, document.Tracks));
         }
         playlists.Sort((a, b) => a.Created.CompareTo(b.Created));
@@ -216,7 +226,7 @@ public sealed class PlaylistStore
     {
         if (dirty.Count == 0 && deleted.Count == 0)
             return null;
-        var writes = dirty.Select(p => (Path.Combine(directory, p.Id + ".json"), new PlaylistDocument
+        var writes = dirty.Where(p => !fromNewerVersion.Contains(p.Id)).Select(p => (Path.Combine(directory, p.Id + ".json"), new PlaylistDocument
         {
             Name = p.Name,
             Description = p.Description,
@@ -224,7 +234,7 @@ public sealed class PlaylistStore
             Modified = p.Modified,
             Tracks = [.. p.PathList],
         })).ToList();
-        var deletions = deleted.Select(id => Path.Combine(directory, id + ".json")).ToList();
+        var deletions = deleted.Where(id => !fromNewerVersion.Contains(id)).Select(id => Path.Combine(directory, id + ".json")).ToList();
         dirty.Clear();
         deleted.Clear();
         return () =>

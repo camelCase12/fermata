@@ -49,6 +49,7 @@ public partial class App : Application
             {
                 Program.Trace("window opened");
                 shell.ReportUnreadable(services.Unreadable);
+                shell.ReportFromNewerVersion(services.FromNewerVersion);
             };
             desktop.ShutdownMode = ShutdownMode.OnMainWindowClose;
             shell.GoHome();

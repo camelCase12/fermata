@@ -3,8 +3,11 @@ using Fermata.Playback;
 namespace Fermata.Storage;
 
 /// <summary>User preferences, saved as <c>~/.config/fermata/settings.json</c>.</summary>
-public sealed class Settings
+public sealed class Settings : IVersionedFile
 {
+    public static int CurrentVersion => 1;
+    public int Version { get; set; } = CurrentVersion;
+
     public List<string> MusicFolders { get; set; } = [];
 
     /// <summary>Linear volume 0–1; the engine maps it to a perceptual curve.</summary>

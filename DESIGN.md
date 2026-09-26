@@ -238,7 +238,7 @@ second signal exits at once.
 - **Text folding:** accents, ligatures and sort keys.
 - **Imaging:** OKLab conversions and cover analysis, on synthetic covers with known families,
   accents and structure.
-- **Storage:** damaged settings, likes and playlists are set aside rather than saved over.
+- **Storage:** damaged settings, likes and playlists are set aside rather than saved over, and files from a newer version are read but not rewritten.
 - **Metadata:** the tag readers, against files ffmpeg writes in every supported format.
 - **Library:** grouping, scanning, the cache, incremental rescans, search, following renamed files,
   M3U import and export, and recommendations.
@@ -288,6 +288,10 @@ touching the real desktop.
 Fermata never writes to your music files. All files are written atomically (a new file renamed
 over the old one), so a crash or power cut cannot leave a half-written playlist. Quitting, logging
 out or `kill` (SIGTERM) saves everything; a second SIGTERM exits at once.
+
+Every saved file records the version of its format. An older file is brought up to date as it
+loads. A file written by a newer Fermata is read as well as possible and never saved over, and
+Fermata says so at startup, so going back to an older version cannot quietly lose data.
 
 ### Performance
 

@@ -1,3 +1,4 @@
+using Fermata.Storage;
 using Fermata.Text;
 
 namespace Fermata.Library;
@@ -26,9 +27,10 @@ public sealed class TrackStats
 public sealed record PlayRecord(string Path, DateTime At);
 
 /// <summary>Serialized form of <see cref="UserData"/>.</summary>
-public sealed class UserDataDocument
+public sealed class UserDataDocument : IVersionedFile
 {
-    public int Version { get; set; } = 1;
+    public static int CurrentVersion => 1;
+    public int Version { get; set; } = CurrentVersion;
     public Dictionary<string, TrackStats> Tracks { get; set; } = [];
     public List<PlayRecord> History { get; set; } = [];
 }

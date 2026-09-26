@@ -375,6 +375,16 @@ public sealed partial class Shell : ObservableObject
             "Show", () => Launch("xdg-open", folder), TimeSpan.FromSeconds(15));
     }
 
+    /// <summary>Shows a notice about files saved by a newer Fermata, which this one leaves unchanged.</summary>
+    public void ReportFromNewerVersion(IReadOnlyList<string> what)
+    {
+        if (what.Count == 0)
+            return;
+        string list = what.Count == 1 ? what[0] : string.Join(", ", what.ToArray()[..^1]) + " and " + what[^1];
+        Toasts.Show($"Your {list} came from a newer version of Fermata. This version won't save changes to them.",
+            duration: TimeSpan.FromSeconds(15));
+    }
+
     public async Task ShowTrackInfoAsync(Track track)
     {
         var dialog = new TrackInfoDialog(track, Services.UserData.StatsFor(track.Path)) { Title = "Song info" };

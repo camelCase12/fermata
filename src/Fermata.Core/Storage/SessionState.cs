@@ -1,8 +1,11 @@
 namespace Fermata.Storage;
 
 /// <summary>The queue and playback position, saved on exit and restored (paused) at startup.</summary>
-public sealed class SessionState
+public sealed class SessionState : IVersionedFile
 {
+    public static int CurrentVersion => 1;
+    public int Version { get; set; } = CurrentVersion;
+
     /// <summary>Queue entries in their original (unshuffled) order.</summary>
     public List<string> Queue { get; set; } = [];
 
