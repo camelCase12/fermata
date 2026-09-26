@@ -20,7 +20,7 @@
           <StackPanel DockPanel.Dock="Bottom" Margin="12,6,12,14" Spacing="2">
             <TextBlock Text="{Binding LibraryStatus}" IsVisible="{Binding LibraryStatus, Converter={x:Static ObjectConverters.IsNotNull}}"
                        Classes="caption" Margin="12,0,0,6" TextTrimming="CharacterEllipsis" />
-            <RadioButton Theme="{StaticResource NavButton}" GroupName="nav" IsChecked="{Binding IsSettings}">
+            <RadioButton Theme="{StaticResource NavButton}" Classes="nav" GroupName="nav" IsChecked="{Binding IsSettings}">
               <StackPanel Orientation="Horizontal" Spacing="14">
                 <PathIcon Data="{StaticResource Icon.Settings}" />
                 <TextBlock Text="Settings" VerticalAlignment="Center" />
@@ -30,13 +30,13 @@
 
           <ScrollViewer HorizontalScrollBarVisibility="Disabled">
             <StackPanel Margin="12,0" Spacing="2">
-              <RadioButton Theme="{StaticResource NavButton}" GroupName="nav" IsChecked="{Binding IsHome}">
+              <RadioButton Theme="{StaticResource NavButton}" Classes="nav" GroupName="nav" IsChecked="{Binding IsHome}">
                 <StackPanel Orientation="Horizontal" Spacing="14">
                   <PathIcon Data="{StaticResource Icon.Home}" />
                   <TextBlock Text="Home" VerticalAlignment="Center" />
                 </StackPanel>
               </RadioButton>
-              <RadioButton Theme="{StaticResource NavButton}" GroupName="nav" IsChecked="{Binding IsExplore}">
+              <RadioButton Theme="{StaticResource NavButton}" Classes="nav" GroupName="nav" IsChecked="{Binding IsExplore}">
                 <StackPanel Orientation="Horizontal" Spacing="14">
                   <PathIcon Data="{StaticResource Icon.Explore}" />
                   <TextBlock Text="Explore" VerticalAlignment="Center" />
@@ -44,31 +44,31 @@
               </RadioButton>
 
               <TextBlock Text="Library" Classes="label" Margin="12,18,0,6" />
-              <RadioButton Theme="{StaticResource NavButton}" GroupName="nav" IsChecked="{Binding IsSongs}">
+              <RadioButton Theme="{StaticResource NavButton}" Classes="nav" GroupName="nav" IsChecked="{Binding IsSongs}">
                 <StackPanel Orientation="Horizontal" Spacing="14">
                   <PathIcon Data="{StaticResource Icon.Song}" />
                   <TextBlock Text="Songs" VerticalAlignment="Center" />
                 </StackPanel>
               </RadioButton>
-              <RadioButton Theme="{StaticResource NavButton}" GroupName="nav" IsChecked="{Binding IsAlbums}">
+              <RadioButton Theme="{StaticResource NavButton}" Classes="nav" GroupName="nav" IsChecked="{Binding IsAlbums}">
                 <StackPanel Orientation="Horizontal" Spacing="14">
                   <PathIcon Data="{StaticResource Icon.Album}" />
                   <TextBlock Text="Albums" VerticalAlignment="Center" />
                 </StackPanel>
               </RadioButton>
-              <RadioButton Theme="{StaticResource NavButton}" GroupName="nav" IsChecked="{Binding IsArtists}">
+              <RadioButton Theme="{StaticResource NavButton}" Classes="nav" GroupName="nav" IsChecked="{Binding IsArtists}">
                 <StackPanel Orientation="Horizontal" Spacing="14">
                   <PathIcon Data="{StaticResource Icon.Artist}" />
                   <TextBlock Text="Artists" VerticalAlignment="Center" />
                 </StackPanel>
               </RadioButton>
-              <RadioButton Theme="{StaticResource NavButton}" GroupName="nav" IsChecked="{Binding IsLiked}">
+              <RadioButton Theme="{StaticResource NavButton}" Classes="nav" GroupName="nav" IsChecked="{Binding IsLiked}">
                 <StackPanel Orientation="Horizontal" Spacing="14">
                   <PathIcon Data="{StaticResource Icon.Heart}" />
                   <TextBlock Text="Liked songs" VerticalAlignment="Center" />
                 </StackPanel>
               </RadioButton>
-              <RadioButton Theme="{StaticResource NavButton}" GroupName="nav" IsChecked="{Binding IsHistory}">
+              <RadioButton Theme="{StaticResource NavButton}" Classes="nav" GroupName="nav" IsChecked="{Binding IsHistory}">
                 <StackPanel Orientation="Horizontal" Spacing="14">
                   <PathIcon Data="{StaticResource Icon.History}" />
                   <TextBlock Text="Recently played" VerticalAlignment="Center" />

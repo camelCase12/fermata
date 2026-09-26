@@ -71,7 +71,10 @@
           <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
         </Style>
         <Style Selector="^:checked">
-          <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+          <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
+        </Style>
+        <Style Selector="^:checked:pointerover">
+          <Setter Property="Foreground" Value="{DynamicResource AccentHoverBrush}" />
         </Style>
         <!-- A playback mode, such as shuffle, shows a dot while it is on. -->
         <Style Selector="^.mode:checked /template/ Border#Dot">
@@ -251,8 +254,12 @@
         <Style Selector="^:pointerover /template/ Border#Knob">
           <Setter Property="Background" Value="{DynamicResource TextSecondaryBrush}" />
         </Style>
+        <Style Selector="^:checked /template/ Border#Track">
+          <Setter Property="Background" Value="{DynamicResource AccentWashBrush}" />
+          <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
+        </Style>
         <Style Selector="^:checked /template/ Border#Knob">
-          <Setter Property="Background" Value="{DynamicResource TextPrimaryBrush}" />
+          <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
         </Style>
       </ControlTheme>
     </ResourceDictionary>
@@ -327,6 +334,10 @@
   <Style Selector="TextBlock.kind">
     <Setter Property="FontSize" Value="13" />
     <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
+  </Style>
+  <!-- The icon of the selected sidebar item. -->
+  <Style Selector="RadioButton.nav:checked PathIcon">
+    <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
   </Style>
   <!-- Small labels for sections and columns. -->
   <Style Selector="TextBlock.label">

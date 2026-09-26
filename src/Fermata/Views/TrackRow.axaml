@@ -71,7 +71,7 @@
     <!-- Liked songs keep a filled heart -->
     <Style Selector="views|TrackRow.liked Button#LikeButton">
       <Setter Property="Opacity" Value="1" />
-      <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
     </Style>
     <Style Selector="views|TrackRow.liked PathIcon#LikeIcon">
       <Setter Property="Data" Value="{StaticResource Icon.Heart}" />
