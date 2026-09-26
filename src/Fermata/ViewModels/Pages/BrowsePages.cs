@@ -25,10 +25,15 @@ public sealed partial class ExploreViewModel : PageViewModel
     [ObservableProperty] public partial IReadOnlyList<BrowseTile> Decades { get; private set; } = [];
     [ObservableProperty] public partial IReadOnlyList<object> NewAlbums { get; private set; } = [];
     [ObservableProperty] public partial bool HasTopSongs { get; private set; }
+    [ObservableProperty] public partial bool IsLibraryEmpty { get; private set; }
+
+    [RelayCommand]
+    private void OpenSettings() => Shell.GoSettings();
 
     protected override void Refresh()
     {
         var library = Shell.Library;
+        IsLibraryEmpty = library.Tracks.Count == 0;
         Genres = library.Genres.OrderByDescending(g => g.Tracks.Count).Take(24)
             .Select(g => new BrowseTile(g.Name, Formats.Count(g.Tracks.Count, "song"), TileBrush(g.Name), g, 0)).ToList();
         Decades = library.Tracks.Where(t => t.Year > 0).GroupBy(t => t.Year / 10 * 10).OrderByDescending(g => g.Key)
@@ -200,7 +205,18 @@ public sealed partial class HistoryViewModel(Shell shell) : PageViewModel(shell)
     protected override void OnActivated() => Refresh();
 }
 
-public sealed record ShortcutRow(string Keys, string Action);
+/// <summary>A key, or the text between keys, in a shortcut.</summary>
+public sealed record ShortcutPart(string Text, bool IsKey);
+
+/// <summary>A row of the keyboard shortcut list.</summary>
+public sealed record ShortcutRow(IReadOnlyList<ShortcutPart> Keys, string Action)
+{
+    /// <summary>Makes a row from keys separated by spaces, where "or", "/" and "…" are words between keys.</summary>
+    public ShortcutRow(string keys, string action)
+        : this(keys.Split(' ', StringSplitOptions.RemoveEmptyEntries).Select(k => new ShortcutPart(k, k is not ("or" or "/" or "…"))).ToList(), action)
+    {
+    }
+}
 
 /// <summary>The Settings page.</summary>
 public sealed partial class SettingsViewModel : PageViewModel
@@ -249,24 +265,24 @@ public sealed partial class SettingsViewModel : PageViewModel
 
     public IReadOnlyList<ShortcutRow> Shortcuts { get; } =
     [
-        new("Space  or  K", "Play or pause"),
-        new("Ctrl+→  or  Shift+N", "Next song"),
-        new("Ctrl+←  or  Shift+P", "Previous song (restarts after 3 seconds)"),
-        new("J  /  L", "Back / forward 10 seconds"),
-        new("←  /  →  (not in a list)", "Back / forward 5 seconds"),
-        new("Ctrl+↑  /  Ctrl+↓", "Volume up / down"),
+        new("Space or K", "Play or pause"),
+        new("Ctrl+→ or Shift+N", "Next song"),
+        new("Ctrl+← or Shift+P", "Previous song (restarts after 3 seconds)"),
+        new("J / L", "Back / forward 10 seconds"),
+        new("← / →", "Back / forward 5 seconds, outside lists"),
+        new("Ctrl+↑ / Ctrl+↓", "Volume up / down"),
         new("M", "Mute"),
         new("S", "Shuffle on or off"),
         new("R", "Repeat: off, all, one"),
         new("F", "Like the playing song"),
         new("Q", "Now playing and queue"),
-        new("Ctrl+F  or  /", "Search"),
-        new("Alt+←  /  Alt+→", "Back / forward between pages"),
+        new([new("Ctrl+F", true), new("or", false), new("/", true)], "Search"),
+        new("Alt+← / Alt+→", "Back / forward between pages"),
         new("Ctrl+1 … Ctrl+7", "Home, Explore, Songs, Albums, Artists, Liked songs, Recently played"),
         new("Ctrl+,", "Settings"),
         new("Enter", "Play the selected song"),
         new("Delete", "Remove the selection from a playlist or the queue"),
-        new("Alt+↑  /  Alt+↓", "Move the selected song in a playlist or the queue (or drag it)"),
+        new("Alt+↑ / Alt+↓", "Move the selected song in a playlist or the queue (or drag it)"),
         new("Ctrl+Q", "Quit"),
     ];
 
@@ -283,9 +299,23 @@ public sealed partial class SettingsViewModel : PageViewModel
 
     private void UpdateDevices()
     {
-        var devices = Shell.Player.Engine.AudioDevices;
+        var devices = OutputDevices(Shell.Player.Engine.AudioDevices, Shell.Services.Settings.AudioDevice);
         Devices = devices.Count > 0 ? devices : [new AudioDevice("auto", "System default")];
         Device = Devices.FirstOrDefault(d => d.Name == Shell.Services.Settings.AudioDevice) ?? Devices[0];
+    }
+
+    /// <summary>The devices worth offering from mpv's list, which names each output once per audio system and includes ALSA plugins.</summary>
+    /// <remarks>
+    /// With PipeWire or PulseAudio running, only its devices are listed, else ALSA's per-card devices. The chosen
+    /// device is always kept.
+    /// </remarks>
+    internal static List<AudioDevice> OutputDevices(IReadOnlyList<AudioDevice> devices, string chosen)
+    {
+        string? server = devices.Any(d => d.Name.StartsWith("pipewire/", StringComparison.Ordinal)) ? "pipewire"
+            : devices.Any(d => d.Name.StartsWith("pulse/", StringComparison.Ordinal)) ? "pulse" : null;
+        return devices.Where(d => d.Name == "auto" || d.Name == chosen || (server is not null
+            ? d.Name.StartsWith(server + "/", StringComparison.Ordinal)
+            : d.Name.StartsWith("alsa/", StringComparison.Ordinal) && d.Name.Contains(':'))).ToList();
     }
 
     partial void OnDeviceChanged(AudioDevice? value)

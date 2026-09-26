@@ -141,8 +141,24 @@
             <ItemsControl.ItemTemplate>
               <DataTemplate DataType="pages:ShortcutRow">
                 <Grid ColumnDefinitions="240,*" Margin="0,4">
-                  <TextBlock Text="{Binding Keys}" FontFamily="monospace" FontSize="13" Foreground="{DynamicResource AccentBrush}" />
-                  <TextBlock Grid.Column="1" Text="{Binding Action}" Classes="secondary" />
+                  <ItemsControl ItemsSource="{Binding Keys}" VerticalAlignment="Center">
+                    <ItemsControl.ItemsPanel>
+                      <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal" Spacing="6" />
+                      </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                      <DataTemplate DataType="pages:ShortcutPart">
+                        <Panel>
+                          <Border IsVisible="{Binding IsKey}" Background="{DynamicResource RaisedBrush}" CornerRadius="6" Padding="7,2">
+                            <TextBlock Text="{Binding Text}" FontFamily="{DynamicResource MonoFont}" FontSize="12.5" />
+                          </Border>
+                          <TextBlock IsVisible="{Binding !IsKey}" Text="{Binding Text}" Classes="caption" VerticalAlignment="Center" />
+                        </Panel>
+                      </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                  </ItemsControl>
+                  <TextBlock Grid.Column="1" Text="{Binding Action}" Classes="secondary" VerticalAlignment="Center" TextWrapping="Wrap" />
                 </Grid>
               </DataTemplate>
             </ItemsControl.ItemTemplate>
@@ -162,7 +178,7 @@
             <Run Text="Audio: " /><Run Text="{Binding EngineStatus}" />
           </TextBlock>
           <TextBlock Text="{Binding DataLocations}" Classes="caption" TextWrapping="Wrap" LineHeight="19" />
-          <TextBlock Classes="caption" TextWrapping="Wrap" Text="Audio: libmpv. Typeface: Inter." />
+          <TextBlock Classes="caption" TextWrapping="Wrap" Text="Audio: libmpv. Fonts: Bricolage Grotesque, Atkinson Hyperlegible and IBM Plex Mono." />
         </StackPanel>
       </Border>
     </StackPanel>

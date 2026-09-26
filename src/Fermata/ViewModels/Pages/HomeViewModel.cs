@@ -27,7 +27,24 @@ public sealed partial class HomeViewModel(Shell shell) : PageViewModel(shell)
     [ObservableProperty] public partial bool IsLoading { get; private set; } = true;
     [ObservableProperty] public partial string Greeting { get; private set; } = "";
 
-    public string MusicFolders => string.Join(", ", Shell.Services.Settings.MusicFolders);
+    /// <summary>What the first-run card says about the music folders.</summary>
+    public string FirstRunText
+    {
+        get
+        {
+            const string Advice = "Add the folders where you keep music, and Fermata will read them and keep watching for changes.";
+            var folders = Shell.Services.Settings.MusicFolders;
+            if (folders.Count == 0)
+                return $"Fermata plays the music on this computer. No music folders are set yet. {Advice}";
+            var missing = folders.Where(f => !Directory.Exists(f)).ToList();
+            if (missing.Count == folders.Count)
+                return $"Fermata plays the music on this computer. It is set to look in {string.Join(", ", folders)}, which "
+                    + (folders.Count == 1 ? "doesn't exist. " : "don't exist. ") + Advice;
+            if (Shell.Services.Library.IsScanning)
+                return $"Fermata plays the music on this computer. It is looking in {string.Join(", ", folders)}.";
+            return $"Fermata plays the music on this computer. It found no music in {string.Join(", ", folders)}. {Advice}";
+        }
+    }
 
     protected override async void Refresh()
     {
@@ -36,6 +53,7 @@ public sealed partial class HomeViewModel(Shell shell) : PageViewModel(shell)
         var userData = Shell.Services.UserData;
         Greeting = DateTime.Now.Hour switch { < 5 => "Good night", < 12 => "Good morning", < 18 => "Good afternoon", _ => "Good evening" };
         IsLibraryEmpty = library.Tracks.Count == 0;
+        OnPropertyChanged(nameof(FirstRunText));
         if (IsLibraryEmpty)
         {
             Sections = [];

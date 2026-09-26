@@ -39,6 +39,7 @@ internal static class Program
     public static int Main(string[] args)
     {
         var lines = new List<string>();
+        int missing = 0;
         foreach (string arg in args)
         {
             switch (arg)
@@ -55,10 +56,19 @@ internal static class Program
                         Console.Error.WriteLine($"fermata: unknown option {arg}\n\n{Usage}");
                         return 2;
                     }
-                    lines.Add("open\t" + Path.GetFullPath(arg));
+                    string path = Path.GetFullPath(arg);
+                    if (!File.Exists(path) && !Directory.Exists(path))
+                    {
+                        Console.Error.WriteLine($"fermata: {arg}: no such file or folder");
+                        missing++;
+                        break;
+                    }
+                    lines.Add("open\t" + path);
                     break;
             }
         }
+        if (missing > 0 && lines.Count == 0)
+            return 1;
         if (lines.Count == 0)
             lines.Add("raise");
 

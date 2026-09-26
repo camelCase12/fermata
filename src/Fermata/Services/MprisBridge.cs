@@ -32,7 +32,11 @@ public sealed class MprisBridge : IMprisTarget, IDisposable
         player.DurationChanged += Publish;
         player.VolumeChanged += Publish;
         player.Queue.Changed += _ => Publish();
-        player.Seeked += () => server.EmitSeeked(player.Position);
+        player.Seeked += () =>
+        {
+            Publish();
+            server.EmitSeeked(player.Position);
+        };
         services.UserData.TrackChanged += path =>
         {
             if (path == player.CurrentTrack?.Path)
@@ -79,15 +83,24 @@ public sealed class MprisBridge : IMprisTarget, IDisposable
         var context = SynchronizationContext.Current!;
         Task.Run(() =>
         {
-            byte[]? bytes = art.Offset >= 0 ? ReadRange(art) : TagReader.ReadPicture(art.Path);
-            if (bytes is null || bytes.Length < 4)
+            string file;
+            try
+            {
+                byte[]? bytes = art.Offset >= 0 ? ReadRange(art) : TagReader.ReadPicture(art.Path);
+                if (bytes is null || bytes.Length < 4)
+                    return;
+                // Consumers such as notification daemons may choose a decoder by extension.
+                file = stem + (bytes[0] == 0xFF && bytes[1] == 0xD8 ? ".jpg"
+                    : bytes[0] == 0x89 && bytes[1] == (byte)'P' ? ".png"
+                    : bytes[0] == (byte)'R' && bytes[1] == (byte)'I' ? ".webp" : ".img");
+                Directory.CreateDirectory(directory);
+                Storage.AtomicFile.WriteAllBytes(file, bytes);
+            }
+            catch (Exception error) when (error is IOException or UnauthorizedAccessException)
+            {
+                // Without the picture, widgets show no cover.
                 return;
-            // Consumers such as notification daemons may choose a decoder by extension.
-            string file = stem + (bytes[0] == 0xFF && bytes[1] == 0xD8 ? ".jpg"
-                : bytes[0] == 0x89 && bytes[1] == (byte)'P' ? ".png"
-                : bytes[0] == (byte)'R' && bytes[1] == (byte)'I' ? ".webp" : ".img");
-            Directory.CreateDirectory(directory);
-            Storage.AtomicFile.WriteAllBytes(file, bytes);
+            }
             context.Post(_ =>
             {
                 if (exportedFor == art)
@@ -164,7 +177,7 @@ public sealed class MprisBridge : IMprisTarget, IDisposable
     public void Play() => services.Player.Resume();
     public void Pause() => services.Player.Pause();
     public void PlayPause() => services.Player.PlayPause();
-    public void Stop() => services.Player.Pause();
+    public void Stop() => services.Player.Stop();
     public void Next() => services.Player.Next();
     public void Previous() => services.Player.Previous();
     public void SeekBy(TimeSpan offset) => services.Player.Seek(services.Player.Position + offset);

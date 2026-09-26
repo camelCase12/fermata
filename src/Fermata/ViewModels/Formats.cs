@@ -22,9 +22,10 @@ public static class Formats
     {
         if (time.TotalDays >= 2)
             return $"{time.TotalDays:0} days";
-        if (time.TotalHours >= 1)
-            return time.Minutes > 0 ? $"{(int)time.TotalHours} hr {time.Minutes} min" : $"{(int)time.TotalHours} hr";
-        return $"{Math.Max(1, (int)Math.Round(time.TotalMinutes))} min";
+        int minutes = Math.Max(1, (int)Math.Round(time.TotalMinutes));
+        if (minutes >= 60)
+            return minutes % 60 > 0 ? $"{minutes / 60} hr {minutes % 60} min" : $"{minutes / 60} hr";
+        return $"{minutes} min";
     }
 
     public static string Count(int count, string singular, string? plural = null) =>

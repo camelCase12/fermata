@@ -198,7 +198,14 @@ public sealed class SearchIndex
         else if (name.StartsWith(query, StringComparison.Ordinal))
             score += 3;
         // Shorter names are closer matches for the same words.
-        score -= name.Length * 0.004;
+        foreach (string token in tokens)
+        {
+            if (name.Contains(token, StringComparison.Ordinal))
+            {
+                score -= name.Length * 0.004;
+                break;
+            }
+        }
         return score;
     }
 }

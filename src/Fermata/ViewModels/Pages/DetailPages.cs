@@ -225,6 +225,7 @@ public sealed partial class PlaylistViewModel : PageViewModel
     {
         var library = Shell.Library;
         IReadOnlyList<Track> tracks;
+        int unavailable = 0;
         switch (Kind)
         {
             case PlaylistKind.Playlist:
@@ -240,9 +241,12 @@ public sealed partial class PlaylistViewModel : PageViewModel
                 }
                 tracks = resolved;
                 List.PlaylistIndices = positions;
+                unavailable = Playlist.Paths.Count - resolved.Count;
                 Title = Playlist.Name;
                 Description = Playlist.Description;
-                EmptyMessage = "Add songs with “Add to playlist” in any song's menu, or by dragging them onto the playlist in the sidebar.";
+                EmptyMessage = unavailable > 0
+                    ? "The songs in this playlist are not in your library right now. They come back when their folder is available again."
+                    : "Add songs with “Add to playlist” in any song's menu, or by dragging them onto the playlist in the sidebar.";
                 break;
             case PlaylistKind.Liked:
                 var userData = Shell.Services.UserData;
@@ -266,6 +270,8 @@ public sealed partial class PlaylistViewModel : PageViewModel
         Backdrop = Covers;
         var total = TimeSpan.FromTicks(tracks.Sum(t => t.Duration.Ticks));
         Details = tracks.Count == 0 ? "No songs yet" : $"{Formats.Count(tracks.Count, "song")} · {Formats.LongDuration(total)}";
+        if (unavailable > 0)
+            Details = tracks.Count == 0 ? $"{unavailable} unavailable" : $"{Details} · {unavailable} unavailable";
     }
 
     [RelayCommand]
@@ -349,7 +355,9 @@ public sealed partial class GenreViewModel : PageViewModel
         }
         List.Tracks = tracks;
         Albums = albums.Cast<object>().ToList();
-        Details = $"{Formats.Count(albums.Count, "album")} · {Formats.Count(tracks.Count, "song")}";
+        Details = albums.Count == 0
+            ? Formats.Count(tracks.Count, "song")
+            : $"{Formats.Count(albums.Count, "album")} · {Formats.Count(tracks.Count, "song")}";
     }
 
     [RelayCommand]

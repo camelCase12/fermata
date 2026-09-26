@@ -69,6 +69,9 @@ public sealed class Player : IDisposable
     /// <summary>Supplies tracks to continue with when the queue runs out; see <see cref="Autoplay"/>.</summary>
     public Func<PlayQueue, IReadOnlyList<Track>>? AutoplaySource { get; set; }
 
+    /// <summary>Whether a folder exists.</summary>
+    public Func<string, bool> FolderExists { get; set; } = Directory.Exists;
+
     /// <summary>Raised when playing, paused or stopped changes.</summary>
     public event Action? StateChanged;
 
@@ -429,8 +432,16 @@ public sealed class Player : IDisposable
         {
             // The broken file is skipped with Next, so that repeat-one cannot loop on it.
             consecutiveFailures++;
-            PlaybackFailed?.Invoke($"Couldn't play “{playing!.Entry.Track.Title}”: {ended.Error}");
+            var track = playing!.Entry.Track;
             FinishListening(completed: false);
+            // Without its folder, the songs after it are most likely unavailable too.
+            if (Path.GetDirectoryName(track.Path) is { } folder && !FolderExists(folder))
+            {
+                PlaybackFailed?.Invoke($"Couldn't play “{track.Title}”: its folder is not available");
+                Stop();
+                return;
+            }
+            PlaybackFailed?.Invoke($"Couldn't play “{track.Title}”: {ended.Error}");
             if (consecutiveFailures >= Math.Min(Math.Max(Queue.Count, 1), 8))
             {
                 Stop();

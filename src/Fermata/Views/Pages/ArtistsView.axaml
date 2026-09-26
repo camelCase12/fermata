@@ -16,8 +16,8 @@
             <PathIcon Data="{StaticResource Icon.Search}" Classes="small" Margin="10,0,2,0" Foreground="{DynamicResource TextTertiaryBrush}" />
           </TextBox.InnerLeftContent>
         </TextBox>
-        <ToggleSwitch Grid.Column="1" IsChecked="{Binding IncludeGuests}" OnContent="Including featured artists"
-                      OffContent="Including featured artists" VerticalAlignment="Center"
+        <ToggleSwitch Grid.Column="1" IsChecked="{Binding IncludeGuests}" OnContent="Include featured artists"
+                      OffContent="Include featured artists" VerticalAlignment="Center"
                       AutomationProperties.Name="Include featured artists" />
       </Grid>
       <views:CardGrid Items="{Binding Artists}" MinCardWidth="160" />

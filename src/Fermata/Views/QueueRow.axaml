@@ -32,6 +32,18 @@
     <Style Selector="views|QueueRow.current Border#Row">
       <Setter Property="Background" Value="{DynamicResource AccentWashBrush}" />
     </Style>
+    <Style Selector="ListBoxItem:pointerover views|QueueRow Border#Row">
+      <Setter Property="Background" Value="{DynamicResource HoverBrush}" />
+    </Style>
+    <Style Selector="ListBoxItem:selected views|QueueRow Border#Row">
+      <Setter Property="Background" Value="{DynamicResource SelectedBrush}" />
+    </Style>
+    <Style Selector="ListBoxItem:selected:pointerover views|QueueRow Border#Row">
+      <Setter Property="Background" Value="{DynamicResource PressedBrush}" />
+    </Style>
+    <Style Selector="ListBoxItem.drop views|QueueRow Border#Row">
+      <Setter Property="Background" Value="{DynamicResource DropTargetBrush}" />
+    </Style>
     <Style Selector="views|QueueRow Border#AutoplayDivider">
       <Setter Property="IsVisible" Value="False" />
     </Style>

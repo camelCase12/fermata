@@ -121,7 +121,7 @@ public partial class App : Application
                         case "play-pause": services.Player.PlayPause(); break;
                         case "next": services.Player.Next(); break;
                         case "previous": services.Player.Previous(); break;
-                        case "stop": services.Player.Pause(); break;
+                        case "stop": services.Player.Stop(); break;
                     }
                     break;
                 case "raise":
@@ -136,22 +136,47 @@ public partial class App : Application
         }
     }
 
-    /// <summary>Plays files and folders given from outside, reading any that are not in the library.</summary>
+    /// <summary>Plays files, folders and M3U playlists given from outside, reading any files that are not in the library.</summary>
     internal static void OpenFiles(AppServices services, Shell shell, IReadOnlyList<string> paths)
     {
         var library = services.Library.Snapshot;
         var tracks = new List<Track>();
+        var failed = new List<string>();
         var pool = new StringPool();
+        string? playlistName = null;
         foreach (string path in paths)
         {
-            IEnumerable<string> files = Directory.Exists(path)
-                ? Directory.EnumerateFiles(path, "*", SearchOption.AllDirectories).Where(f => Metadata.TagReader.AudioExtensions.Contains(Path.GetExtension(f))).Order(StringComparer.Ordinal)
-                : [path];
+            IEnumerable<string> files;
+            if (Directory.Exists(path))
+            {
+                files = Directory.EnumerateFiles(path, "*", SearchOption.AllDirectories)
+                    .Where(f => Metadata.TagReader.AudioExtensions.Contains(Path.GetExtension(f))).Order(StringComparer.Ordinal);
+            }
+            else if (IsPlaylistFile(path) && File.Exists(path))
+            {
+                var playlist = TryReadM3u(path);
+                if (playlist is null)
+                {
+                    failed.Add(path);
+                    continue;
+                }
+                playlistName ??= playlist.Name ?? Path.GetFileNameWithoutExtension(path);
+                files = playlist.Paths.Where(File.Exists);
+            }
+            else
+            {
+                files = [path];
+            }
             foreach (string file in files)
             {
                 if (library.FindTrack(file) is { } known)
                 {
                     tracks.Add(known);
+                    continue;
+                }
+                if (!Metadata.TagReader.AudioExtensions.Contains(Path.GetExtension(file)) || !File.Exists(file))
+                {
+                    failed.Add(file);
                     continue;
                 }
                 try
@@ -162,12 +187,31 @@ public partial class App : Application
                 }
                 catch (Exception error) when (error is IOException or UnauthorizedAccessException)
                 {
-                    shell.Toasts.Show($"Couldn't open {Path.GetFileName(file)}");
+                    failed.Add(file);
                 }
             }
         }
+        if (failed.Count == 1)
+            shell.Toasts.Show($"Couldn't open {Path.GetFileName(failed[0])}");
+        else if (failed.Count > 1)
+            shell.Toasts.Show($"Couldn't open {failed.Count} files");
         if (tracks.Count > 0)
-            shell.Play(tracks, 0, new QueueSource("files", SourceTitle(paths, tracks)));
+            shell.Play(tracks, 0, new QueueSource("files", playlistName ?? SourceTitle(paths, tracks)));
+    }
+
+    private static bool IsPlaylistFile(string path) =>
+        Path.GetExtension(path).ToLowerInvariant() is ".m3u" or ".m3u8";
+
+    private static M3uPlaylist? TryReadM3u(string path)
+    {
+        try
+        {
+            return PlaylistStore.ReadM3u(path);
+        }
+        catch (Exception error) when (error is IOException or UnauthorizedAccessException)
+        {
+            return null;
+        }
     }
 
     /// <summary>The name of the source that opened files play from.</summary>

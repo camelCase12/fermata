@@ -26,6 +26,7 @@ public sealed partial class TrackListModel(Shell shell, QueueSource source, Trac
     public QueueSource Source { get; set; } = source;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ShowHeader))]
     public partial IReadOnlyList<Track> Tracks { get; set; } = [];
 
     /// <summary>The playlist shown, when the list is one.</summary>
@@ -40,7 +41,7 @@ public sealed partial class TrackListModel(Shell shell, QueueSource source, Trac
     public partial bool CanReorder { get; set; }
 
     /// <summary>Whether column titles are shown.</summary>
-    public bool ShowHeader => Style != TrackListStyle.Album;
+    public bool ShowHeader => Style != TrackListStyle.Album && Tracks.Count > 0;
 
     public void PlayAt(int index)
     {

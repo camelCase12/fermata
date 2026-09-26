@@ -133,6 +133,7 @@ public sealed class AppServices : IDisposable
 
     private void OnLibraryChanged(LibrarySnapshot snapshot)
     {
+        Art.ForgetFailures();
         var renames = UserData.Relink(snapshot);
         if (renames.Count > 0)
             Playlists.RenamePaths(renames);

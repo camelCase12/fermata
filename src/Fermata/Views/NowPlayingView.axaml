@@ -96,7 +96,7 @@
             <ToggleSwitch Grid.Column="1" IsChecked="{Binding Autoplay}" OnContent="Autoplay" OffContent="Autoplay"
                           ToolTip.Tip="Keep playing similar music when the queue ends" />
           </Grid>
-          <ListBox Name="QueueList" Grid.Row="1" Classes="rows" ItemsSource="{Binding Entries}" SelectionMode="Multiple">
+          <ListBox Name="QueueList" Grid.Row="1" Classes="rows queue" ItemsSource="{Binding Entries}" SelectionMode="Multiple">
             <ListBox.ItemTemplate>
               <DataTemplate DataType="playback:QueueEntry">
                 <views:QueueRow />

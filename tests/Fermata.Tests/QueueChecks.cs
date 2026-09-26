@@ -131,6 +131,10 @@ internal static class QueueChecks
 
         queue.Append(MakeTracks(1, "a"));
         check.Equal("a0", queue.Entries[^1].Track.Title, "add to queue appends");
+        queue.Append(MakeTracks(2, "auto"), autoplay: true);
+        queue.Append(MakeTracks(1, "b"));
+        check.Equal("a0,b0,auto0,auto1", Titles(queue.Entries.TakeLast(4)), "add to queue goes before autoplay entries");
+        queue.Remove(queue.Entries.TakeLast(3).ToArray());
 
         queue.JumpTo(queue.Entries[2]); // n1
         bool currentRemoved = queue.Remove([queue.Entries[0], queue.Entries[1]]);

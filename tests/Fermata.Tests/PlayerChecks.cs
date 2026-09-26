@@ -22,7 +22,7 @@ internal static class PlayerChecks
     {
         var engine = new FakeEngine();
         var data = new UserData();
-        var player = new Player(engine, new PlayQueue(new Random(seed)), data);
+        var player = new Player(engine, new PlayQueue(new Random(seed)), data) { FolderExists = _ => true };
         return (player, engine, data);
     }
 
@@ -154,6 +154,18 @@ internal static class PlayerChecks
         for (int i = 0; i < 10 && engine.PendingEvents > 0; i++)
             engine.Deliver();
         check.That(player.State != PlaybackState.Playing, "a queue of unplayable files stops instead of looping");
+
+        (player, engine, _) = Create();
+        player.FolderExists = _ => false;
+        foreach (var track in tracks)
+            engine.Broken.Add(track.Path);
+        messages.Clear();
+        player.PlaybackFailed += messages.Add;
+        player.Play(tracks, 1, new QueueSource("album", "A"));
+        for (int i = 0; i < 10 && engine.PendingEvents > 0; i++)
+            engine.Deliver();
+        check.That(player.State != PlaybackState.Playing && player.CurrentTrack == tracks[1] && player.Queue.Count == 4 && messages.Count == 1,
+            "a song whose folder is missing stops playback there and keeps the queue");
     }
 
     private static void Statistics(Checks check)

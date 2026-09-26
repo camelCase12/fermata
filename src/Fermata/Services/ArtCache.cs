@@ -80,6 +80,17 @@ public sealed class ArtCache
         _ = DecodeAsync(entry);
     }
 
+    /// <summary>Forgets images that could not be read, so that they are tried again when next requested.</summary>
+    public void ForgetFailures()
+    {
+        foreach (var (key, entry) in entries.Where(e => e.Value.Failed).ToList())
+            entries.Remove(key);
+        foreach (var source in colorGrids.Where(g => g.Value is null).Select(g => g.Key).ToList())
+            colorGrids.Remove(source);
+        foreach (var source in palettes.Where(p => p.Value is null).Select(p => p.Key).ToList())
+            palettes.Remove(source);
+    }
+
     private async Task DecodeAsync(Entry entry)
     {
         Bitmap? bitmap = null;

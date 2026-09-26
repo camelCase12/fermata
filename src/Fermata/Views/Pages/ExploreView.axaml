@@ -6,7 +6,7 @@
              x:DataType="pages:ExploreViewModel">
   <UserControl.DataTemplates>
     <DataTemplate DataType="pages:BrowseTile">
-      <Button Classes="tile" Background="{Binding Background}" Height="96" MinWidth="180" Padding="16,12"
+      <Button Classes="tile" Background="{Binding Background}" Height="96" Padding="16,12"
               HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" VerticalContentAlignment="Bottom"
               Command="{Binding $parent[UserControl].((pages:ExploreViewModel)DataContext).OpenTileCommand}" CommandParameter="{Binding}">
         <StackPanel>
@@ -19,12 +19,16 @@
   <ScrollViewer HorizontalScrollBarVisibility="Disabled">
     <StackPanel Margin="32,10,32,40" Spacing="36">
       <TextBlock Text="Explore" Classes="h1" />
+      <StackPanel IsVisible="{Binding IsLibraryEmpty}" Spacing="14" HorizontalAlignment="Left">
+        <TextBlock Text="Genres, decades and your most played songs appear here once your library has music." Classes="secondary" />
+        <Button Theme="{StaticResource TextButton}" Command="{Binding OpenSettingsCommand}" Content="Choose music folders" />
+      </StackPanel>
       <StackPanel Spacing="14" IsVisible="{Binding Genres.Count, Converter={x:Static views:Converters.Positive}}">
         <TextBlock Text="Genres" Classes="h2" />
         <ItemsControl ItemsSource="{Binding Genres}">
           <ItemsControl.ItemsPanel>
             <ItemsPanelTemplate>
-              <UniformGrid Columns="4" />
+              <UniformGrid Columns="{Binding $parent[ItemsControl].Bounds.Width, Converter={x:Static views:Converters.TileColumns}}" />
             </ItemsPanelTemplate>
           </ItemsControl.ItemsPanel>
         </ItemsControl>
@@ -34,12 +38,13 @@
         <ItemsControl ItemsSource="{Binding Decades}">
           <ItemsControl.ItemsPanel>
             <ItemsPanelTemplate>
-              <UniformGrid Columns="4" />
+              <UniformGrid Columns="{Binding $parent[ItemsControl].Bounds.Width, Converter={x:Static views:Converters.TileColumns}}" />
             </ItemsPanelTemplate>
           </ItemsControl.ItemsPanel>
         </ItemsControl>
       </StackPanel>
-      <views:Shelf Title="New in your library" Items="{Binding NewAlbums}" />
+      <views:Shelf Title="New in your library" Items="{Binding NewAlbums}"
+                   IsVisible="{Binding NewAlbums.Count, Converter={x:Static views:Converters.Positive}}" />
       <StackPanel Spacing="12" IsVisible="{Binding HasTopSongs}">
         <TextBlock Text="Your most played" Classes="h2" />
         <views:TrackList DataContext="{Binding TopSongs}" />

@@ -317,15 +317,37 @@ public sealed class PlayQueue
     }
 
     /// <summary>Adds tracks to the end of the queue ("Add to queue").</summary>
+    /// <remarks>Tracks the listener adds go before any upcoming entries added by autoplay.</remarks>
     public void Append(IReadOnlyList<Track> tracks, bool autoplay = false)
     {
         if (tracks.Count == 0)
             return;
         var entries = tracks.Select(t => new QueueEntry(t, autoplay)).ToList();
-        linear.AddRange(entries);
-        shuffled?.AddRange(entries);
+        if (autoplay)
+        {
+            linear.AddRange(entries);
+            shuffled?.AddRange(entries);
+        }
+        else
+        {
+            var playing = Current;
+            int linearFrom = playing is null ? 0 : linear.IndexOf(playing) + 1;
+            linear.InsertRange(FirstAutoplay(linear, linearFrom), entries);
+            shuffled?.InsertRange(FirstAutoplay(shuffled, current + 1), entries);
+        }
         nextCycle = null;
         Notify(QueueChange.Entries);
+    }
+
+    /// <summary>The index of the first autoplay entry at or after <paramref name="from"/>, or the end of the list.</summary>
+    private static int FirstAutoplay(List<QueueEntry> list, int from)
+    {
+        for (int i = Math.Max(from, 0); i < list.Count; i++)
+        {
+            if (list[i].IsAutoplay)
+                return i;
+        }
+        return list.Count;
     }
 
     /// <summary>Removes entries.</summary>

@@ -88,6 +88,11 @@ public sealed partial class SongsViewModel : FilteredPageViewModel
 
     [ObservableProperty] public partial SongSort Sort { get; set; }
     [ObservableProperty] public partial string Summary { get; private set; } = "";
+    [ObservableProperty] public partial bool HasSongs { get; private set; } = true;
+    [ObservableProperty] public partial bool IsLibraryEmpty { get; private set; }
+
+    [RelayCommand]
+    private void OpenSettings() => Shell.GoSettings();
 
     public SortChoice SelectedSort
     {
@@ -120,6 +125,8 @@ public sealed partial class SongsViewModel : FilteredPageViewModel
         List.Source = new QueueSource("songs", filter.Length > 0 ? $"Songs matching “{filter}”" : "All songs");
         var total = TimeSpan.FromTicks(tracks.Sum(t => t.Duration.Ticks));
         Summary = tracks.Count == 0 ? "" : $"{Formats.Count(tracks.Count, "song")} · {Formats.LongDuration(total)}";
+        HasSongs = tracks.Count > 0;
+        IsLibraryEmpty = library.Tracks.Count == 0;
     }
 
     internal static List<Track> SortTracks(List<Track> tracks, SongSort sort, IReadOnlyDictionary<string, int>? plays)

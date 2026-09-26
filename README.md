@@ -55,14 +55,20 @@ You need the .NET 10 SDK and clang.
 | | |
 | --- | --- |
 | Play / pause | `Space` or `K` |
-| Next / previous | `Ctrl+→` / `Ctrl+←` |
+| Next / previous | `Ctrl+→` / `Ctrl+←`, or `Shift+N` / `Shift+P` |
 | Skip back / forward 10 s | `J` / `L` |
+| Skip back / forward 5 s | `←` / `→` (outside lists) |
 | Volume, mute | `Ctrl+↑` / `Ctrl+↓`, `M` |
 | Shuffle, repeat | `S`, `R` |
 | Like the current song | `F` |
 | Now playing | `Q` |
 | Search | `Ctrl+F` or `/` |
 | Back / forward | `Alt+←` / `Alt+→` |
+| Home, Explore, Songs, Albums, Artists, Liked songs, Recently played | `Ctrl+1` … `Ctrl+7` |
+| Settings | `Ctrl+,` |
+| Play the selected song | `Enter` |
+| Remove the selection from a playlist or the queue | `Delete` |
+| Move the selected song in a playlist or the queue | `Alt+↑` / `Alt+↓` |
 | Quit | `Ctrl+Q` |
 
 ## Notes

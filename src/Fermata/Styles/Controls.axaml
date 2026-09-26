@@ -13,7 +13,7 @@
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="FocusAdorner">
           <FocusAdornerTemplate>
-            <Border BorderThickness="2" BorderBrush="{DynamicResource FocusRingBrush}" CornerRadius="12" Margin="-2" />
+            <Border BorderThickness="2" BorderBrush="{DynamicResource FocusRingBrush}" CornerRadius="12" Margin="-2" AdornerLayer.IsClipEnabled="False" />
           </FocusAdornerTemplate>
         </Setter>
         <Setter Property="HorizontalContentAlignment" Value="Center" />
@@ -51,7 +51,7 @@
         <Setter Property="CornerRadius" Value="10" />
         <Setter Property="FocusAdorner">
           <FocusAdornerTemplate>
-            <Border BorderThickness="2" BorderBrush="{DynamicResource FocusRingBrush}" CornerRadius="12" Margin="-2" />
+            <Border BorderThickness="2" BorderBrush="{DynamicResource FocusRingBrush}" CornerRadius="12" Margin="-2" AdornerLayer.IsClipEnabled="False" />
           </FocusAdornerTemplate>
         </Setter>
         <Setter Property="Cursor" Value="Hand" />
@@ -89,7 +89,7 @@
         <Setter Property="FontWeight" Value="Bold" />
         <Setter Property="FocusAdorner">
           <FocusAdornerTemplate>
-            <Border BorderThickness="2" BorderBrush="{DynamicResource FocusRingBrush}" CornerRadius="12" Margin="-2" />
+            <Border BorderThickness="2" BorderBrush="{DynamicResource FocusRingBrush}" CornerRadius="12" Margin="-2" AdornerLayer.IsClipEnabled="False" />
           </FocusAdornerTemplate>
         </Setter>
         <Setter Property="FontSize" Value="14" />
@@ -132,7 +132,7 @@
         <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
         <Setter Property="FocusAdorner">
           <FocusAdornerTemplate>
-            <Border BorderThickness="2" BorderBrush="{DynamicResource FocusRingBrush}" CornerRadius="4" Margin="-4,-2" />
+            <Border BorderThickness="2" BorderBrush="{DynamicResource FocusRingBrush}" CornerRadius="4" Margin="-4,-2" AdornerLayer.IsClipEnabled="False" />
           </FocusAdornerTemplate>
         </Setter>
         <Setter Property="Padding" Value="0" />
@@ -162,7 +162,7 @@
         <Setter Property="FontSize" Value="14.5" />
         <Setter Property="FocusAdorner">
           <FocusAdornerTemplate>
-            <Border BorderThickness="2" BorderBrush="{DynamicResource FocusRingBrush}" CornerRadius="12" Margin="-2" />
+            <Border BorderThickness="2" BorderBrush="{DynamicResource FocusRingBrush}" CornerRadius="12" Margin="-2" AdornerLayer.IsClipEnabled="False" />
           </FocusAdornerTemplate>
         </Setter>
         <Setter Property="Cursor" Value="Hand" />
@@ -195,7 +195,7 @@
         <Setter Property="FontSize" Value="13.5" />
         <Setter Property="FocusAdorner">
           <FocusAdornerTemplate>
-            <Border BorderThickness="2" BorderBrush="{DynamicResource FocusRingBrush}" CornerRadius="12" Margin="-2" />
+            <Border BorderThickness="2" BorderBrush="{DynamicResource FocusRingBrush}" CornerRadius="12" Margin="-2" AdornerLayer.IsClipEnabled="False" />
           </FocusAdornerTemplate>
         </Setter>
         <Setter Property="FontWeight" Value="Bold" />
@@ -224,7 +224,7 @@
         <Setter Property="FontSize" Value="13" />
         <Setter Property="FocusAdorner">
           <FocusAdornerTemplate>
-            <Border BorderThickness="2" BorderBrush="{DynamicResource FocusRingBrush}" CornerRadius="9" Margin="-2" />
+            <Border BorderThickness="2" BorderBrush="{DynamicResource FocusRingBrush}" CornerRadius="9" Margin="-2" AdornerLayer.IsClipEnabled="False" />
           </FocusAdornerTemplate>
         </Setter>
         <Setter Property="Template">
@@ -262,7 +262,7 @@
   <Style Selector="AdornerLayer">
     <Setter Property="DefaultFocusAdorner">
       <FocusAdornerTemplate>
-        <Border BorderThickness="2" BorderBrush="{DynamicResource FocusRingBrush}" CornerRadius="8" Margin="-2" />
+        <Border BorderThickness="2" BorderBrush="{DynamicResource FocusRingBrush}" CornerRadius="8" Margin="-2" AdornerLayer.IsClipEnabled="False" />
       </FocusAdornerTemplate>
     </Setter>
   </Style>
@@ -397,6 +397,14 @@
   </Style>
   <Style Selector="ListBox.rows ListBoxItem:selected:focus /template/ ContentPresenter#PART_ContentPresenter">
     <Setter Property="Background" Value="{DynamicResource SelectedBrush}" />
+  </Style>
+  <!-- The queue's rows draw their own highlight, below the autoplay divider. -->
+  <Style Selector="ListBox.rows.queue ListBoxItem /template/ ContentPresenter#PART_ContentPresenter,
+                   ListBox.rows.queue ListBoxItem:pointerover /template/ ContentPresenter#PART_ContentPresenter,
+                   ListBox.rows.queue ListBoxItem:selected /template/ ContentPresenter#PART_ContentPresenter,
+                   ListBox.rows.queue ListBoxItem:selected:pointerover /template/ ContentPresenter#PART_ContentPresenter,
+                   ListBox.rows.queue ListBoxItem:selected:focus /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="Transparent" />
   </Style>
 
   <!-- Drop-downs, shaped like the text fields. -->
