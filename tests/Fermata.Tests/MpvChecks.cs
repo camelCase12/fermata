@@ -54,7 +54,8 @@ internal static class MpvChecks
 
         // Seeking, pausing and position.
         player.Play(tracks.Take(2).ToList(), 0, new QueueSource("test", "test"));
-        context.RunUntil(() => player.Duration > TimeSpan.Zero && engine.Position > TimeSpan.Zero, TimeSpan.FromSeconds(5));
+        // Wait for real progress: the duration and position of the previous queue can still be showing.
+        context.RunUntil(() => player.State == PlaybackState.Playing && engine.Position.TotalSeconds > 0.1, TimeSpan.FromSeconds(5));
         check.Near(1.2, player.Duration.TotalSeconds, 0.05, "duration measured by mpv");
         player.Pause();
         context.RunUntil(() => false, TimeSpan.FromMilliseconds(150));
