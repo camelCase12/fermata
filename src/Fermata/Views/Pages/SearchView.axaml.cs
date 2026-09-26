@@ -48,18 +48,18 @@ public partial class SearchView : UserControl
             case Track track:
                 TopArt.Source = library?.ArtOf(track);
                 TopTitle.Text = track.Title;
-                TopSubtitle.Text = $"Song • {track.DisplayArtist}";
+                TopSubtitle.Text = $"Song · {track.DisplayArtist}";
                 break;
             case Album album:
                 TopArt.Source = album.Art;
                 TopTitle.Text = album.Title;
-                TopSubtitle.Text = $"Album • {album.Artist}";
+                TopSubtitle.Text = $"Album · {album.Artist}";
                 break;
             case Artist artist:
                 TopArt.Source = artist.Art;
                 TopArt.IsRound = true;
                 TopTitle.Text = artist.Name;
-                TopSubtitle.Text = $"Artist • {Formats.Count(artist.Tracks.Count, "song")}";
+                TopSubtitle.Text = $"Artist · {Formats.Count(artist.Tracks.Count, "song")}";
                 break;
         }
     }

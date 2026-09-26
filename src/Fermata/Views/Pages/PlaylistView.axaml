@@ -8,23 +8,23 @@
   <ScrollViewer HorizontalScrollBarVisibility="Disabled">
     <StackPanel Margin="32,10,32,40" Spacing="30">
       <Grid ColumnDefinitions="Auto,*">
-        <Border Width="232" Height="232" CornerRadius="10" ClipToBounds="True">
+        <Border Width="200" Height="200" CornerRadius="16" ClipToBounds="True">
           <controls:Mosaic Covers="{Binding Covers}" PlaceholderKey="{Binding Title}" />
         </Border>
         <StackPanel Grid.Column="1" Margin="28,0,0,4" VerticalAlignment="Bottom" Spacing="8">
-          <TextBlock Text="{Binding KindLabel}" Classes="overline" />
+          <TextBlock Text="{Binding KindLabel}" Classes="kind" />
           <TextBlock Text="{Binding Title}" Classes="display" TextWrapping="Wrap" MaxLines="2" TextTrimming="CharacterEllipsis" />
           <TextBlock Text="{Binding Description}" Classes="secondary" TextWrapping="Wrap" MaxWidth="640"
                      IsVisible="{Binding Description, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
           <TextBlock Text="{Binding Details}" Classes="secondary" />
           <StackPanel Orientation="Horizontal" Spacing="10" Margin="0,10,0,0">
-            <Button Theme="{StaticResource PillButton}" Classes="accent" Command="{Binding PlayCommand}" IsEnabled="{Binding !IsEmpty}">
+            <Button Theme="{StaticResource TextButton}" Classes="accent" Command="{Binding PlayCommand}" IsEnabled="{Binding !IsEmpty}">
               <StackPanel Orientation="Horizontal" Spacing="8">
                 <PathIcon Data="{StaticResource Icon.Play}" Classes="small" />
                 <TextBlock Text="Play" VerticalAlignment="Center" />
               </StackPanel>
             </Button>
-            <Button Theme="{StaticResource PillButton}" Command="{Binding ShuffleCommand}" IsEnabled="{Binding !IsEmpty}">
+            <Button Theme="{StaticResource TextButton}" Command="{Binding ShuffleCommand}" IsEnabled="{Binding !IsEmpty}">
               <StackPanel Orientation="Horizontal" Spacing="8">
                 <PathIcon Data="{StaticResource Icon.Shuffle}" Classes="small" />
                 <TextBlock Text="Shuffle" VerticalAlignment="Center" />
@@ -45,7 +45,7 @@
             <Button Theme="{StaticResource IconButton}" Command="{Binding DeleteCommand}" ToolTip.Tip="Delete playlist" IsVisible="{Binding IsUserPlaylist}">
               <PathIcon Data="{StaticResource Icon.Delete}" />
             </Button>
-            <Button Theme="{StaticResource PillButton}" Command="{Binding SaveAsPlaylistCommand}" IsVisible="{Binding !IsUserPlaylist}" IsEnabled="{Binding !IsEmpty}">
+            <Button Theme="{StaticResource TextButton}" Command="{Binding SaveAsPlaylistCommand}" IsVisible="{Binding !IsUserPlaylist}" IsEnabled="{Binding !IsEmpty}">
               <StackPanel Orientation="Horizontal" Spacing="8">
                 <PathIcon Data="{StaticResource Icon.Plus}" Classes="small" />
                 <TextBlock Text="Save as playlist" VerticalAlignment="Center" />

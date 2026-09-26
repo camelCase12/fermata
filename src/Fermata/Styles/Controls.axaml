@@ -2,18 +2,18 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
   <Styles.Resources>
     <ResourceDictionary>
-      <!-- A round, transparent button for a single icon. -->
+      <!-- A transparent square button for a single icon. -->
       <ControlTheme x:Key="IconButton" TargetType="Button">
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
-        <Setter Property="Width" Value="36" />
-        <Setter Property="Height" Value="36" />
+        <Setter Property="Width" Value="38" />
+        <Setter Property="Height" Value="38" />
         <Setter Property="Padding" Value="0" />
-        <Setter Property="CornerRadius" Value="18" />
+        <Setter Property="CornerRadius" Value="10" />
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="FocusAdorner">
           <FocusAdornerTemplate>
-            <Border BorderThickness="2" BorderBrush="{DynamicResource FocusRingBrush}" CornerRadius="999" Margin="-2" />
+            <Border BorderThickness="2" BorderBrush="{DynamicResource FocusRingBrush}" CornerRadius="12" Margin="-2" />
           </FocusAdornerTemplate>
         </Setter>
         <Setter Property="HorizontalContentAlignment" Value="Center" />
@@ -45,20 +45,24 @@
       <ControlTheme x:Key="IconToggle" TargetType="ToggleButton">
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
-        <Setter Property="Width" Value="36" />
-        <Setter Property="Height" Value="36" />
+        <Setter Property="Width" Value="38" />
+        <Setter Property="Height" Value="38" />
         <Setter Property="Padding" Value="0" />
-        <Setter Property="CornerRadius" Value="18" />
+        <Setter Property="CornerRadius" Value="10" />
         <Setter Property="FocusAdorner">
           <FocusAdornerTemplate>
-            <Border BorderThickness="2" BorderBrush="{DynamicResource FocusRingBrush}" CornerRadius="999" Margin="-2" />
+            <Border BorderThickness="2" BorderBrush="{DynamicResource FocusRingBrush}" CornerRadius="12" Margin="-2" />
           </FocusAdornerTemplate>
         </Setter>
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="Template">
           <ControlTemplate>
             <Border Background="{TemplateBinding Background}" CornerRadius="{TemplateBinding CornerRadius}">
-              <ContentPresenter Content="{TemplateBinding Content}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+              <Panel>
+                <ContentPresenter Content="{TemplateBinding Content}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                <Border Name="Dot" Width="4" Height="4" CornerRadius="2" Margin="0,0,0,4" IsVisible="False"
+                        HorizontalAlignment="Center" VerticalAlignment="Bottom" Background="{TemplateBinding Foreground}" />
+              </Panel>
             </Border>
           </ControlTemplate>
         </Setter>
@@ -67,27 +71,28 @@
           <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
         </Style>
         <Style Selector="^:checked">
-          <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
+          <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
         </Style>
-        <Style Selector="^:checked:pointerover">
-          <Setter Property="Foreground" Value="{DynamicResource AccentHoverBrush}" />
+        <!-- A playback mode, such as shuffle, shows a dot while it is on. -->
+        <Style Selector="^.mode:checked /template/ Border#Dot">
+          <Setter Property="IsVisible" Value="True" />
         </Style>
       </ControlTheme>
 
-      <!-- A rounded text button. The class "accent" marks the primary action. -->
-      <ControlTheme x:Key="PillButton" TargetType="Button">
+      <!-- A text button. The class "accent" marks the primary action. -->
+      <ControlTheme x:Key="TextButton" TargetType="Button">
         <Setter Property="Background" Value="{DynamicResource FillBrush}" />
         <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
-        <Setter Property="Height" Value="36" />
+        <Setter Property="Height" Value="38" />
         <Setter Property="Padding" Value="16,0" />
-        <Setter Property="CornerRadius" Value="18" />
-        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="CornerRadius" Value="10" />
+        <Setter Property="FontWeight" Value="Bold" />
         <Setter Property="FocusAdorner">
           <FocusAdornerTemplate>
-            <Border BorderThickness="2" BorderBrush="{DynamicResource FocusRingBrush}" CornerRadius="999" Margin="-2" />
+            <Border BorderThickness="2" BorderBrush="{DynamicResource FocusRingBrush}" CornerRadius="12" Margin="-2" />
           </FocusAdornerTemplate>
         </Setter>
-        <Setter Property="FontSize" Value="13" />
+        <Setter Property="FontSize" Value="14" />
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="Template">
           <ControlTemplate>
@@ -149,18 +154,17 @@
       <ControlTheme x:Key="NavButton" TargetType="RadioButton">
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
-        <Setter Property="Height" Value="40" />
+        <Setter Property="Height" Value="38" />
         <Setter Property="Padding" Value="12,0" />
-        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="CornerRadius" Value="10" />
         <Setter Property="HorizontalAlignment" Value="Stretch" />
         <Setter Property="HorizontalContentAlignment" Value="Left" />
-        <Setter Property="FontSize" Value="14" />
+        <Setter Property="FontSize" Value="14.5" />
         <Setter Property="FocusAdorner">
           <FocusAdornerTemplate>
-            <Border BorderThickness="2" BorderBrush="{DynamicResource FocusRingBrush}" CornerRadius="10" Margin="-2" />
+            <Border BorderThickness="2" BorderBrush="{DynamicResource FocusRingBrush}" CornerRadius="12" Margin="-2" />
           </FocusAdornerTemplate>
         </Setter>
-        <Setter Property="FontWeight" Value="Medium" />
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="Template">
           <ControlTemplate>
@@ -176,25 +180,25 @@
           <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
         </Style>
         <Style Selector="^:checked">
-          <Setter Property="Background" Value="{DynamicResource SelectedBrush}" />
+          <Setter Property="Background" Value="{DynamicResource RaisedBrush}" />
           <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
         </Style>
       </ControlTheme>
 
       <!-- A filter or tab chip. -->
       <ControlTheme x:Key="ChipButton" TargetType="RadioButton">
-        <Setter Property="Background" Value="{DynamicResource SubtleFillBrush}" />
-        <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
-        <Setter Property="Height" Value="32" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Foreground" Value="{DynamicResource TextTertiaryBrush}" />
+        <Setter Property="Height" Value="34" />
         <Setter Property="Padding" Value="14,0" />
-        <Setter Property="CornerRadius" Value="8" />
-        <Setter Property="FontSize" Value="13" />
+        <Setter Property="CornerRadius" Value="10" />
+        <Setter Property="FontSize" Value="13.5" />
         <Setter Property="FocusAdorner">
           <FocusAdornerTemplate>
-            <Border BorderThickness="2" BorderBrush="{DynamicResource FocusRingBrush}" CornerRadius="10" Margin="-2" />
+            <Border BorderThickness="2" BorderBrush="{DynamicResource FocusRingBrush}" CornerRadius="12" Margin="-2" />
           </FocusAdornerTemplate>
         </Setter>
-        <Setter Property="FontWeight" Value="Medium" />
+        <Setter Property="FontWeight" Value="Bold" />
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="Template">
           <ControlTemplate>
@@ -205,10 +209,50 @@
         </Setter>
         <Style Selector="^:pointerover">
           <Setter Property="Background" Value="{DynamicResource HoverBrush}" />
+          <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
         </Style>
         <Style Selector="^:checked">
+          <Setter Property="Background" Value="{DynamicResource RaisedBrush}" />
+          <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+        </Style>
+      </ControlTheme>
+
+      <!-- A switch with a rounded-square track and knob. -->
+      <ControlTheme x:Key="{x:Type ToggleSwitch}" TargetType="ToggleSwitch">
+        <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="FocusAdorner">
+          <FocusAdornerTemplate>
+            <Border BorderThickness="2" BorderBrush="{DynamicResource FocusRingBrush}" CornerRadius="9" Margin="-2" />
+          </FocusAdornerTemplate>
+        </Setter>
+        <Setter Property="Template">
+          <ControlTemplate>
+            <StackPanel Orientation="Horizontal" Spacing="8" Background="Transparent">
+              <ContentPresenter Name="Label" Content="{TemplateBinding OffContent}" VerticalAlignment="Center"
+                                IsVisible="{Binding $parent[ToggleSwitch].OffContent, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+              <Border Name="Track" Width="32" Height="18" CornerRadius="6" Background="{DynamicResource RaisedBrush}"
+                      BorderBrush="{DynamicResource DividerBrush}" BorderThickness="1" VerticalAlignment="Center">
+                <Canvas Name="PART_SwitchKnob" Width="12" Height="12" Margin="2,0" HorizontalAlignment="Left">
+                  <Panel Name="PART_MovingKnobs" Width="12" Height="12" Canvas.Left="0">
+                    <Panel.Transitions>
+                      <Transitions>
+                        <DoubleTransition Property="Canvas.Left" Duration="0:0:0.12" Easing="CubicEaseOut" />
+                      </Transitions>
+                    </Panel.Transitions>
+                    <Border Name="Knob" CornerRadius="4" Background="{DynamicResource TextTertiaryBrush}" />
+                  </Panel>
+                </Canvas>
+              </Border>
+            </StackPanel>
+          </ControlTemplate>
+        </Setter>
+        <Style Selector="^:pointerover /template/ Border#Knob">
+          <Setter Property="Background" Value="{DynamicResource TextSecondaryBrush}" />
+        </Style>
+        <Style Selector="^:checked /template/ Border#Knob">
           <Setter Property="Background" Value="{DynamicResource TextPrimaryBrush}" />
-          <Setter Property="Foreground" Value="{DynamicResource BackgroundBrush}" />
         </Style>
       </ControlTheme>
     </ResourceDictionary>
@@ -218,7 +262,7 @@
   <Style Selector="AdornerLayer">
     <Setter Property="DefaultFocusAdorner">
       <FocusAdornerTemplate>
-        <Border BorderThickness="2" BorderBrush="{DynamicResource FocusRingBrush}" CornerRadius="6" Margin="-2" />
+        <Border BorderThickness="2" BorderBrush="{DynamicResource FocusRingBrush}" CornerRadius="8" Margin="-2" />
       </FocusAdornerTemplate>
     </Setter>
   </Style>
@@ -243,21 +287,31 @@
 
   <!-- Typography. -->
   <Style Selector="TextBlock.display">
-    <Setter Property="FontSize" Value="40" />
-    <Setter Property="FontWeight" Value="Bold" />
-    <Setter Property="LetterSpacing" Value="-0.5" />
+    <Setter Property="FontFamily" Value="{DynamicResource DisplayFont}" />
+    <Setter Property="FontSize" Value="42" />
+    <Setter Property="FontWeight" Value="ExtraBold" />
+    <Setter Property="LetterSpacing" Value="-0.8" />
   </Style>
   <Style Selector="TextBlock.h1">
-    <Setter Property="FontSize" Value="28" />
-    <Setter Property="FontWeight" Value="Bold" />
+    <Setter Property="FontFamily" Value="{DynamicResource DisplayFont}" />
+    <Setter Property="FontSize" Value="30" />
+    <Setter Property="FontWeight" Value="ExtraBold" />
+    <Setter Property="LetterSpacing" Value="-0.6" />
   </Style>
   <Style Selector="TextBlock.h2">
+    <Setter Property="FontFamily" Value="{DynamicResource DisplayFont}" />
     <Setter Property="FontSize" Value="20" />
     <Setter Property="FontWeight" Value="Bold" />
   </Style>
   <Style Selector="TextBlock.h3">
-    <Setter Property="FontSize" Value="15" />
-    <Setter Property="FontWeight" Value="SemiBold" />
+    <Setter Property="FontFamily" Value="{DynamicResource DisplayFont}" />
+    <Setter Property="FontSize" Value="16" />
+    <Setter Property="FontWeight" Value="Bold" />
+  </Style>
+  <!-- Times, counts and other figures. -->
+  <Style Selector="TextBlock.num">
+    <Setter Property="FontFamily" Value="{DynamicResource MonoFont}" />
+    <Setter Property="FontSize" Value="12.5" />
   </Style>
   <Style Selector="TextBlock.secondary">
     <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
@@ -269,11 +323,15 @@
     <Setter Property="FontSize" Value="12" />
     <Setter Property="Foreground" Value="{DynamicResource TextTertiaryBrush}" />
   </Style>
-  <Style Selector="TextBlock.overline">
-    <Setter Property="FontSize" Value="11" />
-    <Setter Property="FontWeight" Value="SemiBold" />
-    <Setter Property="LetterSpacing" Value="1" />
+  <!-- The kind of thing a page shows, above its title. -->
+  <Style Selector="TextBlock.kind">
+    <Setter Property="FontSize" Value="13" />
     <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
+  </Style>
+  <!-- Small labels for sections and columns. -->
+  <Style Selector="TextBlock.label">
+    <Setter Property="FontSize" Value="12.5" />
+    <Setter Property="Foreground" Value="{DynamicResource TextTertiaryBrush}" />
   </Style>
 
   <!-- Text fields. -->
@@ -315,18 +373,18 @@
     <Setter Property="Padding" Value="0" />
     <Setter Property="Margin" Value="0" />
     <Setter Property="MinHeight" Value="0" />
-    <Setter Property="CornerRadius" Value="6" />
+    <Setter Property="CornerRadius" Value="10" />
     <Setter Property="HorizontalContentAlignment" Value="Stretch" />
     <!-- The focus ring sits inside the row. -->
     <Setter Property="FocusAdorner">
       <FocusAdornerTemplate>
-        <Border BorderThickness="2" BorderBrush="{DynamicResource FocusRingBrush}" CornerRadius="6" />
+        <Border BorderThickness="2" BorderBrush="{DynamicResource FocusRingBrush}" CornerRadius="10" />
       </FocusAdornerTemplate>
     </Setter>
   </Style>
   <Style Selector="ListBox.rows ListBoxItem /template/ ContentPresenter#PART_ContentPresenter">
     <Setter Property="Background" Value="Transparent" />
-    <Setter Property="CornerRadius" Value="6" />
+    <Setter Property="CornerRadius" Value="10" />
   </Style>
   <Style Selector="ListBox.rows ListBoxItem:pointerover /template/ ContentPresenter#PART_ContentPresenter">
     <Setter Property="Background" Value="{DynamicResource HoverBrush}" />

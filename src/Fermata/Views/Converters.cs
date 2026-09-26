@@ -15,4 +15,9 @@ public static class Converters
     /// <summary>The cover for a track (embedded, album or folder art).</summary>
     public static readonly IValueConverter TrackArt = new FuncValueConverter<Track?, ArtSource?>(track =>
         track is not null && App.Shell is { } shell ? shell.Library.ArtOf(track) : null);
+
+    /// <summary>A playlist's length, such as "14 songs".</summary>
+    public static readonly IValueConverter SongCount = new FuncValueConverter<Playlist?, string>(playlist =>
+        playlist is null ? "" : ViewModels.Formats.Count(playlist.Paths.Count, "song"));
+
 }

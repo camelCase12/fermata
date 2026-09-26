@@ -83,4 +83,4 @@ distribution. If Fermata crashed, attach `~/.local/state/fermata/crash.log`.
 ## License
 
 MIT. See [LICENSE](LICENSE), and [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md) for the libraries and
-font Fermata uses.
+fonts Fermata uses.

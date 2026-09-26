@@ -47,7 +47,7 @@ AppBuilder.Configure<App>()
     .UseSkia()
     .UseHarfBuzz()
     .UseHeadless(new AvaloniaHeadlessPlatformOptions { UseHeadlessDrawing = false })
-    .WithInterFont()
+    .WithFermataFonts()
     .SetupWithoutStarting();
 
 var context = SynchronizationContext.Current!;

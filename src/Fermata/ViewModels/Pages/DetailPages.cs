@@ -48,7 +48,7 @@ public sealed partial class AlbumViewModel : PageViewModel
         Backdrop = album.Art is { } art ? [art] : [];
         List.Tracks = album.Tracks;
         Kind = album.IsCompilation ? "Compilation" : album.Tracks.Count <= 3 && album.Duration < TimeSpan.FromMinutes(15) ? "Single" : album.Tracks.Count <= 6 && album.Duration < TimeSpan.FromMinutes(30) ? "EP" : "Album";
-        Details = string.Join(" • ", new[]
+        Details = string.Join(" · ", new[]
         {
             album.Year > 0 ? album.Year.ToString() : "",
             Formats.Count(album.Tracks.Count, "song"),
@@ -122,7 +122,7 @@ public sealed partial class ArtistViewModel : PageViewModel
         Albums = Artist.Albums.Cast<object>().ToList();
         AppearsOn = Artist.AppearsOn.Cast<object>().ToList();
         HasAppearances = AppearsOn.Count > 0;
-        Details = string.Join(" • ", new[]
+        Details = string.Join(" · ", new[]
         {
             Artist.Albums.Count > 0 ? Formats.Count(Artist.Albums.Count, "album") : "",
             Formats.Count(Artist.Tracks.Count, "song"),
@@ -265,7 +265,7 @@ public sealed partial class PlaylistViewModel : PageViewModel
         Covers = HomeFeed.Covers(library, tracks);
         Backdrop = Covers;
         var total = TimeSpan.FromTicks(tracks.Sum(t => t.Duration.Ticks));
-        Details = tracks.Count == 0 ? "No songs yet" : $"{Formats.Count(tracks.Count, "song")} • {Formats.LongDuration(total)}";
+        Details = tracks.Count == 0 ? "No songs yet" : $"{Formats.Count(tracks.Count, "song")} · {Formats.LongDuration(total)}";
     }
 
     [RelayCommand]
@@ -349,7 +349,7 @@ public sealed partial class GenreViewModel : PageViewModel
         }
         List.Tracks = tracks;
         Albums = albums.Cast<object>().ToList();
-        Details = $"{Formats.Count(albums.Count, "album")} • {Formats.Count(tracks.Count, "song")}";
+        Details = $"{Formats.Count(albums.Count, "album")} · {Formats.Count(tracks.Count, "song")}";
     }
 
     [RelayCommand]

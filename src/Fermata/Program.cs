@@ -104,7 +104,7 @@ internal static class Program
         };
         return AppBuilder.Configure<App>()
             .UsePlatformDetect()
-            .WithInterFont()
+            .WithFermataFonts()
             .With(x11);
     }
 }

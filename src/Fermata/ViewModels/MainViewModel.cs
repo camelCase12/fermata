@@ -26,6 +26,7 @@ public sealed partial class MainViewModel : ObservableObject
 
         var services = shell.Services;
         services.Playlists.ListChanged += SyncPlaylists;
+        services.Playlists.PlaylistChanged += _ => SyncPlaylists();
         SyncPlaylists();
         shell.Navigator.PropertyChanged += (_, e) =>
         {
@@ -131,7 +132,7 @@ public sealed partial class MainViewModel : ObservableObject
         var current = Shell.Services.Playlists.Playlists;
         if (Playlists.SequenceEqual(current))
         {
-            // Replacing each item refreshes the names of renamed playlists.
+            // Replacing each item refreshes each playlist's name and length.
             for (int i = 0; i < Playlists.Count; i++)
                 Playlists[i] = current[i];
             return;

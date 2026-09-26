@@ -277,8 +277,8 @@ public sealed partial class SettingsViewModel : PageViewModel
         var library = Shell.Library;
         Statistics = library.Tracks.Count == 0
             ? "No music found yet."
-            : $"{Formats.Count(library.Tracks.Count, "song")} • {Formats.Count(library.Albums.Count, "album")} • "
-              + $"{Formats.Count(library.Artists.Count, "artist")} • {Formats.LongDuration(library.TotalDuration)} • {Formats.Size(library.TotalSize)}";
+            : $"{Formats.Count(library.Tracks.Count, "song")} · {Formats.Count(library.Albums.Count, "album")} · "
+              + $"{Formats.Count(library.Artists.Count, "artist")} · {Formats.LongDuration(library.TotalDuration)} · {Formats.Size(library.TotalSize)}";
     }
 
     private void UpdateDevices()

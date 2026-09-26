@@ -45,7 +45,7 @@ public partial class Card : UserControl
                 Art.Source = album.Art;
                 Art.PlaceholderKey = album.Key;
                 Title.Text = album.Title;
-                Subtitle.Text = album.Year > 0 ? $"{album.Artist} • {album.Year}" : album.Artist;
+                Subtitle.Text = album.Year > 0 ? $"{album.Artist} · {album.Year}" : album.Artist;
                 break;
             case Artist artist:
                 Art.Source = artist.Art;
@@ -65,7 +65,7 @@ public partial class Card : UserControl
                 var tracks = playlist.Resolve(shell.Library);
                 ShowMosaic(HomeFeed.Covers(shell.Library, tracks), playlist.Id);
                 Title.Text = playlist.Name;
-                Subtitle.Text = $"Playlist • {Formats.Count(tracks.Count, "song")}";
+                Subtitle.Text = $"Playlist · {Formats.Count(tracks.Count, "song")}";
                 break;
         }
     }

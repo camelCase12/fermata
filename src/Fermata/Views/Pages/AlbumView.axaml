@@ -9,9 +9,9 @@
   <ScrollViewer HorizontalScrollBarVisibility="Disabled">
     <StackPanel Margin="32,10,32,40" Spacing="30">
       <Grid ColumnDefinitions="Auto,*">
-        <controls:CoverArt Source="{Binding Album.Art}" PlaceholderKey="{Binding Album.Key}" Width="232" Height="232" Radius="10" />
+        <controls:CoverArt Source="{Binding Album.Art}" PlaceholderKey="{Binding Album.Key}" Width="200" Height="200" Radius="16" />
         <StackPanel Grid.Column="1" Margin="28,0,0,4" VerticalAlignment="Bottom" Spacing="8">
-          <TextBlock Text="{Binding Kind}" Classes="overline" />
+          <TextBlock Text="{Binding Kind}" Classes="kind" />
           <TextBlock Text="{Binding Album.Title}" Classes="display" TextWrapping="Wrap" MaxLines="2" TextTrimming="CharacterEllipsis" />
           <ItemsControl ItemsSource="{Binding Artists}">
             <ItemsControl.ItemsPanel>
@@ -31,13 +31,13 @@
           <TextBlock Text="{Binding Album.Artist}" FontWeight="SemiBold" FontSize="15" IsVisible="{Binding Album.IsCompilation}" />
           <TextBlock Text="{Binding Details}" Classes="secondary" />
           <StackPanel Orientation="Horizontal" Spacing="10" Margin="0,10,0,0">
-            <Button Theme="{StaticResource PillButton}" Classes="accent" Command="{Binding PlayCommand}">
+            <Button Theme="{StaticResource TextButton}" Classes="accent" Command="{Binding PlayCommand}">
               <StackPanel Orientation="Horizontal" Spacing="8">
                 <PathIcon Data="{StaticResource Icon.Play}" Classes="small" />
                 <TextBlock Text="Play" VerticalAlignment="Center" />
               </StackPanel>
             </Button>
-            <Button Theme="{StaticResource PillButton}" Command="{Binding ShuffleCommand}">
+            <Button Theme="{StaticResource TextButton}" Command="{Binding ShuffleCommand}">
               <StackPanel Orientation="Horizontal" Spacing="8">
                 <PathIcon Data="{StaticResource Icon.Shuffle}" Classes="small" />
                 <TextBlock Text="Shuffle" VerticalAlignment="Center" />

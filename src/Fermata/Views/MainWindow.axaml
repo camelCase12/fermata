@@ -14,15 +14,16 @@
       <!-- Sidebar -->
       <Border Background="{DynamicResource SidebarBrush}">
         <DockPanel>
-          <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Spacing="10" Margin="22,20,16,18">
-            <!-- The app icon, in the accent colour. -->
-            <Border Width="30" Height="30" CornerRadius="7" Background="{DynamicResource AccentBrush}">
-              <Viewbox>
-                <Path Width="100" Height="100" Fill="{DynamicResource AccentForegroundBrush}"
-                      Data="F1 M27.68 61.16A22.32 22.32 0 0 1 72.32 61.16L68.6 61.16A18.6 16.74 0 0 0 31.4 61.16Z M54.65 57.44A4.65 4.65 0 1 1 45.35 57.44A4.65 4.65 0 1 1 54.65 57.44Z" />
-              </Viewbox>
-            </Border>
-            <TextBlock Text="Fermata" FontSize="20" FontWeight="Bold" VerticalAlignment="Center" LetterSpacing="-0.3" />
+          <!-- The wordmark, with a fermata held over its last letter. -->
+          <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="24,20,16,16" TextElement.FontFamily="{DynamicResource DisplayFont}"
+                      TextElement.FontSize="27" TextElement.FontWeight="ExtraBold">
+            <TextBlock Text="fermat" LetterSpacing="-0.9" />
+            <Panel>
+              <TextBlock Text="a" />
+              <Path Width="13" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,-3,0,0"
+                    Fill="{DynamicResource AccentBrush}"
+                    Data="F1 M0 36A36 36 0 0 1 72 36L63 36A27 22 0 0 0 9 36Z M43 32A7 7 0 1 1 29 32A7 7 0 1 1 43 32Z" />
+            </Panel>
           </StackPanel>
 
           <StackPanel DockPanel.Dock="Bottom" Margin="12,6,12,14" Spacing="2">
@@ -51,7 +52,7 @@
                 </StackPanel>
               </RadioButton>
 
-              <TextBlock Text="LIBRARY" Classes="overline" Margin="12,18,0,6" />
+              <TextBlock Text="Library" Classes="label" Margin="12,18,0,6" />
               <RadioButton Theme="{StaticResource NavButton}" GroupName="nav" IsChecked="{Binding IsSongs}">
                 <StackPanel Orientation="Horizontal" Spacing="14">
                   <PathIcon Data="{StaticResource Icon.Song}" />
@@ -84,7 +85,7 @@
               </RadioButton>
 
               <Grid ColumnDefinitions="*,Auto" Margin="12,18,0,4">
-                <TextBlock Text="PLAYLISTS" Classes="overline" VerticalAlignment="Center" />
+                <TextBlock Text="Playlists" Classes="label" VerticalAlignment="Center" />
                 <Button Grid.Column="1" Theme="{StaticResource IconButton}" Width="28" Height="28"
                         Command="{Binding NewPlaylistCommand}" ToolTip.Tip="New playlist">
                   <PathIcon Data="{StaticResource Icon.Plus}" Classes="small" />
@@ -94,11 +95,11 @@
                        SelectedItem="{Binding SelectedPlaylist}" Background="Transparent">
                 <ListBox.ItemTemplate>
                   <DataTemplate DataType="lib:Playlist">
-                    <StackPanel Orientation="Horizontal" Spacing="14" Height="38" Margin="12,0" Background="Transparent">
-                      <PathIcon Data="{StaticResource Icon.Playlist}" Foreground="{DynamicResource TextSecondaryBrush}" />
-                      <TextBlock Text="{Binding Name}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" MaxWidth="150"
-                                 Foreground="{DynamicResource TextSecondaryBrush}" FontWeight="Medium" />
-                    </StackPanel>
+                    <Grid ColumnDefinitions="*,Auto" Height="36" Margin="12,0" Background="Transparent">
+                      <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+                      <TextBlock Grid.Column="1" Text="{Binding Converter={x:Static views:Converters.SongCount}}" FontSize="12"
+                                 Foreground="{DynamicResource TextTertiaryBrush}" VerticalAlignment="Center" Margin="10,0,0,0" />
+                    </Grid>
                   </DataTemplate>
                 </ListBox.ItemTemplate>
               </ListBox>
@@ -111,16 +112,16 @@
       <Grid Grid.Column="1" RowDefinitions="Auto,*">
         <controls:AmbientBackdrop Grid.RowSpan="2" Covers="{Binding Shell.Navigator.Current.Backdrop}"
                                   AlignTop="True" FadeStart="0" FadeEnd="0.8" />
-        <Grid ColumnDefinitions="Auto,Auto,*,Auto" Margin="20,14,24,6">
-          <Button Theme="{StaticResource IconButton}" Command="{Binding BackCommand}"
+        <Grid ColumnDefinitions="Auto,Auto,*,Auto" Margin="24,14,24,6">
+          <Button Theme="{StaticResource IconButton}" Command="{Binding BackCommand}" Width="32" Height="32"
                   IsEnabled="{Binding Shell.Navigator.CanGoBack}" ToolTip.Tip="Back (Alt+←)">
-            <PathIcon Data="{StaticResource Icon.ChevronLeft}" Width="36" Height="36" />
+            <PathIcon Data="{StaticResource Icon.ChevronLeft}" Classes="small" />
           </Button>
-          <Button Grid.Column="1" Theme="{StaticResource IconButton}" Command="{Binding ForwardCommand}"
-                  IsEnabled="{Binding Shell.Navigator.CanGoForward}" ToolTip.Tip="Forward (Alt+→)" Margin="2,0,14,0">
-            <PathIcon Data="{StaticResource Icon.ChevronRight}" Width="36" Height="36" />
+          <Button Grid.Column="1" Theme="{StaticResource IconButton}" Command="{Binding ForwardCommand}" Width="32" Height="32"
+                  IsEnabled="{Binding Shell.Navigator.CanGoForward}" ToolTip.Tip="Forward (Alt+→)" Margin="4,0,0,0">
+            <PathIcon Data="{StaticResource Icon.ChevronRight}" Classes="small" />
           </Button>
-          <TextBox Name="SearchBox" Grid.Column="2" Classes="field" MaxWidth="560" HorizontalAlignment="Left" MinWidth="280"
+          <TextBox Name="SearchBox" Grid.Column="3" Classes="field" Width="320"
                    PlaceholderText="Search songs, albums, artists" Text="{Binding SearchText}">
             <TextBox.InnerLeftContent>
               <PathIcon Data="{StaticResource Icon.Search}" Classes="small" Margin="10,0,2,0" Foreground="{DynamicResource TextTertiaryBrush}" />

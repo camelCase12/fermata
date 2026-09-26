@@ -12,13 +12,13 @@
           <TextBlock Text="{Binding Summary}" Classes="secondary" />
         </StackPanel>
         <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10" VerticalAlignment="Bottom">
-          <Button Theme="{StaticResource PillButton}" Classes="accent" Command="{Binding PlayAllCommand}">
+          <Button Theme="{StaticResource TextButton}" Classes="accent" Command="{Binding PlayAllCommand}">
             <StackPanel Orientation="Horizontal" Spacing="8">
               <PathIcon Data="{StaticResource Icon.Play}" Classes="small" />
               <TextBlock Text="Play" VerticalAlignment="Center" />
             </StackPanel>
           </Button>
-          <Button Theme="{StaticResource PillButton}" Command="{Binding ShuffleAllCommand}">
+          <Button Theme="{StaticResource TextButton}" Command="{Binding ShuffleAllCommand}">
             <StackPanel Orientation="Horizontal" Spacing="8">
               <PathIcon Data="{StaticResource Icon.Shuffle}" Classes="small" />
               <TextBlock Text="Shuffle" VerticalAlignment="Center" />

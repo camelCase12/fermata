@@ -9,6 +9,7 @@
              x:DataType="vm:NowPlayingViewModel">
   <UserControl.Styles>
     <Style Selector="TextBlock.lyric">
+      <Setter Property="FontFamily" Value="{DynamicResource DisplayFont}" />
       <Setter Property="FontSize" Value="26" />
       <Setter Property="FontWeight" Value="Bold" />
       <Setter Property="TextWrapping" Value="Wrap" />
@@ -53,27 +54,28 @@
       <Grid Grid.Row="1" RowDefinitions="*,Auto" Margin="20,0,48,0">
         <!-- Not clipped, so the cover's shadow shows. -->
         <Viewbox Stretch="Uniform" MaxWidth="620" MaxHeight="620" VerticalAlignment="Center" ClipToBounds="False">
-          <Border Name="Cover" Width="620" Height="620" CornerRadius="12" BoxShadow="{StaticResource CoverShadow}" Cursor="Hand">
-            <controls:CoverArt Source="{Binding Player.Art}" PlaceholderKey="{Binding Player.Title}" Radius="12" />
+          <Border Name="Cover" Width="620" Height="620" CornerRadius="16" BoxShadow="{StaticResource CoverShadow}" Cursor="Hand">
+            <controls:CoverArt Source="{Binding Player.Art}" PlaceholderKey="{Binding Player.Title}" Radius="16" />
           </Border>
         </Viewbox>
         <StackPanel Grid.Row="1" HorizontalAlignment="Center" Spacing="6" Margin="0,24,0,0">
-          <TextBlock Text="{Binding Player.Title}" FontSize="26" FontWeight="Bold" HorizontalAlignment="Center" TextTrimming="CharacterEllipsis" />
+          <TextBlock Text="{Binding Player.Title}" Classes="display" FontSize="36" HorizontalAlignment="Center" TextTrimming="CharacterEllipsis" />
           <controls:InlineRow HorizontalAlignment="Center">
             <Button Theme="{StaticResource LinkButton}" Classes="onTint" Command="{Binding Player.OpenArtistCommand}">
-              <TextBlock Text="{Binding Player.Artist}" FontSize="16" TextTrimming="CharacterEllipsis" />
+              <TextBlock Text="{Binding Player.Artist}" FontSize="15" TextTrimming="CharacterEllipsis" />
             </Button>
-            <TextBlock Text="  •  " FontSize="16" Foreground="{DynamicResource OnTintTertiaryBrush}" IsVisible="{Binding Player.Details, Converter={x:Static vm:Formats.NotEmpty}}" />
+            <TextBlock Text=" · " FontSize="15" Foreground="{DynamicResource OnTintTertiaryBrush}" IsVisible="{Binding Player.Details, Converter={x:Static vm:Formats.NotEmpty}}" />
             <Button Theme="{StaticResource LinkButton}" Classes="onTint" Command="{Binding Player.OpenAlbumCommand}">
-              <TextBlock Text="{Binding Player.Details}" FontSize="16" TextTrimming="CharacterEllipsis" />
+              <TextBlock Text="{Binding Player.Details}" FontSize="15" TextTrimming="CharacterEllipsis" />
             </Button>
           </controls:InlineRow>
         </StackPanel>
       </Grid>
 
-      <!-- Tabs -->
-      <Grid Grid.Column="1" Grid.RowSpan="2" RowDefinitions="Auto,*" Margin="0,8,0,0">
-        <StackPanel Orientation="Horizontal" Spacing="8">
+      <!-- Tabs, on a translucent panel -->
+      <Border Grid.Column="1" Grid.RowSpan="2" Background="{DynamicResource GlassBrush}" CornerRadius="18" Padding="16" Margin="0,8,0,0">
+      <Grid RowDefinitions="Auto,*">
+        <StackPanel Orientation="Horizontal" Spacing="6">
           <RadioButton Theme="{StaticResource ChipButton}" GroupName="nowplaying" Content="Up next" Name="UpNextTab" IsChecked="{Binding IsUpNext, Mode=OneWay}"
                        Command="{Binding ShowTabCommand}" CommandParameter="{x:Static vm:NowPlayingTab.UpNext}" />
           <RadioButton Theme="{StaticResource ChipButton}" GroupName="nowplaying" Content="Lyrics" IsChecked="{Binding IsLyrics, Mode=OneWay}"
@@ -83,7 +85,7 @@
         </StackPanel>
 
         <!-- Up next -->
-        <Grid Grid.Row="1" RowDefinitions="Auto,*,Auto" IsVisible="{Binding IsUpNext}" Margin="0,18,0,0">
+        <Grid Grid.Row="1" RowDefinitions="Auto,*,Auto" IsVisible="{Binding IsUpNext}" Margin="0,16,0,0">
           <Grid ColumnDefinitions="*,Auto" Margin="4,0,4,10">
             <StackPanel>
               <TextBlock Classes="caption" Foreground="{DynamicResource TextSecondaryBrush}">
@@ -102,8 +104,8 @@
             </ListBox.ItemTemplate>
           </ListBox>
           <StackPanel Grid.Row="2" Orientation="Horizontal" Spacing="10" Margin="0,12,0,0">
-            <Button Theme="{StaticResource PillButton}" Command="{Binding SaveQueueAsPlaylistCommand}" Content="Save as playlist" />
-            <Button Theme="{StaticResource PillButton}" Command="{Binding ClearUpcomingCommand}" Content="Clear up next" />
+            <Button Theme="{StaticResource TextButton}" Command="{Binding SaveQueueAsPlaylistCommand}" Content="Save as playlist" />
+            <Button Theme="{StaticResource TextButton}" Command="{Binding ClearUpcomingCommand}" Content="Clear up next" />
           </StackPanel>
         </Grid>
 
@@ -128,15 +130,15 @@
             <ItemsControl Name="RelatedList" ItemsSource="{Binding Related}">
               <ItemsControl.ItemTemplate>
                 <DataTemplate DataType="lib:Track">
-                  <Border Classes="pick" Height="58" Padding="6" CornerRadius="8" Background="Transparent" Cursor="Hand">
+                  <Border Classes="pick" Height="58" Padding="6" CornerRadius="10" Background="Transparent" Cursor="Hand">
                     <Grid ColumnDefinitions="46,*,Auto">
-                      <controls:CoverArt Source="{Binding Converter={x:Static views:Converters.TrackArt}}" Width="46" Height="46" Radius="4" />
+                      <controls:CoverArt Source="{Binding Converter={x:Static views:Converters.TrackArt}}" Width="46" Height="46" Radius="6" />
                       <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="12,0" Spacing="2">
                         <TextBlock Text="{Binding Title}" FontWeight="Medium" TextTrimming="CharacterEllipsis" />
                         <TextBlock Text="{Binding DisplayArtist}" FontSize="13" Classes="secondary" TextTrimming="CharacterEllipsis" />
                       </StackPanel>
                       <TextBlock Grid.Column="2" Text="{Binding Duration, Converter={x:Static vm:Formats.DurationConverter}}"
-                                 VerticalAlignment="Center" Classes="secondary" FontSize="13" Margin="0,0,6,0" />
+                                 VerticalAlignment="Center" Classes="num" Foreground="{DynamicResource TextTertiaryBrush}" Margin="0,0,6,0" />
                     </Grid>
                   </Border>
                 </DataTemplate>
@@ -145,6 +147,7 @@
           </StackPanel>
         </ScrollViewer>
       </Grid>
+      </Border>
     </Grid>
   </Grid>
 </UserControl>

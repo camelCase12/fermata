@@ -55,6 +55,9 @@
     <Style Selector="views|TrackRow.playing TextBlock#Title">
       <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
     </Style>
+    <Style Selector="views|TrackRow.playing Border#Row">
+      <Setter Property="Background" Value="{DynamicResource AccentWashBrush}" />
+    </Style>
     <Style Selector="views|TrackRow.playing:not(.album) Border#PlayingOverlay">
       <Setter Property="IsVisible" Value="True" />
     </Style>
@@ -68,25 +71,26 @@
     <!-- Liked songs keep a filled heart -->
     <Style Selector="views|TrackRow.liked Button#LikeButton">
       <Setter Property="Opacity" Value="1" />
-      <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
     </Style>
     <Style Selector="views|TrackRow.liked PathIcon#LikeIcon">
       <Setter Property="Data" Value="{StaticResource Icon.Heart}" />
     </Style>
   </UserControl.Styles>
 
+  <Border Name="Row" CornerRadius="10">
   <Grid Name="Columns" ColumnDefinitions="52,4*,3*,3*,40,60,40" Margin="8,0,4,0">
     <!-- Cover (with a play button on hover) or track number -->
     <Panel Name="Leading" Width="40" Height="40">
-      <controls:CoverArt Name="Art" Width="40" Height="40" Radius="4" />
-      <Border Name="PlayOverlay" Background="{DynamicResource ShadeBrush}" CornerRadius="4" Cursor="Hand">
+      <controls:CoverArt Name="Art" Width="40" Height="40" Radius="6" />
+      <Border Name="PlayOverlay" Background="{DynamicResource ShadeBrush}" CornerRadius="6" Cursor="Hand">
         <PathIcon Data="{StaticResource Icon.Play}" Foreground="{DynamicResource OnTintPrimaryBrush}" />
       </Border>
-      <Border Name="PlayingOverlay" Background="{DynamicResource ShadeStrongBrush}" CornerRadius="4">
+      <Border Name="PlayingOverlay" Background="{DynamicResource ShadeStrongBrush}" CornerRadius="6">
         <PathIcon Data="{StaticResource Icon.Equalizer}" Foreground="{DynamicResource AccentBrush}" Classes="small" />
       </Border>
       <TextBlock Name="Number" HorizontalAlignment="Center" VerticalAlignment="Center"
-                 Foreground="{DynamicResource TextTertiaryBrush}" FontSize="13" />
+                 Foreground="{DynamicResource TextTertiaryBrush}" Classes="num" />
       <PathIcon Name="NumberPlay" Data="{StaticResource Icon.Play}" Classes="small" Cursor="Hand" />
       <PathIcon Name="NumberPlaying" Data="{StaticResource Icon.Equalizer}" Classes="small" Foreground="{DynamicResource AccentBrush}" />
     </Panel>
@@ -109,10 +113,11 @@
     </Button>
 
     <TextBlock Name="Duration" Grid.Column="5" Text="{Binding Duration, Converter={x:Static vm:Formats.DurationConverter}}"
-               HorizontalAlignment="Right" VerticalAlignment="Center" FontSize="13" Classes="secondary" Margin="0,0,8,0" />
+               HorizontalAlignment="Right" VerticalAlignment="Center" Classes="num" Foreground="{DynamicResource TextTertiaryBrush}" Margin="0,0,8,0" />
 
     <Button Name="MoreButton" Grid.Column="6" Classes="hover" Theme="{StaticResource IconButton}" Width="32" Height="32" ToolTip.Tip="More">
       <PathIcon Data="{StaticResource Icon.More}" Classes="small" />
     </Button>
   </Grid>
+  </Border>
 </UserControl>

@@ -7,17 +7,17 @@ using Fermata.Imaging;
 namespace Fermata.Services;
 
 /// <summary>The app's accent colour, taken from the cover of the playing song.</summary>
-/// <remarks>Without a cover with real colour, or with the setting turned off, the accent is the theme's gold.</remarks>
+/// <remarks>Without a cover with real colour, or with the setting turned off, the accent is the theme's own.</remarks>
 public sealed class DynamicAccent
 {
-    private const double Lightness = 0.80, HoverLightness = 0.86, PressedLightness = 0.72;
+    private const double Lightness = 0.72, HoverLightness = 0.78, PressedLightness = 0.64;
     private static readonly TimeSpan Crossfade = TimeSpan.FromMilliseconds(450);
 
     private readonly AppServices services;
     private readonly Application application;
     private readonly SolidColorBrush[] accentBrushes;
     private readonly SolidColorBrush hoverBrush, pressedBrush;
-    private readonly Color gold, goldHover, goldPressed;
+    private readonly Color themeAccent, themeHover, themePressed;
     private readonly DispatcherTimer timer = new() { Interval = TimeSpan.FromMilliseconds(16) };
     private Oklab from, to;
     private DateTime started;
@@ -27,13 +27,13 @@ public sealed class DynamicAccent
     {
         this.services = services;
         this.application = application;
-        accentBrushes = [Brush("AccentBrush"), Brush("FocusRingBrush"), Brush("DropTargetBrush")];
+        accentBrushes = [Brush("AccentBrush"), Brush("FocusRingBrush"), Brush("DropTargetBrush"), Brush("AccentWashBrush")];
         hoverBrush = Brush("AccentHoverBrush");
         pressedBrush = Brush("AccentPressedBrush");
-        gold = accentBrushes[0].Color;
-        goldHover = hoverBrush.Color;
-        goldPressed = pressedBrush.Color;
-        from = to = ToOklab(gold);
+        themeAccent = accentBrushes[0].Color;
+        themeHover = hoverBrush.Color;
+        themePressed = pressedBrush.Color;
+        from = to = ToOklab(themeAccent);
         timer.Tick += (_, _) => Step();
         services.Player.TrackChanged += Update;
     }
@@ -62,7 +62,7 @@ public sealed class DynamicAccent
 
     private void MoveTo(Oklab? accent)
     {
-        var target = accent is { } color ? Oklab.FromLch(Lightness, Math.Clamp(color.Chroma * 1.1, 0.11, 0.17), color.Hue) : ToOklab(gold);
+        var target = accent is { } color ? Oklab.FromLch(Lightness, Math.Clamp(color.Chroma * 1.1, 0.11, 0.17), color.Hue) : ToOklab(themeAccent);
         from = Current();
         to = target;
         started = DateTime.UtcNow;
@@ -79,11 +79,11 @@ public sealed class DynamicAccent
     {
         var color = Current();
         bool done = DateTime.UtcNow - started >= Crossfade;
-        bool isGold = to == ToOklab(gold);
+        bool isThemeAccent = to == ToOklab(themeAccent);
         foreach (var brush in accentBrushes)
-            brush.Color = done && isGold ? gold : ToColor(color);
-        hoverBrush.Color = done && isGold ? goldHover : ToColor(color.WithLightness(HoverLightness));
-        pressedBrush.Color = done && isGold ? goldPressed : ToColor(color.WithLightness(PressedLightness));
+            brush.Color = done && isThemeAccent ? themeAccent : ToColor(color);
+        hoverBrush.Color = done && isThemeAccent ? themeHover : ToColor(color.WithLightness(HoverLightness));
+        pressedBrush.Color = done && isThemeAccent ? themePressed : ToColor(color.WithLightness(PressedLightness));
         if (!done)
             return;
         timer.Stop();

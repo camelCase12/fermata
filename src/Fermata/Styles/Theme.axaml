@@ -1,20 +1,20 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
   <!-- Fermata's palette. The views take every colour from here. -->
-  <Color x:Key="BackgroundColor">#0D0D10</Color>
-  <Color x:Key="SidebarColor">#111115</Color>
-  <Color x:Key="SurfaceColor">#17171C</Color>
-  <Color x:Key="RaisedColor">#1F1F25</Color>
-  <Color x:Key="PopupColor">#2C2C35</Color>
+  <Color x:Key="BackgroundColor">#141218</Color>
+  <Color x:Key="SidebarColor">#1B1820</Color>
+  <Color x:Key="SurfaceColor">#1B1820</Color>
+  <Color x:Key="RaisedColor">#26222D</Color>
+  <Color x:Key="PopupColor">#2C2735</Color>
   <Color x:Key="HoverColor">#FFFFFF</Color>
-  <Color x:Key="DividerColor">#25252C</Color>
-  <Color x:Key="TextPrimaryColor">#F3F3F5</Color>
-  <Color x:Key="TextSecondaryColor">#ADADB8</Color>
-  <Color x:Key="TextTertiaryColor">#8A8A96</Color>
-  <Color x:Key="AccentColor">#F2B43C</Color>
-  <Color x:Key="AccentHoverColor">#F7C867</Color>
-  <Color x:Key="AccentPressedColor">#D89D26</Color>
-  <Color x:Key="AccentForegroundColor">#1A1408</Color>
+  <Color x:Key="DividerColor">#2C2834</Color>
+  <Color x:Key="TextPrimaryColor">#EFEAF2</Color>
+  <Color x:Key="TextSecondaryColor">#B3ACBD</Color>
+  <Color x:Key="TextTertiaryColor">#8F889A</Color>
+  <Color x:Key="AccentColor">#F26FAE</Color>
+  <Color x:Key="AccentHoverColor">#FF82C1</Color>
+  <Color x:Key="AccentPressedColor">#D65695</Color>
+  <Color x:Key="AccentForegroundColor">#141218</Color>
   <Color x:Key="DangerColor">#FF6B6B</Color>
   <Color x:Key="ShadeColor">#99000000</Color>
 
@@ -45,6 +45,8 @@
   <!-- Shades over cover art, under play buttons and the playing indicator. -->
   <SolidColorBrush x:Key="ShadeBrush" Color="{StaticResource ShadeColor}" />
   <SolidColorBrush x:Key="ShadeStrongBrush" Color="#000000" Opacity="0.7" />
+  <!-- A translucent panel over the Now Playing backdrop. -->
+  <SolidColorBrush x:Key="GlassBrush" Color="{StaticResource BackgroundColor}" Opacity="0.5" />
   <!-- Text over the Now Playing backdrop. -->
   <SolidColorBrush x:Key="OnTintPrimaryBrush" Color="#FFFFFF" />
   <SolidColorBrush x:Key="OnTintSecondaryBrush" Color="#FFFFFF" Opacity="0.8" />
@@ -52,17 +54,19 @@
   <SolidColorBrush x:Key="OnTintFaintBrush" Color="#FFFFFF" Opacity="0.3" />
   <!-- A playlist in the sidebar under songs being dragged. -->
   <SolidColorBrush x:Key="DropTargetBrush" Color="{StaticResource AccentColor}" Opacity="0.22" />
+  <!-- The playing song's row. -->
+  <SolidColorBrush x:Key="AccentWashBrush" Color="{StaticResource AccentColor}" Opacity="0.10" />
   <!-- The keyboard focus ring. -->
   <SolidColorBrush x:Key="FocusRingBrush" Color="{StaticResource AccentColor}" />
 
   <!-- Fluent's accent colours, set to Fermata's accent. -->
-  <Color x:Key="SystemAccentColor">#F2B43C</Color>
-  <Color x:Key="SystemAccentColorLight1">#F7C867</Color>
-  <Color x:Key="SystemAccentColorLight2">#FAD68A</Color>
-  <Color x:Key="SystemAccentColorLight3">#FCE4B0</Color>
-  <Color x:Key="SystemAccentColorDark1">#D89D26</Color>
-  <Color x:Key="SystemAccentColorDark2">#B98314</Color>
-  <Color x:Key="SystemAccentColorDark3">#8F6208</Color>
+  <Color x:Key="SystemAccentColor">#F26FAE</Color>
+  <Color x:Key="SystemAccentColorLight1">#FF82C1</Color>
+  <Color x:Key="SystemAccentColorLight2">#FF9CCF</Color>
+  <Color x:Key="SystemAccentColorLight3">#FFB8DD</Color>
+  <Color x:Key="SystemAccentColorDark1">#D65695</Color>
+  <Color x:Key="SystemAccentColorDark2">#B83F7D</Color>
+  <Color x:Key="SystemAccentColorDark3">#932A62</Color>
 
   <BoxShadows x:Key="PopupShadow">0 6 24 0 #80000000</BoxShadows>
   <BoxShadows x:Key="CoverShadow">0 24 60 0 #99000000</BoxShadows>
@@ -85,8 +89,13 @@
   <StaticResource x:Key="ComboBoxItemBackgroundSelectedPointerOver" ResourceKey="PressedBrush" />
   <StaticResource x:Key="ComboBoxItemBackgroundSelectedPressed" ResourceKey="PressedBrush" />
 
-  <FontFamily x:Key="UiFont">fonts:Inter#Inter, $Default</FontFamily>
+  <FontFamily x:Key="UiFont">fonts:Fermata#Atkinson Hyperlegible, $Default</FontFamily>
+  <FontFamily x:Key="DisplayFont">fonts:Fermata#Bricolage Grotesque, $Default</FontFamily>
+  <FontFamily x:Key="MonoFont">fonts:Fermata#IBM Plex Mono, $Default</FontFamily>
   <x:Double x:Key="TrackRowHeight">56</x:Double>
-  <CornerRadius x:Key="CardRadius">8</CornerRadius>
+  <CornerRadius x:Key="SmallRadius">6</CornerRadius>
+  <CornerRadius x:Key="ControlRadius">10</CornerRadius>
+  <CornerRadius x:Key="LargeRadius">16</CornerRadius>
+  <CornerRadius x:Key="CardRadius">10</CornerRadius>
   <CornerRadius x:Key="ArtRadius">6</CornerRadius>
 </ResourceDictionary>

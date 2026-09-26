@@ -7,24 +7,28 @@
              x:DataType="vm:PlayerViewModel">
   <UserControl.Styles>
     <Style Selector="Button.play">
-      <Setter Property="Width" Value="44" />
-      <Setter Property="Height" Value="44" />
-      <Setter Property="CornerRadius" Value="22" />
-      <Setter Property="Background" Value="{DynamicResource TextPrimaryBrush}" />
-      <Setter Property="Foreground" Value="{DynamicResource BackgroundBrush}" />
+      <Setter Property="Width" Value="46" />
+      <Setter Property="Height" Value="46" />
+      <Setter Property="CornerRadius" Value="14" />
+      <Setter Property="Margin" Value="4,0" />
+      <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource AccentForegroundBrush}" />
     </Style>
     <Style Selector="Button.play:pointerover">
-      <Setter Property="Background" Value="{DynamicResource OnTintPrimaryBrush}" />
-      <Setter Property="Foreground" Value="{DynamicResource BackgroundBrush}" />
-      <Setter Property="RenderTransform" Value="scale(1.04)" />
+      <Setter Property="Background" Value="{DynamicResource AccentHoverBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource AccentForegroundBrush}" />
+    </Style>
+    <Style Selector="Button.play:pressed">
+      <Setter Property="Background" Value="{DynamicResource AccentPressedBrush}" />
     </Style>
   </UserControl.Styles>
 
-  <Border Background="{DynamicResource SidebarBrush}" BorderBrush="{DynamicResource DividerBrush}" BorderThickness="0,1,0,0">
-    <Grid RowDefinitions="14,*" Height="92">
+  <Border Background="{DynamicResource SidebarBrush}">
+    <Grid RowDefinitions="18,*" Height="92">
       <!-- Progress along the top of the bar -->
-      <controls:SeekBar Name="Progress" AutomationProperties.Name="Position" Value="{Binding Progress}" Thickness="3" Height="14"
-                        FillBrush="{DynamicResource AccentBrush}" IsEnabled="{Binding HasTrack}" />
+      <controls:SeekBar Name="Progress" AutomationProperties.Name="Position" Value="{Binding Progress}" Thickness="2" Height="18"
+                        TrackBrush="{DynamicResource DividerBrush}" FillBrush="{DynamicResource AccentBrush}"
+                        AlwaysShowHandle="{Binding HasTrack}" IsEnabled="{Binding HasTrack}" />
       <Canvas Name="HoverLayer" IsHitTestVisible="False" ClipToBounds="False">
         <Border Name="HoverBubble" IsVisible="False" Background="{DynamicResource PopupBrush}" CornerRadius="6" Padding="7,3" Canvas.Top="-30">
           <TextBlock Name="HoverText" FontSize="12" FontWeight="SemiBold" />
@@ -35,17 +39,17 @@
         <!-- Current track -->
         <Grid ColumnDefinitions="Auto,*,Auto" IsVisible="{Binding HasTrack}">
           <Button Theme="{StaticResource LinkButton}" Command="{Binding ToggleNowPlayingCommand}" ToolTip.Tip="Now playing (Q)">
-            <controls:CoverArt Source="{Binding Art}" PlaceholderKey="{Binding Title}" Width="58" Height="58" Radius="6" />
+            <controls:CoverArt Source="{Binding Art}" PlaceholderKey="{Binding Title}" Width="50" Height="50" Radius="6" />
           </Button>
-          <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="14,0,8,0" Spacing="3">
-            <TextBlock Text="{Binding Title}" FontWeight="SemiBold" FontSize="14" TextTrimming="CharacterEllipsis" />
+          <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="12,0,6,0" Spacing="2">
+            <TextBlock Text="{Binding Title}" FontWeight="Bold" FontSize="14.5" TextTrimming="CharacterEllipsis" />
             <controls:InlineRow>
               <Button Theme="{StaticResource LinkButton}" Command="{Binding OpenArtistCommand}">
-                <TextBlock Text="{Binding Artist}" FontSize="13" TextTrimming="CharacterEllipsis" MaxWidth="220" />
+                <TextBlock Text="{Binding Artist}" FontSize="12.5" TextTrimming="CharacterEllipsis" MaxWidth="220" />
               </Button>
-              <TextBlock Text="  •  " FontSize="13" Classes="tertiary" IsVisible="{Binding Details, Converter={x:Static vm:Formats.NotEmpty}}" />
+              <TextBlock Text=" · " FontSize="12.5" Classes="tertiary" IsVisible="{Binding Details, Converter={x:Static vm:Formats.NotEmpty}}" />
               <Button Theme="{StaticResource LinkButton}" Command="{Binding OpenAlbumCommand}">
-                <TextBlock Text="{Binding Details}" FontSize="13" TextTrimming="CharacterEllipsis" MaxWidth="220" />
+                <TextBlock Text="{Binding Details}" FontSize="12.5" TextTrimming="CharacterEllipsis" MaxWidth="220" />
               </Button>
             </controls:InlineRow>
           </StackPanel>
@@ -61,26 +65,26 @@
                    Text="{Binding EngineMessage}" TextWrapping="Wrap" MaxWidth="360" />
 
         <!-- Transport -->
-        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center" Margin="24,0">
-          <ToggleButton Theme="{StaticResource IconToggle}" IsChecked="{Binding Shuffle, Mode=OneWay}"
+        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center" Margin="24,0">
+          <ToggleButton Theme="{StaticResource IconToggle}" Classes="mode" IsChecked="{Binding Shuffle, Mode=OneWay}"
                         Command="{Binding ToggleShuffleCommand}" ToolTip.Tip="Shuffle (S)">
             <PathIcon Data="{StaticResource Icon.Shuffle}" Classes="small" />
           </ToggleButton>
           <Button Theme="{StaticResource IconButton}" Command="{Binding PreviousCommand}" ToolTip.Tip="Previous (Ctrl+←)"
-                  Foreground="{DynamicResource TextPrimaryBrush}" Width="40" Height="40" CornerRadius="20">
-            <PathIcon Data="{StaticResource Icon.Previous}" Width="40" Height="40" />
+                  Foreground="{DynamicResource TextPrimaryBrush}">
+            <PathIcon Data="{StaticResource Icon.Previous}" />
           </Button>
           <Button Classes="play" Theme="{StaticResource IconButton}" Command="{Binding PlayPauseCommand}" ToolTip.Tip="Play or pause (Space)">
             <Panel>
-              <PathIcon Data="{StaticResource Icon.Play}" Width="34" Height="34" IsVisible="{Binding !IsPlaying}" />
-              <PathIcon Data="{StaticResource Icon.Pause}" Width="34" Height="34" IsVisible="{Binding IsPlaying}" />
+              <PathIcon Data="{StaticResource Icon.Play}" Width="26" Height="26" IsVisible="{Binding !IsPlaying}" />
+              <PathIcon Data="{StaticResource Icon.Pause}" Width="26" Height="26" IsVisible="{Binding IsPlaying}" />
             </Panel>
           </Button>
           <Button Theme="{StaticResource IconButton}" Command="{Binding NextCommand}" ToolTip.Tip="Next (Ctrl+→)"
-                  Foreground="{DynamicResource TextPrimaryBrush}" Width="40" Height="40" CornerRadius="20">
-            <PathIcon Data="{StaticResource Icon.Next}" Width="40" Height="40" />
+                  Foreground="{DynamicResource TextPrimaryBrush}">
+            <PathIcon Data="{StaticResource Icon.Next}" />
           </Button>
-          <ToggleButton Name="RepeatButton" Theme="{StaticResource IconToggle}" Command="{Binding CycleRepeatCommand}" ToolTip.Tip="Repeat (R)">
+          <ToggleButton Name="RepeatButton" Theme="{StaticResource IconToggle}" Classes="mode" Command="{Binding CycleRepeatCommand}" ToolTip.Tip="Repeat (R)">
             <Panel>
               <PathIcon Name="RepeatIcon" Data="{StaticResource Icon.Repeat}" Classes="small" />
               <PathIcon Name="RepeatOneIcon" Data="{StaticResource Icon.RepeatOne}" Classes="small" IsVisible="False" />
@@ -90,18 +94,18 @@
 
         <!-- Time, volume and the queue -->
         <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Spacing="6">
-          <TextBlock VerticalAlignment="Center" FontSize="12" Classes="secondary" Margin="0,0,10,0" IsVisible="{Binding HasTrack}">
-            <Run Text="{Binding PositionText}" />
+          <TextBlock VerticalAlignment="Center" Classes="num" Margin="0,0,10,0" IsVisible="{Binding HasTrack}">
+            <Run Text="{Binding PositionText}" Foreground="{DynamicResource TextSecondaryBrush}" />
             <Run Text=" / " Foreground="{DynamicResource TextTertiaryBrush}" />
             <Run Text="{Binding DurationText}" Foreground="{DynamicResource TextTertiaryBrush}" />
           </TextBlock>
           <Button Name="MuteButton" Theme="{StaticResource IconButton}" Command="{Binding ToggleMuteCommand}" ToolTip.Tip="Mute (M)">
             <PathIcon Name="VolumeIcon" Data="{StaticResource Icon.VolumeHigh}" />
           </Button>
-          <controls:SeekBar Name="VolumeBar" AutomationProperties.Name="Volume" Width="96" Height="20" Value="{Binding Volume}" VerticalAlignment="Center"
-                            FillBrush="{DynamicResource TextPrimaryBrush}" Thickness="4" />
+          <controls:SeekBar Name="VolumeBar" AutomationProperties.Name="Volume" Width="90" Height="20" Value="{Binding Volume}" VerticalAlignment="Center"
+                            TrackBrush="{DynamicResource DividerBrush}" FillBrush="{DynamicResource TextSecondaryBrush}" Thickness="2" />
           <Button Theme="{StaticResource IconButton}" Command="{Binding ToggleNowPlayingCommand}" ToolTip.Tip="Now playing and queue (Q)"
-                  Margin="8,0,0,0">
+                  Margin="6,0,0,0">
             <PathIcon Data="{StaticResource Icon.Queue}" />
           </Button>
         </StackPanel>

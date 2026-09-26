@@ -114,7 +114,7 @@ public sealed partial class PlayerViewModel : ObservableObject
         {
             Title = track.Title;
             Artist = track.DisplayArtist;
-            Details = string.Join(" • ", new[] { track.AlbumTitle, track.Year > 0 ? track.Year.ToString() : "" }.Where(s => s.Length > 0));
+            Details = string.Join(" · ", new[] { track.AlbumTitle, track.Year > 0 ? track.Year.ToString() : "" }.Where(s => s.Length > 0));
             Art = shell.Library.ArtOf(track);
             IsLiked = shell.IsLiked(track);
         }

@@ -41,7 +41,7 @@
       <StackPanel Spacing="12" IsVisible="{Binding Songs.Tracks.Count, Converter={x:Static views:Converters.Positive}}">
         <TextBlock Text="Songs" Classes="h2" />
         <views:TrackList DataContext="{Binding Songs}" />
-        <Button Theme="{StaticResource PillButton}" HorizontalAlignment="Left" Command="{Binding ToggleAllSongsCommand}"
+        <Button Theme="{StaticResource TextButton}" HorizontalAlignment="Left" Command="{Binding ToggleAllSongsCommand}"
                 IsVisible="{Binding SongsSummary, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
           <Panel>
             <TextBlock Text="{Binding SongsSummary}" IsVisible="{Binding !ShowAllSongs}" />

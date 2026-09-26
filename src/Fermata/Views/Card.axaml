@@ -29,9 +29,11 @@
 
   <StackPanel Spacing="10" Margin="0,0,0,6">
     <controls:SquarePanel>
-      <controls:CoverArt Name="Art" Radius="8" />
-      <controls:Mosaic Name="MosaicArt" IsVisible="False" />
-      <Border Name="Shade" Opacity="0" CornerRadius="8" IsHitTestVisible="False">
+      <controls:CoverArt Name="Art" Radius="10" />
+      <Border CornerRadius="10" ClipToBounds="True">
+        <controls:Mosaic Name="MosaicArt" IsVisible="False" />
+      </Border>
+      <Border Name="Shade" Opacity="0" CornerRadius="10" IsHitTestVisible="False">
         <Border.Background>
           <LinearGradientBrush StartPoint="0%,40%" EndPoint="0%,100%">
             <GradientStop Offset="0" Color="Transparent" />
@@ -39,14 +41,14 @@
           </LinearGradientBrush>
         </Border.Background>
       </Border>
-      <Button Name="PlayButton" Theme="{StaticResource IconButton}" Width="44" Height="44" CornerRadius="22"
+      <Button Name="PlayButton" Theme="{StaticResource IconButton}" Width="40" Height="40" CornerRadius="12"
               HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="10"
               Background="{DynamicResource AccentBrush}" Foreground="{DynamicResource AccentForegroundBrush}" ToolTip.Tip="Play">
-        <PathIcon Data="{StaticResource Icon.Play}" Width="32" Height="32" />
+        <PathIcon Data="{StaticResource Icon.Play}" Width="26" Height="26" />
       </Button>
     </controls:SquarePanel>
     <StackPanel Spacing="3">
-      <TextBlock Name="Title" FontWeight="SemiBold" FontSize="14" TextTrimming="CharacterEllipsis" />
+      <TextBlock Name="Title" FontWeight="Bold" FontSize="14" TextTrimming="CharacterEllipsis" />
       <TextBlock Name="Subtitle" FontSize="13" Classes="secondary" TextTrimming="CharacterEllipsis" />
     </StackPanel>
   </StackPanel>

@@ -9,8 +9,8 @@
       <TextBlock Text="{Binding Message}" Classes="secondary" TextWrapping="Wrap" IsVisible="{Binding Message, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
       <TextBox Name="Input" Classes="field" Text="{Binding Text}" PlaceholderText="{Binding Placeholder}" />
       <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10" Margin="0,4,0,0">
-        <Button Theme="{StaticResource PillButton}" Command="{Binding CancelCommand}" Content="Cancel" />
-        <Button Theme="{StaticResource PillButton}" Classes="accent" Command="{Binding ConfirmCommand}" Content="{Binding ConfirmLabel}" IsDefault="True" />
+        <Button Theme="{StaticResource TextButton}" Command="{Binding CancelCommand}" Content="Cancel" />
+        <Button Theme="{StaticResource TextButton}" Classes="accent" Command="{Binding ConfirmCommand}" Content="{Binding ConfirmLabel}" IsDefault="True" />
       </StackPanel>
     </StackPanel>
   </Border>
