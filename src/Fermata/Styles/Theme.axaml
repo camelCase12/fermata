@@ -89,9 +89,9 @@
   <StaticResource x:Key="ComboBoxItemBackgroundSelectedPointerOver" ResourceKey="PressedBrush" />
   <StaticResource x:Key="ComboBoxItemBackgroundSelectedPressed" ResourceKey="PressedBrush" />
 
-  <FontFamily x:Key="UiFont">fonts:Fermata#Atkinson Hyperlegible, $Default</FontFamily>
-  <FontFamily x:Key="DisplayFont">fonts:Fermata#Bricolage Grotesque, $Default</FontFamily>
-  <FontFamily x:Key="MonoFont">fonts:Fermata#IBM Plex Mono, $Default</FontFamily>
+  <FontFamily x:Key="UiFont">fonts:Fermata#Fermata Sans, $Default</FontFamily>
+  <FontFamily x:Key="DisplayFont">fonts:Fermata#Fermata Sans, $Default</FontFamily>
+  <FontFamily x:Key="NumberFont">fonts:Fermata#Fermata Sans, $Default</FontFamily>
   <x:Double x:Key="TrackRowHeight">56</x:Double>
   <CornerRadius x:Key="SmallRadius">6</CornerRadius>
   <CornerRadius x:Key="ControlRadius">10</CornerRadius>

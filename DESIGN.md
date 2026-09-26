@@ -311,7 +311,7 @@ compositor session:
 
 ```sh
 ./build.sh test                                             # build, then run the checks
-dotnet run --project tests/Fermata.Tests -c Release         # 664 checks, about 8 s
+dotnet run --project tests/Fermata.Tests -c Release         # 666 checks, about 8 s
 FERMATA_FUZZ_RUNS=20000 dotnet run --project tests/Fermata.Tests -c Release   # a longer queue fuzz
 dotnet run --project tests/Fermata.Tests -c Release -- --compare-ffprobe DIR  # tags and durations against ffprobe
 dotnet run --project tests/Fermata.Tests -c Release -- --make-large-library DIR 50000
@@ -319,6 +319,7 @@ dotnet run --project tests/Fermata.Tests -c Release -- --measure-scan DIR
 dotnet run --project tests/Fermata.Ui -c Release -- --screenshots OUT_DIR MUSIC_DIR  # every page, headless
 tools/make-sample-library.py DIR                            # 105 tagged songs in 12 formats, with covers and lyrics
 dotnet run --project tools/icons [PREVIEW.png]                # regenerates the icons in Styles/Icons.axaml
+.venv/bin/python tools/font/build.py                         # rebuilds Fermata Sans into Assets/Fonts (see requirements.txt)
 ```
 
 The checks cover the tag readers (against files written by ffmpeg), the library and its index,

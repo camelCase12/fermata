@@ -10,9 +10,6 @@ Fermata is built on the following software. Their full license texts are in [lic
 | [CommunityToolkit.Mvvm](https://github.com/CommunityToolkit/dotnet) | MIT | [CommunityToolkit.Mvvm.txt](licenses/CommunityToolkit.Mvvm.txt), [notices](licenses/CommunityToolkit.Mvvm-third-party-notices.txt) |
 | [Tmds.DBus](https://github.com/tmds/Tmds.DBus) | MIT | [Tmds.DBus.txt](licenses/Tmds.DBus.txt) |
 | [MicroCom](https://github.com/kekekeks/MicroCom) | MIT | [MicroCom.txt](licenses/MicroCom.txt) |
-| [Atkinson Hyperlegible](https://github.com/googlefonts/atkinson-hyperlegible), the interface font | SIL Open Font License 1.1 | [AtkinsonHyperlegible-font.txt](licenses/AtkinsonHyperlegible-font.txt) |
-| [Bricolage Grotesque](https://github.com/ateliertriay/bricolage), the heading font | SIL Open Font License 1.1 | [BricolageGrotesque-font.txt](licenses/BricolageGrotesque-font.txt) |
-| [IBM Plex Mono](https://github.com/IBM/plex), the font for times and numbers | SIL Open Font License 1.1 | [IBMPlexMono-font.txt](licenses/IBMPlexMono-font.txt) |
 | [.NET runtime](https://github.com/dotnet/runtime), compiled into the executable | MIT | [dotnet-runtime.txt](licenses/dotnet-runtime.txt), [notices](licenses/dotnet-runtime-third-party-notices.txt) |
 
 Fermata plays audio through [libmpv](https://mpv.io), which is installed separately and loaded at run

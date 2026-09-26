@@ -1,3 +1,5 @@
+<img src="src/Fermata/Assets/fermata.svg" alt="" width="96">
+
 # Fermata
 
 [![CI](https://github.com/camelCase12/fermata/actions/workflows/ci.yml/badge.svg)](https://github.com/camelCase12/fermata/actions/workflows/ci.yml)
@@ -88,5 +90,5 @@ distribution. If Fermata crashed, attach `~/.local/state/fermata/crash.log`.
 
 ## License
 
-MIT. See [LICENSE](LICENSE), and [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md) for the libraries and
-fonts Fermata uses.
+MIT. See [LICENSE](LICENSE), and [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md) for the libraries
+Fermata uses.

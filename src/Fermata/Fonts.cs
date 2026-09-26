@@ -12,5 +12,5 @@ internal static class Fonts
         builder
             .ConfigureFonts(fonts => fonts.AddFontCollection(
                 new EmbeddedFontCollection(new Uri("fonts:Fermata"), new Uri("avares://fermata/Assets/Fonts"))))
-            .With(new FontManagerOptions { DefaultFamilyName = "fonts:Fermata#Atkinson Hyperlegible" });
+            .With(new FontManagerOptions { DefaultFamilyName = "fonts:Fermata#Fermata Sans" });
 }

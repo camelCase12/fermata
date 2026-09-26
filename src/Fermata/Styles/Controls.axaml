@@ -317,8 +317,10 @@
   </Style>
   <!-- Times, counts and other figures. -->
   <Style Selector="TextBlock.num">
-    <Setter Property="FontFamily" Value="{DynamicResource MonoFont}" />
-    <Setter Property="FontSize" Value="12.5" />
+    <Setter Property="FontFamily" Value="{DynamicResource NumberFont}" />
+    <Setter Property="FontSize" Value="13" />
+    <Setter Property="FontWeight" Value="Medium" />
+    <Setter Property="LetterSpacing" Value="0.5" />
   </Style>
   <Style Selector="TextBlock.secondary">
     <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />

@@ -151,7 +151,7 @@
                       <DataTemplate DataType="pages:ShortcutPart">
                         <Panel>
                           <Border IsVisible="{Binding IsKey}" Background="{DynamicResource RaisedBrush}" CornerRadius="6" Padding="7,2">
-                            <TextBlock Text="{Binding Text}" FontFamily="{DynamicResource MonoFont}" FontSize="12.5" />
+                            <TextBlock Text="{Binding Text}" FontFamily="{DynamicResource NumberFont}" FontSize="12.5" />
                           </Border>
                           <TextBlock IsVisible="{Binding !IsKey}" Text="{Binding Text}" Classes="caption" VerticalAlignment="Center" />
                         </Panel>
@@ -178,7 +178,7 @@
             <Run Text="Audio: " /><Run Text="{Binding EngineStatus}" />
           </TextBlock>
           <TextBlock Text="{Binding DataLocations}" Classes="caption" TextWrapping="Wrap" LineHeight="19" />
-          <TextBlock Classes="caption" TextWrapping="Wrap" Text="Audio: libmpv. Fonts: Bricolage Grotesque, Atkinson Hyperlegible and IBM Plex Mono." />
+          <TextBlock Classes="caption" TextWrapping="Wrap" Text="Audio: libmpv. Font: Fermata Sans." />
         </StackPanel>
       </Border>
     </StackPanel>
