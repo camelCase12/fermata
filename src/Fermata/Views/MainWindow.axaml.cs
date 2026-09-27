@@ -24,6 +24,7 @@ public partial class MainWindow : Window
         AddHandler(KeyDownEvent, OnShortcut, RoutingStrategies.Tunnel);
         AddHandler(KeyUpEvent, OnShortcutReleased, RoutingStrategies.Tunnel);
         AddHandler(PointerPressedEvent, OnAnyPointerPressed, RoutingStrategies.Tunnel);
+        AddHandler(PointerPressedEvent, OnTitleBarPressed);
         AddHandler(DragDrop.DragOverEvent, OnDragOver);
         AddHandler(DragDrop.DropEvent, OnDrop);
         DragDrop.SetAllowDrop(this, true);
@@ -55,6 +56,28 @@ public partial class MainWindow : Window
         // Nothing needs to update on screen while the window is minimized.
         if (change.Property == WindowStateProperty && DataContext is MainViewModel model)
             model.Player.SetWindowVisible(WindowState != WindowState.Minimized);
+        if (change.Property == IsExtendedIntoWindowDecorationsProperty || change.Property == WindowStateProperty
+            || change.Property == WindowDecorationMarginProperty)
+        {
+            Classes.Set("drawnTitleBar", IsExtendedIntoWindowDecorations && WindowState != WindowState.FullScreen);
+            Classes.Set("framed", IsExtendedIntoWindowDecorations && WindowDecorationMargin != default);
+        }
+    }
+
+    /// <summary>Moves the window when its own title bar is dragged, and maximizes or restores it on a double click.</summary>
+    /// <remarks>Only where the window draws its title bar: elsewhere the desktop's title bar does this.</remarks>
+    private void OnTitleBarPressed(object? sender, PointerPressedEventArgs e)
+    {
+        if (!IsExtendedIntoWindowDecorations || e.Source is not StyledElement source || !source.Classes.Contains("titleBar")
+            || !e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
+        {
+            return;
+        }
+        if (e.ClickCount == 2)
+            WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
+        else
+            BeginMoveDrag(e);
+        e.Handled = true;
     }
 
     protected override void OnClosing(WindowClosingEventArgs e)

@@ -258,6 +258,14 @@ second signal exits at once.
     token (MPRIS Raise, a launch from a terminal), Fermata asks the compositor for one, and the
     compositor then usually just marks the window as wanting attention.
   - The window's icon comes from the installed launcher entry; the window does not send one.
+- **Window decorations.** Where the compositor draws title bars (KDE, sway, and X11 window managers),
+  Fermata keeps the desktop's own. Where it leaves them to the window, as GNOME does, Avalonia draws
+  the decorations and Fermata gives them its own look (`WindowDecorations` in `Styles/Controls.axaml`).
+  There is no separate title bar. The window's top rows take its place: their empty space moves the
+  window, a double click there maximizes it, and the minimize, maximize and close buttons sit at the
+  right end of the top row. The window has rounded corners, a soft shadow and a thin outline, and the
+  shadow's width at the edges resizes it. GNOME's setting for which window buttons to show is not
+  followed; all three always show.
 - **X11.** The window class is `fermata`, matching `StartupWMClass` in the launcher entry.
 
 ## Testing
