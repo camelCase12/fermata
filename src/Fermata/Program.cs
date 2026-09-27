@@ -96,6 +96,7 @@ internal static class Program
         // Commands for a running instance mean nothing when this is the first one.
         App.StartupRequests = lines.Where(l => l.StartsWith("open\t", StringComparison.Ordinal)).ToList();
         App.StartupActivationToken = activationToken;
+        Trace(UsesWayland ? "window system wayland" : "window system x11");
         if (!UsesWayland && DisplayScaling.Apply() is { } factors)
             Trace("screen scale factors " + factors);
         App.Instance = instance;
@@ -135,10 +136,24 @@ internal static class Program
     }
 
     /// <summary>Whether Fermata opens a Wayland window rather than an X11 one.</summary>
-    private static bool UsesWayland => Environment.GetEnvironmentVariable("FERMATA_PLATFORM") switch
+    private static bool UsesWayland => usesWayland ??= Environment.GetEnvironmentVariable("FERMATA_PLATFORM") switch
     {
         "x11" => false,
         "wayland" => true,
-        _ => !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("WAYLAND_DISPLAY")),
+        _ => !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("WAYLAND_DISPLAY")) && CompositorSupportsAvalonia(),
     };
+
+    private static bool? usesWayland;
+
+    private static bool CompositorSupportsAvalonia()
+    {
+        try
+        {
+            return WaylandProbe.SupportsAvalonia();
+        }
+        catch (Exception error) when (error is System.Net.Sockets.SocketException or IOException or InvalidDataException)
+        {
+            return false;
+        }
+    }
 }

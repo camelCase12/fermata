@@ -234,13 +234,15 @@ second signal exits at once.
   Unix socket in `$XDG_RUNTIME_DIR` and exits, in about 6 ms. It passes on its launcher's
   activation token too.
 - **Wayland.** In a Wayland session Fermata opens a Wayland window through Avalonia's Wayland backend,
-  which is still experimental in Avalonia 12.1, and falls back to XWayland if that fails.
-  `FERMATA_PLATFORM=x11` or `wayland` picks one without the fallback.
+  which is still experimental in Avalonia 12.1. The backend needs `xdg_wm_base` version 3, which
+  sway 1.9 and older compositors lack, so `WaylandProbe` checks for it first and Fermata uses XWayland
+  without it. `FERMATA_PLATFORM=x11` or `wayland` picks one without the check.
 
   Avalonia.Wayland 12.1.3 sends no app ID, and its `Window.Activate` does nothing, so `WaylandWindow`
   makes both requests on the backend's internal protocol objects through `UnsafeAccessor`. If an
   Avalonia update renames those, the requests are skipped with one line on standard error, and
-  `tools/check-platforms.sh` fails in CI. Once an Avalonia release has an app ID option (pull request
+  `tools/check-platforms.sh` fails. CI's sway is too old for a Wayland window, so run it locally after
+  updating Avalonia. Once an Avalonia release has an app ID option (pull request
   22209), that can replace the app ID request.
 
   - The app ID is the launcher entry's ID. It is sent after the window's first commit, so KWin rules
@@ -287,9 +289,9 @@ above were made, and how dragging, typing and resizing were exercised with `tool
 compositor's virtual pointer), `tools/keyboard.c` (its virtual keyboard) and `tools/xinput.c` (XTEST
 keys, for X11 windows only), without touching the real desktop.
 
-`tools/check-platforms.sh`, which CI runs in that session, opens Fermata as a Wayland client and as
-an X11 client. It checks each window's app ID or class, that no Wayland request failed, and that
-Fermata quits cleanly on SIGTERM.
+`tools/check-platforms.sh`, which CI runs in that session, opens Fermata with the window system it
+chooses, as an X11 client, and as a Wayland client where the compositor supports one. It checks each
+window's app ID or class, that no Wayland request failed, and that Fermata quits cleanly on SIGTERM.
 
 ## Choices
 
