@@ -146,9 +146,10 @@ a class set in code and styled in XAML. Code never sets local visual values, whi
 styles and produce the mismatched hover states that inconsistent UIs are made of. Colours, shadows
 and focus rings are named tokens in `Styles/Theme.axaml`, each control theme draws a focus ring
 matching its own shape, and Fluent's built-in controls (drop-downs, text fields) are restyled
-through the same tokens. Fields and secondary buttons are translucent white washes rather than grey
-fills. On the plain background they look the same as an opaque raised surface, and over a cover's
-colours they take on its tint instead of sitting on it as dark boxes.
+through the same tokens. Text fields are translucent white washes rather than grey fills, so over a
+cover's colours they take on its tint instead of sitting on it as dark boxes. Buttons are keys: a flat
+face on a solid lip two pixels deep, in a darker shade of the face, and pressing moves the face down
+onto the lip. Icon buttons show the key only while hovered.
 
 **Ambient backdrop.** Now Playing, and album, artist and playlist pages, sit on a dimmed field made
 from the cover (`AmbientBackdrop`). It has two styles, and Settings chooses between them.
