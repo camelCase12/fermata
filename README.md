@@ -19,7 +19,8 @@ The background and the accent colour come from the cover of whatever's playing.
 
 ![Albums](docs/albums.png)
 
-(The songs and covers in these screenshots are made up. `tools/make-sample-library.py` generates them.)
+(The music in these screenshots is free to share: Broke For Free and Lobo Loco under CC BY 3.0, and Komiku,
+Monplaisir and Loyalty Freak Music under CC0. All of it is on the [Internet Archive](https://archive.org).)
 
 ## Installing
 
