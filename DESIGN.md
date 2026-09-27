@@ -123,7 +123,9 @@ file has the same identity, its history moves to that file, and playlists are up
 
 ## UI and performance
 
-**Nothing polls.** While paused, minimized or idle, no timer runs and CPU use is effectively zero. While
+**Nothing polls.** While paused, minimized or idle, no timer runs and CPU use is effectively zero.
+(Wayland does not tell a window that it is minimized or hidden, so there the position timer keeps
+running while a song plays. The compositor stops asking for frames, so nothing is drawn.) While
 playing, the one timer is the position timer. Its interval is the time the progress bar takes to
 move one pixel (every ~150 ms for a four-minute song on a wide window, clamped to 40 ms–1 s). The
 seek bar invalidates only when its fill has moved by at least one device pixel, and text is updated
@@ -203,7 +205,9 @@ noise of the measurement, in either style.
 
 **Renderer.** OpenGL. Measured while playing on an RTX 4080, Vulkan used about 40% more memory
 (it loads both GPUs' drivers) and more CPU. The software renderer uses less memory but about four
-times the CPU. `FERMATA_RENDERING` overrides the choice.
+times the CPU. `FERMATA_RENDERING` overrides the choice. On Wayland, OpenGL goes through EGL and
+Vulkan is not available. For `FERMATA_RENDERING=software` the Wayland backend is given no OpenGL
+versions to try, so it draws on the CPU into shared memory.
 
 **Memory.** With a small library the process is about 300–340 MB resident, and most of that is the
 GPU driver: its libraries (shared with every other GL program) and its allocations. Fermata's own
@@ -229,8 +233,13 @@ second signal exits at once.
   through this.
 - **One instance.** A second launch sends its files or command (`--play-pause`, `--next`, …) over a
   Unix socket in `$XDG_RUNTIME_DIR` and exits, in about 6 ms.
-- **X11.** Avalonia has no Wayland backend yet, so Fermata runs through XWayland on Wayland desktops.
-  Its window class is `fermata`, matching the desktop file.
+- **Wayland.** In a Wayland session (`WAYLAND_DISPLAY` set), Fermata opens a Wayland window through
+  Avalonia's Wayland backend, which Avalonia 12.1 still calls experimental. If the compositor cannot
+  be used, it falls back to an X11 window through XWayland. `FERMATA_PLATFORM=x11` or `wayland`
+  decides instead, without the fallback. A Wayland window is sharp at fractional scales, and while a
+  song plays it takes less CPU than the XWayland window (see Performance).
+
+- **X11.** The window class is `fermata`, matching `StartupWMClass` in the launcher entry.
 
 ## Testing
 
@@ -258,10 +267,11 @@ With `--backdrops OUTPUT IMAGE...` it instead renders the ambient backdrop in bo
 image, prints each cover's analysis, and times the analysis.
 
 `tools/isolated-session.sh` runs the real executable in a private headless sway session with
-XWayland, D-Bus, XDG directories and silent audio, with `FERMATA_GPU` choosing the GPU. That is how
-the measurements above were made, and how dragging, typing and resizing were exercised with
-`tools/pointer.c` (the compositor's virtual pointer) and `tools/xinput.c` (XTEST keys), without
-touching the real desktop.
+XWayland, D-Bus, XDG directories and silent audio, with `FERMATA_GPU` choosing the GPU. Fermata opens
+a Wayland window there, or an X11 one with `FERMATA_PLATFORM=x11`. That is how the measurements
+above were made, and how dragging, typing and resizing were exercised with `tools/pointer.c` (the
+compositor's virtual pointer), `tools/keyboard.c` (its virtual keyboard) and `tools/xinput.c` (XTEST
+keys, for X11 windows only), without touching the real desktop.
 
 ## Choices
 
@@ -311,6 +321,14 @@ compositor session:
 | 50,000-song library: heap / resident after browsing | ~41 MB / ~400 MB |
 | Scrolling 50,000 songs as fast as the wheel goes | ~17% of one core while scrolling |
 
+The table was measured with the X11 window. On a Ryzen 7 8845H laptop (Radeon 780M, OpenGL), in the
+same headless session with 20–40 s songs (so the position timer ran at its fastest), the Wayland
+window compared with the X11 one as follows. Start to window shown (until sway listed the window):
+~220 ms against ~265 ms. Playing with the window visible: 2.4% against 3.5% of one core, the render
+thread taking half as much. Idle and paused: at most 0.1% for both. Resident memory: ~220 MB for
+both. Playing with the window hidden on another workspace: ~2% against ~1.2%, because the Wayland
+window cannot tell that it is hidden.
+
 
 ### Development
 
@@ -336,11 +354,12 @@ themselves when those are missing.
 `tools/isolated-session.sh COMMAND` runs a command in a private headless compositor (sway with
 XWayland), with its own D-Bus, XDG directories and silent audio, so Fermata can be driven and
 screenshotted without touching your desktop, audio or files. `tools/pointer.c` (the compositor's
-virtual pointer) and `tools/xinput.c` (XTEST keys) drive it; build instructions are at the top of
-each file.
+virtual pointer), `tools/keyboard.c` (its virtual keyboard) and `tools/xinput.c` (XTEST keys, for
+X11 windows) drive it; build instructions are at the top of each file.
 
-Environment variables for troubleshooting: `FERMATA_RENDERING=gl|vulkan|software` picks the
-renderer, `FERMATA_AUDIO_OUTPUT` sets mpv's audio output (`null` for silence),
+Environment variables for troubleshooting: `FERMATA_PLATFORM=wayland|x11` picks the window system
+(a Wayland session uses Wayland, falling back to XWayland), `FERMATA_RENDERING=gl|vulkan|software`
+picks the renderer, `FERMATA_AUDIO_OUTPUT` sets mpv's audio output (`null` for silence),
 `FERMATA_MPV_LOG=FILE` writes mpv's detailed log to a file, and `FERMATA_TRACE_STARTUP=1` prints
 startup timings.
 

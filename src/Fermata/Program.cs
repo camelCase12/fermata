@@ -106,17 +106,33 @@ internal static class Program
     /// <summary>Also used by the visual designer.</summary>
     public static AppBuilder BuildAvaloniaApp()
     {
+        string? rendering = Environment.GetEnvironmentVariable("FERMATA_RENDERING");
         var x11 = new X11PlatformOptions { WmClass = "fermata" };
         // OpenGL, unless FERMATA_RENDERING chooses vulkan, gl or software.
-        x11.RenderingMode = Environment.GetEnvironmentVariable("FERMATA_RENDERING") switch
+        x11.RenderingMode = rendering switch
         {
             "software" => [X11RenderingMode.Software],
             "vulkan" => [X11RenderingMode.Vulkan, X11RenderingMode.Glx, X11RenderingMode.Software],
             _ => [X11RenderingMode.Glx, X11RenderingMode.Software],
         };
-        return AppBuilder.Configure<App>()
+        var builder = AppBuilder.Configure<App>()
             .UsePlatformDetect()
             .WithFermataFonts()
             .With(x11);
+        if (!OperatingSystem.IsLinux())
+            return builder;
+
+        var wayland = new WaylandPlatformOptions();
+        if (rendering == "software")
+            wayland.GlProfiles = [];
+        builder = builder.With(wayland);
+
+        return Environment.GetEnvironmentVariable("FERMATA_PLATFORM") switch
+        {
+            "x11" => builder,
+            "wayland" => builder.UseWayland(),
+            _ when Environment.GetEnvironmentVariable("WAYLAND_DISPLAY") is { Length: > 0 } => builder.UseWaylandWithFallback(),
+            _ => builder,
+        };
     }
 }
