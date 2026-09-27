@@ -13,7 +13,7 @@ Shuffle plays songs in the order the queue shows them.
 
 ![Now playing](docs/now-playing.png)
 
-The background and the accent colour come from the cover of whatever's playing.
+The background and the accent color come from the cover of whatever's playing.
 
 ![A playlist](docs/playlist.png)
 
