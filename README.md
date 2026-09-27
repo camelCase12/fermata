@@ -56,7 +56,8 @@ Media keys work too.
 
 ## Building
 
-You need the .NET 10 SDK and clang.
+You need the .NET 10 SDK and clang. `global.json` selects the newest .NET 10 SDK installed, even when a
+newer major version is installed too.
 
 ```sh
 ./build.sh          # builds bin/fermata/fermata
