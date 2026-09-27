@@ -10,6 +10,6 @@
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <WarningsAsErrors>$(WarningsAsErrors);nullable</WarningsAsErrors>
     <Deterministic>true</Deterministic>
-    <Version>0.1.1</Version>
+    <Version>0.1.2</Version>
   </PropertyGroup>
 </Project>
