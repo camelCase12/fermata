@@ -10,14 +10,14 @@ namespace Fermata.Services;
 /// <remarks>Without a cover with real colour, or with the setting turned off, the accent is the theme's own.</remarks>
 public sealed class DynamicAccent
 {
-    private const double Lightness = 0.72, HoverLightness = 0.78, PressedLightness = 0.64;
+    private const double Lightness = 0.72, HoverLightness = 0.78, PressedLightness = 0.64, LipLightness = 0.56;
     private static readonly TimeSpan Crossfade = TimeSpan.FromMilliseconds(450);
 
     private readonly AppServices services;
     private readonly Application application;
     private readonly SolidColorBrush[] accentBrushes;
-    private readonly SolidColorBrush hoverBrush, pressedBrush;
-    private readonly Color themeAccent, themeHover, themePressed;
+    private readonly SolidColorBrush hoverBrush, pressedBrush, lipBrush;
+    private readonly Color themeAccent, themeHover, themePressed, themeLip;
     private readonly DispatcherTimer timer = new() { Interval = TimeSpan.FromMilliseconds(16) };
     private Oklab from, to;
     private DateTime started;
@@ -30,9 +30,11 @@ public sealed class DynamicAccent
         accentBrushes = [Brush("AccentBrush"), Brush("FocusRingBrush"), Brush("DropTargetBrush"), Brush("AccentWashBrush")];
         hoverBrush = Brush("AccentHoverBrush");
         pressedBrush = Brush("AccentPressedBrush");
+        lipBrush = Brush("AccentLipBrush");
         themeAccent = accentBrushes[0].Color;
         themeHover = hoverBrush.Color;
         themePressed = pressedBrush.Color;
+        themeLip = lipBrush.Color;
         from = to = ToOklab(themeAccent);
         timer.Tick += (_, _) => Step();
         services.Player.TrackChanged += Update;
@@ -84,6 +86,7 @@ public sealed class DynamicAccent
             brush.Color = done && isThemeAccent ? themeAccent : ToColor(color);
         hoverBrush.Color = done && isThemeAccent ? themeHover : ToColor(color.WithLightness(HoverLightness));
         pressedBrush.Color = done && isThemeAccent ? themePressed : ToColor(color.WithLightness(PressedLightness));
+        lipBrush.Color = done && isThemeAccent ? themeLip : ToColor(color.WithLightness(LipLightness));
         if (!done)
             return;
         timer.Stop();

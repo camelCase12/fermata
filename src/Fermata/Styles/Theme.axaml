@@ -14,6 +14,7 @@
   <Color x:Key="AccentColor">#F26FAE</Color>
   <Color x:Key="AccentHoverColor">#FF82C1</Color>
   <Color x:Key="AccentPressedColor">#D65695</Color>
+  <Color x:Key="AccentLipColor">#B54883</Color>
   <Color x:Key="AccentForegroundColor">#141218</Color>
   <Color x:Key="DangerColor">#FF6B6B</Color>
   <Color x:Key="ShadeColor">#99000000</Color>
@@ -30,6 +31,12 @@
   <SolidColorBrush x:Key="AccentBrush" Color="{StaticResource AccentColor}" />
   <SolidColorBrush x:Key="AccentHoverBrush" Color="{StaticResource AccentHoverColor}" />
   <SolidColorBrush x:Key="AccentPressedBrush" Color="{StaticResource AccentPressedColor}" />
+  <!-- The solid lip under a raised button, and the face of a raised neutral button. -->
+  <SolidColorBrush x:Key="AccentLipBrush" Color="{StaticResource AccentLipColor}" />
+  <SolidColorBrush x:Key="KeyFaceBrush" Color="#2A2631" />
+  <SolidColorBrush x:Key="KeyFaceHoverBrush" Color="#312C38" />
+  <SolidColorBrush x:Key="KeyLipBrush" Color="#0D0B10" />
+  <SolidColorBrush x:Key="DangerLipBrush" Color="#B84A4A" />
   <SolidColorBrush x:Key="AccentForegroundBrush" Color="{StaticResource AccentForegroundColor}" />
   <SolidColorBrush x:Key="DangerBrush" Color="{StaticResource DangerColor}" />
   <!-- Translucent white layers. -->

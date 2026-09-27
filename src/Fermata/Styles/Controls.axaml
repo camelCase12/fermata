@@ -18,23 +18,34 @@
         </Setter>
         <Setter Property="HorizontalContentAlignment" Value="Center" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="BorderBrush" Value="Transparent" />
         <Setter Property="Template">
           <ControlTemplate>
-            <Border Background="{TemplateBinding Background}" CornerRadius="{TemplateBinding CornerRadius}">
-              <ContentPresenter Name="PART_ContentPresenter" Content="{TemplateBinding Content}"
-                                ContentTemplate="{TemplateBinding ContentTemplate}"
-                                Padding="{TemplateBinding Padding}"
-                                HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
-            </Border>
+            <Panel>
+              <Border Name="Lip" Background="{TemplateBinding BorderBrush}" CornerRadius="{TemplateBinding CornerRadius}" Margin="0,2,0,0" />
+              <Border Name="Face" Background="{TemplateBinding Background}" CornerRadius="{TemplateBinding CornerRadius}" Margin="0,0,0,2">
+                <Border.Transitions>
+                  <Transitions>
+                    <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.08" />
+                  </Transitions>
+                </Border.Transitions>
+                <ContentPresenter Name="PART_ContentPresenter" Content="{TemplateBinding Content}"
+                                  ContentTemplate="{TemplateBinding ContentTemplate}"
+                                  Padding="{TemplateBinding Padding}"
+                                  HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                  VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+              </Border>
+            </Panel>
           </ControlTemplate>
         </Setter>
+        <!-- Hovered, the button shows as a key on a solid lip, and pressing pushes it onto the lip. -->
         <Style Selector="^:pointerover">
-          <Setter Property="Background" Value="{DynamicResource HoverBrush}" />
+          <Setter Property="Background" Value="{DynamicResource KeyFaceBrush}" />
+          <Setter Property="BorderBrush" Value="{DynamicResource KeyLipBrush}" />
           <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
         </Style>
-        <Style Selector="^:pressed">
-          <Setter Property="Background" Value="{DynamicResource PressedBrush}" />
+        <Style Selector="^:pressed /template/ Border#Face">
+          <Setter Property="RenderTransform" Value="translateY(2px)" />
         </Style>
         <Style Selector="^:disabled">
           <Setter Property="Opacity" Value="0.35" />
@@ -55,20 +66,33 @@
           </FocusAdornerTemplate>
         </Setter>
         <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="BorderBrush" Value="Transparent" />
         <Setter Property="Template">
           <ControlTemplate>
-            <Border Background="{TemplateBinding Background}" CornerRadius="{TemplateBinding CornerRadius}">
-              <Panel>
-                <ContentPresenter Content="{TemplateBinding Content}" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                <Border Name="Dot" Width="4" Height="4" CornerRadius="2" Margin="0,0,0,4" IsVisible="False"
-                        HorizontalAlignment="Center" VerticalAlignment="Bottom" Background="{TemplateBinding Foreground}" />
-              </Panel>
-            </Border>
+            <Panel>
+              <Border Name="Lip" Background="{TemplateBinding BorderBrush}" CornerRadius="{TemplateBinding CornerRadius}" Margin="0,2,0,0" />
+              <Border Name="Face" Background="{TemplateBinding Background}" CornerRadius="{TemplateBinding CornerRadius}" Margin="0,0,0,2">
+                <Border.Transitions>
+                  <Transitions>
+                    <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.08" />
+                  </Transitions>
+                </Border.Transitions>
+                <Panel>
+                  <ContentPresenter Content="{TemplateBinding Content}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                  <Border Name="Dot" Width="4" Height="4" CornerRadius="2" Margin="0,0,0,3" IsVisible="False"
+                          HorizontalAlignment="Center" VerticalAlignment="Bottom" Background="{TemplateBinding Foreground}" />
+                </Panel>
+              </Border>
+            </Panel>
           </ControlTemplate>
         </Setter>
         <Style Selector="^:pointerover">
-          <Setter Property="Background" Value="{DynamicResource HoverBrush}" />
+          <Setter Property="Background" Value="{DynamicResource KeyFaceBrush}" />
+          <Setter Property="BorderBrush" Value="{DynamicResource KeyLipBrush}" />
           <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+        </Style>
+        <Style Selector="^:pressed /template/ Border#Face">
+          <Setter Property="RenderTransform" Value="translateY(2px)" />
         </Style>
         <Style Selector="^:checked">
           <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
@@ -84,7 +108,8 @@
 
       <!-- A text button. The class "accent" marks the primary action. -->
       <ControlTheme x:Key="TextButton" TargetType="Button">
-        <Setter Property="Background" Value="{DynamicResource FillBrush}" />
+        <Setter Property="Background" Value="{DynamicResource KeyFaceBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource KeyLipBrush}" />
         <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
         <Setter Property="Height" Value="38" />
         <Setter Property="Padding" Value="16,0" />
@@ -99,30 +124,37 @@
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="Template">
           <ControlTemplate>
-            <Border Background="{TemplateBinding Background}" CornerRadius="{TemplateBinding CornerRadius}"
-                    Padding="{TemplateBinding Padding}">
-              <ContentPresenter Content="{TemplateBinding Content}" HorizontalAlignment="Center" VerticalAlignment="Center" />
-            </Border>
+            <Panel>
+              <Border Name="Lip" Background="{TemplateBinding BorderBrush}" CornerRadius="{TemplateBinding CornerRadius}" Margin="0,2,0,0" />
+              <Border Name="Face" Background="{TemplateBinding Background}" CornerRadius="{TemplateBinding CornerRadius}"
+                      Padding="{TemplateBinding Padding}" Margin="0,0,0,2">
+                <Border.Transitions>
+                  <Transitions>
+                    <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.08" />
+                  </Transitions>
+                </Border.Transitions>
+                <ContentPresenter Content="{TemplateBinding Content}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+              </Border>
+            </Panel>
           </ControlTemplate>
         </Setter>
         <Style Selector="^:pointerover">
-          <Setter Property="Background" Value="{DynamicResource FillHoverBrush}" />
+          <Setter Property="Background" Value="{DynamicResource KeyFaceHoverBrush}" />
         </Style>
-        <Style Selector="^:pressed">
-          <Setter Property="Background" Value="{DynamicResource FillPressedBrush}" />
+        <Style Selector="^:pressed /template/ Border#Face">
+          <Setter Property="RenderTransform" Value="translateY(2px)" />
         </Style>
         <Style Selector="^.accent">
           <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
+          <Setter Property="BorderBrush" Value="{DynamicResource AccentLipBrush}" />
           <Setter Property="Foreground" Value="{DynamicResource AccentForegroundBrush}" />
         </Style>
         <Style Selector="^.accent:pointerover">
           <Setter Property="Background" Value="{DynamicResource AccentHoverBrush}" />
         </Style>
-        <Style Selector="^.accent:pressed">
-          <Setter Property="Background" Value="{DynamicResource AccentPressedBrush}" />
-        </Style>
         <Style Selector="^.danger, ^.danger:pointerover, ^.danger:pressed">
           <Setter Property="Background" Value="{DynamicResource DangerBrush}" />
+          <Setter Property="BorderBrush" Value="{DynamicResource DangerLipBrush}" />
           <Setter Property="Foreground" Value="{DynamicResource AccentForegroundBrush}" />
         </Style>
         <Style Selector="^.danger:pointerover">

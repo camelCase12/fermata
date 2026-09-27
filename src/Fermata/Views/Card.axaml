@@ -43,7 +43,8 @@
       </Border>
       <Button Name="PlayButton" Theme="{StaticResource IconButton}" Width="40" Height="40" CornerRadius="12"
               HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="10"
-              Background="{DynamicResource AccentBrush}" Foreground="{DynamicResource AccentForegroundBrush}" ToolTip.Tip="Play">
+              Background="{DynamicResource AccentBrush}" BorderBrush="{DynamicResource AccentLipBrush}"
+              Foreground="{DynamicResource AccentForegroundBrush}" ToolTip.Tip="Play">
         <PathIcon Data="{StaticResource Icon.Play}" Width="26" Height="26" />
       </Button>
     </controls:SquarePanel>
