@@ -42,7 +42,8 @@ unpack it and run `./install.sh`. That puts Fermata in `~/.local` with a launche
 `./install.sh --uninstall` takes it back out. By default it reads your `~/Music` folder. You can change
 that in Settings.
 
-It runs on X11, and on Wayland through XWayland.
+It runs on X11, and on Wayland through XWayland, where it matches each monitor's scale. To pick a scale
+yourself, set `AVALONIA_GLOBAL_SCALE_FACTOR` (for example to `1.5`).
 
 You can also control it from the command line:
 

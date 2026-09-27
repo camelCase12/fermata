@@ -90,6 +90,8 @@ internal static class Program
 
         // Commands for a running instance mean nothing when this is the first one.
         App.StartupRequests = lines.Where(l => l.StartsWith("open\t", StringComparison.Ordinal)).ToList();
+        if (DisplayScaling.Apply() is { } factors)
+            Trace("screen scale factors " + factors);
         App.Instance = instance;
         try
         {
