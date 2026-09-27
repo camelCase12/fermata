@@ -106,6 +106,79 @@
         </Style>
       </ControlTheme>
 
+      <!-- The window decorations Fermata draws when the compositor does not draw them. -->
+      <ControlTheme x:Key="WindowDecorations" TargetType="WindowDrawnDecorations">
+        <Setter Property="DefaultTitleBarHeight" Value="0" />
+        <Setter Property="DefaultFrameThickness" Value="1" />
+        <Setter Property="DefaultShadowThickness" Value="12" />
+        <Setter Property="Template">
+          <WindowDrawnDecorationsTemplate>
+            <WindowDrawnDecorationsContent>
+              <WindowDrawnDecorationsContent.Underlay>
+                <Border Name="Frame" BorderBrush="{DynamicResource DividerBrush}" BorderThickness="{TemplateBinding FrameThickness}"
+                        IsHitTestVisible="False" />
+              </WindowDrawnDecorationsContent.Underlay>
+              <WindowDrawnDecorationsContent.Overlay>
+                <Panel Name="ShadowInset">
+                  <Panel Name="FrameInset">
+                    <StackPanel Orientation="Horizontal" Spacing="4" HorizontalAlignment="Right" VerticalAlignment="Top"
+                                Margin="0,16,16,0" IsVisible="{TemplateBinding HasTitleBar}">
+                      <StackPanel.Styles>
+                        <Style Selector="Button">
+                          <Setter Property="Width" Value="32" />
+                          <Setter Property="Height" Value="32" />
+                          <!-- Clicking a window button leaves keyboard focus where it was. -->
+                          <Setter Property="Focusable" Value="False" />
+                        </Style>
+                        <Style Selector="PathIcon">
+                          <Setter Property="Width" Value="18" />
+                          <Setter Property="Height" Value="18" />
+                        </Style>
+                      </StackPanel.Styles>
+                      <Button Name="PART_MinimizeButton" Theme="{StaticResource IconButton}"
+                              WindowDecorationProperties.ElementRole="MinimizeButton">
+                        <PathIcon Data="{DynamicResource Icon.Minimize}" />
+                      </Button>
+                      <Button Name="PART_MaximizeButton" Theme="{StaticResource IconButton}"
+                              WindowDecorationProperties.ElementRole="MaximizeButton">
+                        <PathIcon Name="MaximizeIcon" Data="{DynamicResource Icon.Maximize}" />
+                      </Button>
+                      <Button Name="PART_CloseButton" Theme="{StaticResource IconButton}"
+                              WindowDecorationProperties.ElementRole="CloseButton">
+                        <PathIcon Data="{DynamicResource Icon.Close}" />
+                      </Button>
+                    </StackPanel>
+                  </Panel>
+                </Panel>
+              </WindowDrawnDecorationsContent.Overlay>
+            </WindowDrawnDecorationsContent>
+          </WindowDrawnDecorationsTemplate>
+        </Setter>
+
+        <Style Selector="^:has-shadow /template/ Border#Frame">
+          <Setter Property="Margin" Value="{TemplateBinding ShadowThickness}" />
+          <Setter Property="Background" Value="{DynamicResource BackgroundBrush}" />
+          <Setter Property="CornerRadius" Value="10" />
+          <Setter Property="BoxShadow" Value="0 2 10 0 #80000000" />
+        </Style>
+        <Style Selector="^:has-shadow /template/ Panel#ShadowInset">
+          <Setter Property="Margin" Value="{TemplateBinding ShadowThickness}" />
+        </Style>
+        <Style Selector="^:has-border /template/ Panel#FrameInset">
+          <Setter Property="Margin" Value="{TemplateBinding FrameThickness}" />
+        </Style>
+
+        <Style Selector="^:maximized /template/ PathIcon#MaximizeIcon">
+          <Setter Property="Data" Value="{DynamicResource Icon.Restore}" />
+        </Style>
+        <Style Selector="^:not(:has-minimize) /template/ Button#PART_MinimizeButton">
+          <Setter Property="IsVisible" Value="False" />
+        </Style>
+        <Style Selector="^:not(:has-maximize) /template/ Button#PART_MaximizeButton">
+          <Setter Property="IsVisible" Value="False" />
+        </Style>
+      </ControlTheme>
+
       <!-- A text button. The class "accent" marks the primary action. -->
       <ControlTheme x:Key="TextButton" TargetType="Button">
         <Setter Property="Background" Value="{DynamicResource KeyFaceBrush}" />

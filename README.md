@@ -35,15 +35,18 @@ Fedora, Arch and openSUSE. It plays through libmpv, which you install from your 
 | Fedora | `dnf install mpv-libs` |
 | openSUSE | `zypper install libmpv2` |
 
-It also needs the X11 libraries any desktop already has, including libICE and libSM.
+It also needs libraries any desktop already has: libwayland-client, libxkbcommon and libEGL on Wayland,
+and the X11 libraries, including libICE and libSM, on X11.
 
 Download the tarball from the [latest release](https://github.com/camelCase12/fermata/releases/latest),
 unpack it and run `./install.sh`. That puts Fermata in `~/.local` with a launcher entry, and
 `./install.sh --uninstall` takes it back out. By default it reads your `~/Music` folder. You can change
 that in Settings.
 
-It runs on X11, and on Wayland through XWayland, where it matches each monitor's scale. To pick a scale
-yourself, set `AVALONIA_GLOBAL_SCALE_FACTOR` (for example to `1.5`).
+It runs natively on Wayland, and on X11. Wayland support is new, so if something looks wrong there,
+please report it. In the meantime, `FERMATA_PLATFORM=x11 fermata` runs Fermata through XWayland, where
+it matches each monitor's scale. To pick a scale yourself there, set `AVALONIA_GLOBAL_SCALE_FACTOR`
+(for example to `1.5`).
 
 You can also control it from the command line:
 
@@ -97,8 +100,8 @@ If you're curious how it works, or want the test and benchmark details, see [DES
 
 ## Reporting bugs
 
-Open an [issue](https://github.com/camelCase12/fermata/issues) with what you did, what happened and your
-distribution. If Fermata crashed, attach `~/.local/state/fermata/crash.log`.
+Open an [issue](https://github.com/camelCase12/fermata/issues) with what you did, what happened, your
+distribution and your desktop. If Fermata crashed, attach `~/.local/state/fermata/crash.log`.
 
 ## License
 

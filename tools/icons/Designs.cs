@@ -41,6 +41,9 @@ internal static class Designs
         new Icon("History").Arc(13, 12, 8, 180, 300).Lines(2.8f, 9.8f, 5, 12.2f, 7.2f, 9.8f).Lines(13, 8, 13, 12, 16, 14),
         new Icon("Plus").Line(12, 5, 12, 19).Line(5, 12, 19, 12),
         new Icon("Close").Line(6, 6, 18, 18).Line(18, 6, 6, 18),
+        new Icon("Minimize").Line(6.5f, 12, 17.5f, 12),
+        new Icon("Maximize").Path(Square(6.5f, 6.5f, 17.5f, 17.5f)),
+        new Icon("Restore").Path(Square(6, 9, 15, 18)).Path("M9 6 H16.5 A1.5 1.5 0 0 1 18 7.5 V15"),
         new Icon("More").Dot(12, 5.5f, 1.8f).Dot(12, 12, 1.8f).Dot(12, 18.5f, 1.8f),
         new Icon("ChevronLeft").Lines(14.5f, 5.5f, 8, 12, 14.5f, 18.5f),
         new Icon("ChevronRight").Lines(9.5f, 5.5f, 16, 12, 9.5f, 18.5f),
@@ -61,6 +64,13 @@ internal static class Designs
     private const string Heart =
         "M12 19.3 C12 19.3 4 14.6 4 9.1 C4 6.8 5.8 5 8.1 5 C9.7 5 11.1 5.9 12 7.2 " +
         "C12.9 5.9 14.3 5 15.9 5 C18.2 5 20 6.8 20 9.1 C20 14.6 12 19.3 12 19.3 Z";
+
+    /// <summary>The outline of a square with rounded corners.</summary>
+    private static string Square(float left, float top, float right, float bottom) =>
+        string.Create(CultureInfo.InvariantCulture,
+            $"M{left + 1.5f} {top} H{right - 1.5f} A1.5 1.5 0 0 1 {right} {top + 1.5f} V{bottom - 1.5f} " +
+            $"A1.5 1.5 0 0 1 {right - 1.5f} {bottom} H{left + 1.5f} A1.5 1.5 0 0 1 {left} {bottom - 1.5f} V{top + 1.5f} " +
+            $"A1.5 1.5 0 0 1 {left + 1.5f} {top} Z");
 
     private static Icon Repeat(string name) => new Icon(name)
         .Path("M5 11 V9.5 A2.5 2.5 0 0 1 7.5 7 H19").Lines(16.5f, 4.5f, 19, 7, 16.5f, 9.5f)

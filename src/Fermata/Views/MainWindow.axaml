@@ -8,148 +8,170 @@
         x:DataType="vm:MainViewModel"
         Title="Fermata"
         Icon="/Assets/fermata-256.png"
-        Width="1280" Height="820" MinWidth="860" MinHeight="560">
-  <Grid RowDefinitions="*,Auto">
-    <Grid ColumnDefinitions="236,*">
-      <!-- Sidebar. It and the page are disabled under Now playing, so keyboard focus cannot reach them there. -->
-      <Border Background="{DynamicResource SidebarBrush}" IsEnabled="{Binding !Shell.IsNowPlayingOpen}">
-        <DockPanel>
-          <TextBlock DockPanel.Dock="Top" Text="fermata" Margin="24,20,16,16" FontFamily="{DynamicResource DisplayFont}"
-                     FontSize="27" FontWeight="ExtraBold" LetterSpacing="-0.9" />
+        Width="1280" Height="820" MinWidth="860" MinHeight="560"
+        Background="Transparent" ExtendClientAreaToDecorationsHint="True"
+        WindowDecorationsTheme="{StaticResource WindowDecorations}">
+  <!-- The class drawnTitleBar marks a window that draws its own title bar, and framed one that also draws its frame. -->
+  <Window.Styles>
+    <Style Selector="Border#TopBar">
+      <Setter Property="Padding" Value="24,14,24,6" />
+    </Style>
+    <!-- Leaves room for the window buttons. -->
+    <Style Selector="Window.drawnTitleBar Border#TopBar">
+      <Setter Property="Padding" Value="24,14,136,6" />
+    </Style>
+    <Style Selector="Window.framed Border#Root">
+      <Setter Property="CornerRadius" Value="9" />
+      <Setter Property="ClipToBounds" Value="True" />
+    </Style>
+  </Window.Styles>
+  <Border Name="Root" Background="{DynamicResource BackgroundBrush}" Margin="{Binding $parent[Window].WindowDecorationMargin}">
+    <Grid RowDefinitions="*,Auto">
+      <Grid ColumnDefinitions="236,*">
+        <!-- Sidebar. It and the page are disabled under Now playing, so keyboard focus cannot reach them there. -->
+        <Border Background="{DynamicResource SidebarBrush}" IsEnabled="{Binding !Shell.IsNowPlayingOpen}">
+          <DockPanel>
+            <Border DockPanel.Dock="Top" Classes="titleBar" Background="Transparent">
+              <TextBlock Text="fermata" Margin="24,20,16,16" FontFamily="{DynamicResource DisplayFont}"
+                         FontSize="27" FontWeight="ExtraBold" LetterSpacing="-0.9" IsHitTestVisible="False" />
+            </Border>
 
-          <StackPanel DockPanel.Dock="Bottom" Margin="12,6,12,14" Spacing="2">
-            <TextBlock Text="{Binding LibraryStatus}" IsVisible="{Binding LibraryStatus, Converter={x:Static ObjectConverters.IsNotNull}}"
-                       Classes="caption" Margin="12,0,0,6" TextTrimming="CharacterEllipsis" />
-            <RadioButton Theme="{StaticResource NavButton}" Classes="nav" GroupName="nav" IsChecked="{Binding IsSettings}">
-              <StackPanel Orientation="Horizontal" Spacing="14">
-                <PathIcon Data="{StaticResource Icon.Settings}" />
-                <TextBlock Text="Settings" VerticalAlignment="Center" />
-              </StackPanel>
-            </RadioButton>
-          </StackPanel>
-
-          <ScrollViewer HorizontalScrollBarVisibility="Disabled">
-            <StackPanel Margin="12,0" Spacing="2">
-              <RadioButton Theme="{StaticResource NavButton}" Classes="nav" GroupName="nav" IsChecked="{Binding IsHome}">
+            <StackPanel DockPanel.Dock="Bottom" Margin="12,6,12,14" Spacing="2">
+              <TextBlock Text="{Binding LibraryStatus}" IsVisible="{Binding LibraryStatus, Converter={x:Static ObjectConverters.IsNotNull}}"
+                         Classes="caption" Margin="12,0,0,6" TextTrimming="CharacterEllipsis" />
+              <RadioButton Theme="{StaticResource NavButton}" Classes="nav" GroupName="nav" IsChecked="{Binding IsSettings}">
                 <StackPanel Orientation="Horizontal" Spacing="14">
-                  <PathIcon Data="{StaticResource Icon.Home}" />
-                  <TextBlock Text="Home" VerticalAlignment="Center" />
+                  <PathIcon Data="{StaticResource Icon.Settings}" />
+                  <TextBlock Text="Settings" VerticalAlignment="Center" />
                 </StackPanel>
               </RadioButton>
-              <RadioButton Theme="{StaticResource NavButton}" Classes="nav" GroupName="nav" IsChecked="{Binding IsExplore}">
-                <StackPanel Orientation="Horizontal" Spacing="14">
-                  <PathIcon Data="{StaticResource Icon.Explore}" />
-                  <TextBlock Text="Explore" VerticalAlignment="Center" />
-                </StackPanel>
-              </RadioButton>
-
-              <TextBlock Text="Library" Classes="label" Margin="12,18,0,6" />
-              <RadioButton Theme="{StaticResource NavButton}" Classes="nav" GroupName="nav" IsChecked="{Binding IsSongs}">
-                <StackPanel Orientation="Horizontal" Spacing="14">
-                  <PathIcon Data="{StaticResource Icon.Song}" />
-                  <TextBlock Text="Songs" VerticalAlignment="Center" />
-                </StackPanel>
-              </RadioButton>
-              <RadioButton Theme="{StaticResource NavButton}" Classes="nav" GroupName="nav" IsChecked="{Binding IsAlbums}">
-                <StackPanel Orientation="Horizontal" Spacing="14">
-                  <PathIcon Data="{StaticResource Icon.Album}" />
-                  <TextBlock Text="Albums" VerticalAlignment="Center" />
-                </StackPanel>
-              </RadioButton>
-              <RadioButton Theme="{StaticResource NavButton}" Classes="nav" GroupName="nav" IsChecked="{Binding IsArtists}">
-                <StackPanel Orientation="Horizontal" Spacing="14">
-                  <PathIcon Data="{StaticResource Icon.Artist}" />
-                  <TextBlock Text="Artists" VerticalAlignment="Center" />
-                </StackPanel>
-              </RadioButton>
-              <RadioButton Theme="{StaticResource NavButton}" Classes="nav" GroupName="nav" IsChecked="{Binding IsLiked}">
-                <StackPanel Orientation="Horizontal" Spacing="14">
-                  <PathIcon Data="{StaticResource Icon.Heart}" />
-                  <TextBlock Text="Liked songs" VerticalAlignment="Center" />
-                </StackPanel>
-              </RadioButton>
-              <RadioButton Theme="{StaticResource NavButton}" Classes="nav" GroupName="nav" IsChecked="{Binding IsHistory}">
-                <StackPanel Orientation="Horizontal" Spacing="14">
-                  <PathIcon Data="{StaticResource Icon.History}" />
-                  <TextBlock Text="Recently played" VerticalAlignment="Center" />
-                </StackPanel>
-              </RadioButton>
-
-              <Grid ColumnDefinitions="*,Auto" Margin="12,18,0,4">
-                <TextBlock Text="Playlists" Classes="label" VerticalAlignment="Center" />
-                <Button Grid.Column="1" Theme="{StaticResource IconButton}" Width="28" Height="28"
-                        Command="{Binding NewPlaylistCommand}" ToolTip.Tip="New playlist">
-                  <PathIcon Data="{StaticResource Icon.Plus}" Classes="small" />
-                </Button>
-              </Grid>
-              <ListBox Name="PlaylistList" Classes="rows inline" ItemsSource="{Binding Playlists}"
-                       SelectedItem="{Binding SelectedPlaylist}" Background="Transparent">
-                <ListBox.ItemTemplate>
-                  <DataTemplate DataType="lib:Playlist">
-                    <Grid ColumnDefinitions="*,Auto" Height="36" Margin="12,0" Background="Transparent">
-                      <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
-                      <TextBlock Grid.Column="1" Text="{Binding Converter={x:Static views:Converters.SongCount}}" FontSize="12"
-                                 Foreground="{DynamicResource TextTertiaryBrush}" VerticalAlignment="Center" Margin="10,0,0,0" />
-                    </Grid>
-                  </DataTemplate>
-                </ListBox.ItemTemplate>
-              </ListBox>
             </StackPanel>
-          </ScrollViewer>
-        </DockPanel>
-      </Border>
 
-      <!-- Page area -->
-      <Grid Grid.Column="1" RowDefinitions="Auto,*" IsEnabled="{Binding !Shell.IsNowPlayingOpen}">
-        <controls:AmbientBackdrop Grid.RowSpan="2" Covers="{Binding Shell.Navigator.Current.Backdrop}"
-                                  AlignTop="True" FadeStart="0" FadeEnd="0.8" />
-        <Grid ColumnDefinitions="Auto,Auto,*,Auto" Margin="24,14,24,6">
-          <Button Theme="{StaticResource IconButton}" Command="{Binding BackCommand}" Width="32" Height="32"
-                  IsEnabled="{Binding Shell.Navigator.CanGoBack}" ToolTip.Tip="Back (Alt+←)">
-            <PathIcon Data="{StaticResource Icon.ChevronLeft}" Classes="small" />
-          </Button>
-          <Button Grid.Column="1" Theme="{StaticResource IconButton}" Command="{Binding ForwardCommand}" Width="32" Height="32"
-                  IsEnabled="{Binding Shell.Navigator.CanGoForward}" ToolTip.Tip="Forward (Alt+→)" Margin="4,0,0,0">
-            <PathIcon Data="{StaticResource Icon.ChevronRight}" Classes="small" />
-          </Button>
-          <TextBox Name="SearchBox" Grid.Column="3" Classes="field" Width="320"
-                   PlaceholderText="Search songs, albums, artists" Text="{Binding SearchText}">
-            <TextBox.InnerLeftContent>
-              <PathIcon Data="{StaticResource Icon.Search}" Classes="small" Margin="10,0,2,0" Foreground="{DynamicResource TextTertiaryBrush}" />
-            </TextBox.InnerLeftContent>
-          </TextBox>
+            <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+              <StackPanel Margin="12,0" Spacing="2">
+                <RadioButton Theme="{StaticResource NavButton}" Classes="nav" GroupName="nav" IsChecked="{Binding IsHome}">
+                  <StackPanel Orientation="Horizontal" Spacing="14">
+                    <PathIcon Data="{StaticResource Icon.Home}" />
+                    <TextBlock Text="Home" VerticalAlignment="Center" />
+                  </StackPanel>
+                </RadioButton>
+                <RadioButton Theme="{StaticResource NavButton}" Classes="nav" GroupName="nav" IsChecked="{Binding IsExplore}">
+                  <StackPanel Orientation="Horizontal" Spacing="14">
+                    <PathIcon Data="{StaticResource Icon.Explore}" />
+                    <TextBlock Text="Explore" VerticalAlignment="Center" />
+                  </StackPanel>
+                </RadioButton>
+
+                <TextBlock Text="Library" Classes="label" Margin="12,18,0,6" />
+                <RadioButton Theme="{StaticResource NavButton}" Classes="nav" GroupName="nav" IsChecked="{Binding IsSongs}">
+                  <StackPanel Orientation="Horizontal" Spacing="14">
+                    <PathIcon Data="{StaticResource Icon.Song}" />
+                    <TextBlock Text="Songs" VerticalAlignment="Center" />
+                  </StackPanel>
+                </RadioButton>
+                <RadioButton Theme="{StaticResource NavButton}" Classes="nav" GroupName="nav" IsChecked="{Binding IsAlbums}">
+                  <StackPanel Orientation="Horizontal" Spacing="14">
+                    <PathIcon Data="{StaticResource Icon.Album}" />
+                    <TextBlock Text="Albums" VerticalAlignment="Center" />
+                  </StackPanel>
+                </RadioButton>
+                <RadioButton Theme="{StaticResource NavButton}" Classes="nav" GroupName="nav" IsChecked="{Binding IsArtists}">
+                  <StackPanel Orientation="Horizontal" Spacing="14">
+                    <PathIcon Data="{StaticResource Icon.Artist}" />
+                    <TextBlock Text="Artists" VerticalAlignment="Center" />
+                  </StackPanel>
+                </RadioButton>
+                <RadioButton Theme="{StaticResource NavButton}" Classes="nav" GroupName="nav" IsChecked="{Binding IsLiked}">
+                  <StackPanel Orientation="Horizontal" Spacing="14">
+                    <PathIcon Data="{StaticResource Icon.Heart}" />
+                    <TextBlock Text="Liked songs" VerticalAlignment="Center" />
+                  </StackPanel>
+                </RadioButton>
+                <RadioButton Theme="{StaticResource NavButton}" Classes="nav" GroupName="nav" IsChecked="{Binding IsHistory}">
+                  <StackPanel Orientation="Horizontal" Spacing="14">
+                    <PathIcon Data="{StaticResource Icon.History}" />
+                    <TextBlock Text="Recently played" VerticalAlignment="Center" />
+                  </StackPanel>
+                </RadioButton>
+
+                <Grid ColumnDefinitions="*,Auto" Margin="12,18,0,4">
+                  <TextBlock Text="Playlists" Classes="label" VerticalAlignment="Center" />
+                  <Button Grid.Column="1" Theme="{StaticResource IconButton}" Width="28" Height="28"
+                          Command="{Binding NewPlaylistCommand}" ToolTip.Tip="New playlist">
+                    <PathIcon Data="{StaticResource Icon.Plus}" Classes="small" />
+                  </Button>
+                </Grid>
+                <ListBox Name="PlaylistList" Classes="rows inline" ItemsSource="{Binding Playlists}"
+                         SelectedItem="{Binding SelectedPlaylist}" Background="Transparent">
+                  <ListBox.ItemTemplate>
+                    <DataTemplate DataType="lib:Playlist">
+                      <Grid ColumnDefinitions="*,Auto" Height="36" Margin="12,0" Background="Transparent">
+                        <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+                        <TextBlock Grid.Column="1" Text="{Binding Converter={x:Static views:Converters.SongCount}}" FontSize="12"
+                                   Foreground="{DynamicResource TextTertiaryBrush}" VerticalAlignment="Center" Margin="10,0,0,0" />
+                      </Grid>
+                    </DataTemplate>
+                  </ListBox.ItemTemplate>
+                </ListBox>
+              </StackPanel>
+            </ScrollViewer>
+          </DockPanel>
+        </Border>
+
+        <!-- Page area -->
+        <Grid Grid.Column="1" RowDefinitions="Auto,*" IsEnabled="{Binding !Shell.IsNowPlayingOpen}">
+          <controls:AmbientBackdrop Grid.RowSpan="2" Covers="{Binding Shell.Navigator.Current.Backdrop}"
+                                    AlignTop="True" FadeStart="0" FadeEnd="0.8" />
+          <Border Name="TopBar" Classes="titleBar" Background="Transparent">
+            <Grid ColumnDefinitions="Auto,Auto,*,Auto">
+              <Button Theme="{StaticResource IconButton}" Command="{Binding BackCommand}" Width="32" Height="32"
+                      IsEnabled="{Binding Shell.Navigator.CanGoBack}" ToolTip.Tip="Back (Alt+←)">
+                <PathIcon Data="{StaticResource Icon.ChevronLeft}" Classes="small" />
+              </Button>
+              <Button Grid.Column="1" Theme="{StaticResource IconButton}" Command="{Binding ForwardCommand}" Width="32" Height="32"
+                      IsEnabled="{Binding Shell.Navigator.CanGoForward}" ToolTip.Tip="Forward (Alt+→)" Margin="4,0,0,0">
+                <PathIcon Data="{StaticResource Icon.ChevronRight}" Classes="small" />
+              </Button>
+              <TextBox Name="SearchBox" Grid.Column="3" Classes="field" Width="320"
+                       PlaceholderText="Search songs, albums, artists" Text="{Binding SearchText}">
+                <TextBox.InnerLeftContent>
+                  <PathIcon Data="{StaticResource Icon.Search}" Classes="small" Margin="10,0,2,0" Foreground="{DynamicResource TextTertiaryBrush}" />
+                </TextBox.InnerLeftContent>
+              </TextBox>
+            </Grid>
+          </Border>
+          <!-- Takes keyboard focus when a text field is left. -->
+          <ContentControl Name="PageHost" Grid.Row="1" Content="{Binding Shell.Navigator.Current}" Focusable="True"
+                          KeyboardNavigation.IsTabStop="False" FocusAdorner="{x:Null}" />
         </Grid>
-        <!-- Takes keyboard focus when a text field is left. -->
-        <ContentControl Name="PageHost" Grid.Row="1" Content="{Binding Shell.Navigator.Current}" Focusable="True"
-                        KeyboardNavigation.IsTabStop="False" FocusAdorner="{x:Null}" />
+
+        <!-- Now playing covers the sidebar and the page -->
+        <Panel Grid.ColumnSpan="2" IsVisible="{Binding Shell.IsNowPlayingOpen}">
+          <views:NowPlayingView DataContext="{Binding NowPlaying}" />
+        </Panel>
+
+        <!-- Toast -->
+        <Border Grid.ColumnSpan="2" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,18"
+                Background="{DynamicResource PopupBrush}" CornerRadius="10" Padding="16,10" BoxShadow="{StaticResource PopupShadow}"
+                IsVisible="{Binding Shell.Toasts.Current, Converter={x:Static ObjectConverters.IsNotNull}}">
+          <StackPanel Orientation="Horizontal" Spacing="18">
+            <TextBlock Text="{Binding Shell.Toasts.Current.Message}" VerticalAlignment="Center" MaxWidth="520" TextWrapping="Wrap"
+                       MaxLines="3" TextTrimming="CharacterEllipsis" />
+            <Button Theme="{StaticResource LinkButton}" IsVisible="{Binding Shell.Toasts.Current.HasAction}"
+                    Command="{Binding Shell.Toasts.Current.RunActionCommand}" Foreground="{DynamicResource AccentBrush}">
+              <TextBlock Text="{Binding Shell.Toasts.Current.ActionLabel}" FontWeight="SemiBold" />
+            </Button>
+          </StackPanel>
+        </Border>
       </Grid>
 
-      <!-- Now playing covers the sidebar and the page -->
-      <Panel Grid.ColumnSpan="2" IsVisible="{Binding Shell.IsNowPlayingOpen}">
-        <views:NowPlayingView DataContext="{Binding NowPlaying}" />
+      <views:PlayerBar Grid.Row="1" DataContext="{Binding Player}" />
+
+      <!-- Dialogs -->
+      <Panel Grid.RowSpan="2" Background="{DynamicResource ScrimBrush}"
+             IsVisible="{Binding Shell.Dialog, Converter={x:Static ObjectConverters.IsNotNull}}">
+        <ContentControl Content="{Binding Shell.Dialog}" HorizontalAlignment="Center" VerticalAlignment="Center" />
       </Panel>
-
-      <!-- Toast -->
-      <Border Grid.ColumnSpan="2" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,18"
-              Background="{DynamicResource PopupBrush}" CornerRadius="10" Padding="16,10" BoxShadow="{StaticResource PopupShadow}"
-              IsVisible="{Binding Shell.Toasts.Current, Converter={x:Static ObjectConverters.IsNotNull}}">
-        <StackPanel Orientation="Horizontal" Spacing="18">
-          <TextBlock Text="{Binding Shell.Toasts.Current.Message}" VerticalAlignment="Center" MaxWidth="520" TextWrapping="Wrap"
-                     MaxLines="3" TextTrimming="CharacterEllipsis" />
-          <Button Theme="{StaticResource LinkButton}" IsVisible="{Binding Shell.Toasts.Current.HasAction}"
-                  Command="{Binding Shell.Toasts.Current.RunActionCommand}" Foreground="{DynamicResource AccentBrush}">
-            <TextBlock Text="{Binding Shell.Toasts.Current.ActionLabel}" FontWeight="SemiBold" />
-          </Button>
-        </StackPanel>
-      </Border>
     </Grid>
-
-    <views:PlayerBar Grid.Row="1" DataContext="{Binding Player}" />
-
-    <!-- Dialogs -->
-    <Panel Grid.RowSpan="2" Background="{DynamicResource ScrimBrush}"
-           IsVisible="{Binding Shell.Dialog, Converter={x:Static ObjectConverters.IsNotNull}}">
-      <ContentControl Content="{Binding Shell.Dialog}" HorizontalAlignment="Center" VerticalAlignment="Center" />
-    </Panel>
-  </Grid>
+  </Border>
 </Window>

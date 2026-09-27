@@ -6,8 +6,8 @@ This is a map of the code and the reasons behind its shape. The README covers us
 
 | Project | Contents |
 | --- | --- |
-| `src/Fermata.Core` | Everything that is not UI, with no Avalonia dependency. `Metadata`: tag readers. `Library`: tracks, the library index, scanning, the index cache, search, lyrics, recommendations, home sections, likes and history, playlists. `Playback`: the queue, the player and the libmpv engine. `Integration`: MPRIS and the single-instance socket. `Storage`: paths, settings, atomic and deferred writes. `Text`: accent folding and artist credits. |
-| `src/Fermata` | The Avalonia application. `Views` are XAML with small code-behind files; `ViewModels` use CommunityToolkit.Mvvm's source generators; `Controls` holds the few custom-drawn controls (cover art, mosaics, the seek bar) and row dragging; `Services` holds the composition root (`AppServices`), the cover art cache and the MPRIS bridge; `Styles` holds the theme tokens, icons and control themes. |
+| `src/Fermata.Core` | Everything that is not UI, with no Avalonia dependency. `Metadata`: tag readers. `Library`: tracks, the library index, scanning, the index cache, search, lyrics, recommendations, home sections, likes and history, playlists. `Playback`: the queue, the player and the libmpv engine. `Integration`: MPRIS, the single-instance socket and the launcher entry's ID. `Storage`: paths, settings, atomic and deferred writes. `Text`: accent folding and artist credits. |
+| `src/Fermata` | The Avalonia application. `Views` are XAML with small code-behind files; `ViewModels` use CommunityToolkit.Mvvm's source generators; `Controls` holds the few custom-drawn controls (cover art, mosaics, the seek bar) and row dragging; `Services` holds the composition root (`AppServices`), the cover art cache, the MPRIS bridge and the Wayland requests Avalonia does not make (`WaylandWindow`); `Styles` holds the theme tokens, icons and control themes. |
 | `tests/Fermata.Tests` | A console program of checks (no test framework), including randomized tests of the player. |
 | `tests/Fermata.Ui` | Renders every page, or the ambient backdrop for given covers, headlessly to PNG files. |
 | `tools` | Sample-library and table generators, and the isolated test session with its input tools. |
@@ -123,7 +123,9 @@ file has the same identity, its history moves to that file, and playlists are up
 
 ## UI and performance
 
-**Nothing polls.** While paused, minimized or idle, no timer runs and CPU use is effectively zero. While
+**Nothing polls.** While paused, minimized or idle, no timer runs and CPU use is effectively zero.
+The exception is a minimized or hidden Wayland window, which is not told so: the position timer
+keeps running while a song plays, though nothing is drawn. While
 playing, the one timer is the position timer. Its interval is the time the progress bar takes to
 move one pixel (every ~150 ms for a four-minute song on a wide window, clamped to 40 ms–1 s). The
 seek bar invalidates only when its fill has moved by at least one device pixel, and text is updated
@@ -203,7 +205,8 @@ noise of the measurement, in either style.
 
 **Renderer.** OpenGL. Measured while playing on an RTX 4080, Vulkan used about 40% more memory
 (it loads both GPUs' drivers) and more CPU. The software renderer uses less memory but about four
-times the CPU. `FERMATA_RENDERING` overrides the choice.
+times the CPU. `FERMATA_RENDERING` overrides the choice. On Wayland, OpenGL goes through EGL and
+Vulkan is not available.
 
 **Memory.** With a small library the process is about 300–340 MB resident, and most of that is the
 GPU driver: its libraries (shared with every other GL program) and its allocations. Fermata's own
@@ -226,11 +229,31 @@ second signal exits at once.
 - **MPRIS** (`org.mpris.MediaPlayer2.fermata`) over Tmds.DBus.Protocol, which works under NativeAOT:
   play/pause, next, previous, seek, volume, shuffle, loop status, metadata and cover art. Embedded
   covers are exported to the cache so other programs can show them. Media keys on most desktops go
-  through this.
+  through this. Its `DesktopEntry` is the launcher entry's ID, `io.github.camelcase12.Fermata`.
 - **One instance.** A second launch sends its files or command (`--play-pause`, `--next`, …) over a
-  Unix socket in `$XDG_RUNTIME_DIR` and exits, in about 6 ms.
-- **X11.** Avalonia has no Wayland backend yet, so Fermata runs through XWayland on Wayland desktops.
-  Its window class is `fermata`, matching the desktop file.
+  Unix socket in `$XDG_RUNTIME_DIR` and exits, in about 6 ms. It passes on its launcher's
+  activation token too.
+- **Wayland.** In a Wayland session Fermata opens a Wayland window through Avalonia's Wayland backend,
+  which is still experimental in Avalonia 12.1, and falls back to XWayland if that fails.
+  `FERMATA_PLATFORM=x11` or `wayland` picks one without the fallback.
+
+  Avalonia.Wayland 12.1.3 sends no app ID, and its `Window.Activate` does nothing, so `WaylandWindow`
+  makes both requests on the backend's internal protocol objects through `UnsafeAccessor`. If an
+  Avalonia update renames those, the requests are skipped with one line on standard error, and
+  `tools/check-platforms.sh` fails in CI. Once an Avalonia release has an app ID option (pull request
+  22209), that can replace the app ID request.
+
+  - The app ID is the launcher entry's ID. It is sent after the window's first commit, so KWin rules
+    that match only when a window is created do not see it.
+  - The window takes focus with the launcher's `XDG_ACTIVATION_TOKEN` when it first opens, and with a
+    second launch's token when that launch raises it. Without a token, as for MPRIS Raise, Fermata
+    requests one, and compositors usually only mark the window as wanting attention.
+- **Window decorations.** Where the compositor draws window decorations, Fermata uses them. Where it
+  does not, as on GNOME, Fermata draws its own, styled by `WindowDecorations` in
+  `Styles/Controls.axaml`. The empty space of the top row is the title bar, the minimize, maximize and
+  close buttons sit at its right end, and the window has rounded corners, a shadow and a thin outline.
+  All three buttons always show, whatever GNOME's button setting.
+- **X11.** The window class is `fermata`, matching `StartupWMClass` in the launcher entry.
 
 ## Testing
 
@@ -258,10 +281,15 @@ With `--backdrops OUTPUT IMAGE...` it instead renders the ambient backdrop in bo
 image, prints each cover's analysis, and times the analysis.
 
 `tools/isolated-session.sh` runs the real executable in a private headless sway session with
-XWayland, D-Bus, XDG directories and silent audio, with `FERMATA_GPU` choosing the GPU. That is how
-the measurements above were made, and how dragging, typing and resizing were exercised with
-`tools/pointer.c` (the compositor's virtual pointer) and `tools/xinput.c` (XTEST keys), without
-touching the real desktop.
+XWayland, D-Bus, XDG directories and silent audio, with `FERMATA_GPU` choosing the GPU. Fermata opens
+a Wayland window there, or an X11 one with `FERMATA_PLATFORM=x11`. That is how the measurements
+above were made, and how dragging, typing and resizing were exercised with `tools/pointer.c` (the
+compositor's virtual pointer), `tools/keyboard.c` (its virtual keyboard) and `tools/xinput.c` (XTEST
+keys, for X11 windows only), without touching the real desktop.
+
+`tools/check-platforms.sh`, which CI runs in that session, opens Fermata as a Wayland client and as
+an X11 client. It checks each window's app ID or class, that no Wayland request failed, and that
+Fermata quits cleanly on SIGTERM.
 
 ## Choices
 
@@ -311,6 +339,18 @@ compositor session:
 | 50,000-song library: heap / resident after browsing | ~41 MB / ~400 MB |
 | Scrolling 50,000 songs as fast as the wheel goes | ~17% of one core while scrolling |
 
+The table was measured with the X11 window. The Wayland and X11 windows compare as follows, measured
+in the same session on a Ryzen 7 8845H laptop (Radeon 780M, OpenGL) with 20–40 s songs, so the
+position timer ran at its fastest.
+
+| | Wayland | X11 |
+| --- | --- | --- |
+| Start to window shown | ~220 ms | ~265 ms |
+| Playing, window visible | 2.4% of one core | 3.5% of one core |
+| Playing, window hidden | ~2% | ~1.2% |
+| Idle or paused | at most 0.1% | at most 0.1% |
+| Resident memory | ~220 MB | ~220 MB |
+
 
 ### Development
 
@@ -324,6 +364,7 @@ dotnet run --project tests/Fermata.Tests -c Release -- --measure-scan DIR
 dotnet run --project tests/Fermata.Ui -c Release -- --screenshots OUT_DIR MUSIC_DIR  # every page, headless
 tools/make-sample-library.py DIR                            # 105 tagged songs in 12 formats, with covers and lyrics
 dotnet run --project tools/icons [PREVIEW.png]                # regenerates the icons in Styles/Icons.axaml
+tools/isolated-session.sh tools/check-platforms.sh           # opens Wayland and X11 windows and checks their identity
 .venv/bin/python tools/font/build.py                         # rebuilds Fermata Sans into Assets/Fonts (see requirements.txt)
 ```
 
@@ -336,11 +377,12 @@ themselves when those are missing.
 `tools/isolated-session.sh COMMAND` runs a command in a private headless compositor (sway with
 XWayland), with its own D-Bus, XDG directories and silent audio, so Fermata can be driven and
 screenshotted without touching your desktop, audio or files. `tools/pointer.c` (the compositor's
-virtual pointer) and `tools/xinput.c` (XTEST keys) drive it; build instructions are at the top of
-each file.
+virtual pointer), `tools/keyboard.c` (its virtual keyboard) and `tools/xinput.c` (XTEST keys, for
+X11 windows) drive it; build instructions are at the top of each file.
 
-Environment variables for troubleshooting: `FERMATA_RENDERING=gl|vulkan|software` picks the
-renderer, `FERMATA_AUDIO_OUTPUT` sets mpv's audio output (`null` for silence),
+Environment variables for troubleshooting: `FERMATA_PLATFORM=wayland|x11` picks the window system,
+`FERMATA_RENDERING=gl|vulkan|software`
+picks the renderer, `FERMATA_AUDIO_OUTPUT` sets mpv's audio output (`null` for silence),
 `FERMATA_MPV_LOG=FILE` writes mpv's detailed log to a file, and `FERMATA_TRACE_STARTUP=1` prints
 startup timings.
 

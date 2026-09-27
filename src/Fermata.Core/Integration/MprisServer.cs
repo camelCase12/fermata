@@ -90,7 +90,7 @@ public sealed class MprisServer : IDisposable
     private DBusConnection? connection;
     private volatile MprisState state = new();
 
-    public MprisServer(IMprisTarget target, SynchronizationContext context, string identity = "Fermata", string desktopEntry = "fermata")
+    public MprisServer(IMprisTarget target, SynchronizationContext context, string identity = "Fermata", string desktopEntry = DesktopEntry.Id)
     {
         this.target = target;
         this.context = context;

@@ -39,6 +39,12 @@
     <Style Selector="Button.onTint:pointerover">
       <Setter Property="Foreground" Value="{DynamicResource OnTintPrimaryBrush}" />
     </Style>
+    <Style Selector="Border#Tabs">
+      <Setter Property="Margin" Value="0,8,0,0" />
+    </Style>
+    <Style Selector="Window.drawnTitleBar Border#Tabs">
+      <Setter Property="Margin" Value="0,40,0,0" />
+    </Style>
   </UserControl.Styles>
 
   <Grid Background="{DynamicResource BackgroundBrush}">
@@ -46,6 +52,8 @@
     <controls:AmbientBackdrop Covers="{Binding Player.Art, Converter={x:Static views:Converters.OneCover}}"
                               FadeStart="0.3" FadeEnd="1" FadeAmount="0.55" />
     <Grid ColumnDefinitions="*,460" RowDefinitions="Auto,*" Margin="28,16,28,20">
+      <!-- The title bar, when the window draws its own. -->
+      <Border Grid.ColumnSpan="2" Classes="titleBar" Background="Transparent" Margin="-28,-16,-28,0" />
       <Button Theme="{StaticResource IconButton}" Command="{Binding CloseCommand}" ToolTip.Tip="Close (Esc)" HorizontalAlignment="Left">
         <PathIcon Data="{StaticResource Icon.ChevronDown}" Width="36" Height="36" />
       </Button>
@@ -73,7 +81,7 @@
       </Grid>
 
       <!-- Tabs, on a translucent panel -->
-      <Border Grid.Column="1" Grid.RowSpan="2" Background="{DynamicResource GlassBrush}" CornerRadius="18" Padding="16" Margin="0,8,0,0">
+      <Border Name="Tabs" Grid.Column="1" Grid.RowSpan="2" Background="{DynamicResource GlassBrush}" CornerRadius="18" Padding="16">
       <Grid RowDefinitions="Auto,*">
         <StackPanel Orientation="Horizontal" Spacing="6">
           <RadioButton Theme="{StaticResource ChipButton}" GroupName="nowplaying" Content="Up next" Name="UpNextTab" IsChecked="{Binding IsUpNext, Mode=OneWay}"

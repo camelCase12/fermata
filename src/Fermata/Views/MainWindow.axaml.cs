@@ -5,7 +5,9 @@ using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
 using Avalonia.VisualTree;
 using Fermata.Controls;
+using Fermata.Integration;
 using Fermata.Library;
+using Fermata.Services;
 using Fermata.ViewModels;
 
 namespace Fermata.Views;
@@ -22,6 +24,7 @@ public partial class MainWindow : Window
         AddHandler(KeyDownEvent, OnShortcut, RoutingStrategies.Tunnel);
         AddHandler(KeyUpEvent, OnShortcutReleased, RoutingStrategies.Tunnel);
         AddHandler(PointerPressedEvent, OnAnyPointerPressed, RoutingStrategies.Tunnel);
+        AddHandler(PointerPressedEvent, OnTitleBarPressed);
         AddHandler(DragDrop.DragOverEvent, OnDragOver);
         AddHandler(DragDrop.DropEvent, OnDrop);
         DragDrop.SetAllowDrop(this, true);
@@ -31,6 +34,7 @@ public partial class MainWindow : Window
         PlaylistList.AddHandler(DragDrop.DragLeaveEvent, OnPlaylistDragLeave);
         PlaylistList.AddHandler(DragDrop.DropEvent, OnPlaylistDrop);
         SearchBox.KeyDown += OnSearchKey;
+        WaylandWindow.SetAppId(this, DesktopEntry.Id);
     }
 
     private MainViewModel Model => (MainViewModel)DataContext!;
@@ -51,6 +55,27 @@ public partial class MainWindow : Window
         // Nothing needs to update on screen while the window is minimized.
         if (change.Property == WindowStateProperty && DataContext is MainViewModel model)
             model.Player.SetWindowVisible(WindowState != WindowState.Minimized);
+        if (change.Property == IsExtendedIntoWindowDecorationsProperty || change.Property == WindowStateProperty
+            || change.Property == WindowDecorationMarginProperty)
+        {
+            Classes.Set("drawnTitleBar", IsExtendedIntoWindowDecorations && WindowState != WindowState.FullScreen);
+            Classes.Set("framed", IsExtendedIntoWindowDecorations && WindowDecorationMargin != default);
+        }
+    }
+
+    /// <summary>Moves, maximizes or restores the window from its drawn title bar.</summary>
+    private void OnTitleBarPressed(object? sender, PointerPressedEventArgs e)
+    {
+        if (!IsExtendedIntoWindowDecorations || e.Source is not StyledElement source || !source.Classes.Contains("titleBar")
+            || !e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
+        {
+            return;
+        }
+        if (e.ClickCount == 2)
+            WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
+        else
+            BeginMoveDrag(e);
+        e.Handled = true;
     }
 
     protected override void OnClosing(WindowClosingEventArgs e)
@@ -67,8 +92,15 @@ public partial class MainWindow : Window
     }
 
     /// <summary>Brings the window forward.</summary>
-    public void Raise()
+    /// <param name="activationToken">The Wayland activation token from the request's launcher, if any.</param>
+    public void Raise(string? activationToken = null)
     {
+        // Wayland does not report minimizing, and activation restores the window.
+        if (WaylandWindow.IsWayland(this))
+        {
+            WaylandWindow.Activate(this, activationToken);
+            return;
+        }
         if (WindowState == WindowState.Minimized)
             WindowState = WindowState.Normal;
         Activate();

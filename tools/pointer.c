@@ -3,12 +3,15 @@
 //
 //   pointer move X Y
 //   pointer hover X Y MS               rest there for MS milliseconds, moving a pixel back and forth
-//   pointer click X Y
+//   pointer click X Y [right|middle]
+//   pointer doubleclick X Y
 //   pointer drag X1 Y1 X2 Y2 [STEPS] [HOLD_MS]
 //                                      press at X1 Y1, move there in STEPS, hold, release at X2 Y2
 //   pointer wheel X Y N                N notches down (negative: up)
 //
-// Coordinates are in pixels of the (single) output. Build from the repository root:
+// Coordinates are in pixels of the (single) output. The virtual pointer exists only while the tool runs,
+// and a Wayland client sees it leave when the tool exits, so take a screenshot of a hover state while
+// "pointer hover" is still running. Build from the repository root:
 //   wayland-scanner client-header tools/protocols/wlr-virtual-pointer-unstable-v1.xml virtual-pointer.h
 //   wayland-scanner private-code tools/protocols/wlr-virtual-pointer-unstable-v1.xml virtual-pointer.c
 //   cc -O2 -I. -o pointer tools/pointer.c virtual-pointer.c -lwayland-client
@@ -79,16 +82,16 @@ static void move_to(double x, double y, int pause_ms)
     send(pause_ms);
 }
 
-static void button(uint32_t state, int pause_ms)
+static void button(uint32_t code, uint32_t state, int pause_ms)
 {
-    zwlr_virtual_pointer_v1_button(pointer, now_ms(), BTN_LEFT, state);
+    zwlr_virtual_pointer_v1_button(pointer, now_ms(), code, state);
     send(pause_ms);
 }
 
 int main(int argc, char **argv)
 {
     if (argc < 4) {
-        fprintf(stderr, "usage: pointer move|click X Y | hover X Y MS | drag X1 Y1 X2 Y2 [STEPS] [HOLD_MS] | wheel X Y N\n");
+        fprintf(stderr, "usage: pointer move X Y | click X Y [right|middle] | doubleclick X Y | hover X Y MS | drag X1 Y1 X2 Y2 [STEPS] [HOLD_MS] | wheel X Y N\n");
         return 2;
     }
     display = wl_display_connect(NULL);
@@ -115,19 +118,26 @@ int main(int argc, char **argv)
         for (int elapsed = 0; elapsed < duration; elapsed += 50)
             move_to(x + (elapsed / 50) % 2, y, 50);
     } else if (!strcmp(verb, "click")) {
+        uint32_t code = argc < 5 ? BTN_LEFT : !strcmp(argv[4], "right") ? BTN_RIGHT : BTN_MIDDLE;
         move_to(x, y, 80);
-        button(WL_POINTER_BUTTON_STATE_PRESSED, 40);
-        button(WL_POINTER_BUTTON_STATE_RELEASED, 40);
+        button(code, WL_POINTER_BUTTON_STATE_PRESSED, 40);
+        button(code, WL_POINTER_BUTTON_STATE_RELEASED, 40);
+    } else if (!strcmp(verb, "doubleclick")) {
+        move_to(x, y, 80);
+        for (int i = 0; i < 2; i++) {
+            button(BTN_LEFT, WL_POINTER_BUTTON_STATE_PRESSED, 30);
+            button(BTN_LEFT, WL_POINTER_BUTTON_STATE_RELEASED, 60);
+        }
     } else if (!strcmp(verb, "drag") && argc >= 6) {
         double x2 = atof(argv[4]), y2 = atof(argv[5]);
         int steps = argc >= 7 ? atoi(argv[6]) : 20;
         int hold = argc >= 8 ? atoi(argv[7]) : 150;
         move_to(x, y, 80);
-        button(WL_POINTER_BUTTON_STATE_PRESSED, 80);
+        button(BTN_LEFT, WL_POINTER_BUTTON_STATE_PRESSED, 80);
         for (int i = 1; i <= steps; i++)
             move_to(x + (x2 - x) * i / steps, y + (y2 - y) * i / steps, 25);
         usleep(hold * 1000);
-        button(WL_POINTER_BUTTON_STATE_RELEASED, 80);
+        button(BTN_LEFT, WL_POINTER_BUTTON_STATE_RELEASED, 80);
     } else if (!strcmp(verb, "wheel") && argc >= 5) {
         int notches = atoi(argv[4]);
         move_to(x, y, 60);

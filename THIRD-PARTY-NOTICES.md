@@ -10,6 +10,7 @@ Fermata is built on the following software. Their full license texts are in [lic
 | [CommunityToolkit.Mvvm](https://github.com/CommunityToolkit/dotnet) | MIT | [CommunityToolkit.Mvvm.txt](licenses/CommunityToolkit.Mvvm.txt), [notices](licenses/CommunityToolkit.Mvvm-third-party-notices.txt) |
 | [Tmds.DBus](https://github.com/tmds/Tmds.DBus) | MIT | [Tmds.DBus.txt](licenses/Tmds.DBus.txt) |
 | [MicroCom](https://github.com/kekekeks/MicroCom) | MIT | [MicroCom.txt](licenses/MicroCom.txt) |
+| [NWayland](https://github.com/AvaloniaUI/NWayland), with bindings generated from the Wayland protocol definitions | MIT; the definitions under MIT-style licenses | [NWayland.txt](licenses/NWayland.txt), [notices](licenses/NWayland-third-party-notices.txt) |
 | [.NET runtime](https://github.com/dotnet/runtime), compiled into the executable | MIT | [dotnet-runtime.txt](licenses/dotnet-runtime.txt), [notices](licenses/dotnet-runtime-third-party-notices.txt) |
 
 Fermata plays audio through [libmpv](https://mpv.io), which is installed separately and loaded at run

@@ -71,6 +71,11 @@ internal static class Program
             return 1;
         if (lines.Count == 0)
             lines.Add("raise");
+        // The token is valid once, so child processes must not inherit it.
+        string? activationToken = Environment.GetEnvironmentVariable("XDG_ACTIVATION_TOKEN") is { Length: > 0 } token ? token : null;
+        Environment.SetEnvironmentVariable("XDG_ACTIVATION_TOKEN", null);
+        if (activationToken is not null && lines.Any(l => l == "raise" || l.StartsWith("open\t", StringComparison.Ordinal)))
+            lines.Add("activation-token\t" + activationToken);
 
         var paths = AppPaths.FromEnvironment();
         CrashLog.Install(paths.CrashLogFile);
@@ -90,7 +95,8 @@ internal static class Program
 
         // Commands for a running instance mean nothing when this is the first one.
         App.StartupRequests = lines.Where(l => l.StartsWith("open\t", StringComparison.Ordinal)).ToList();
-        if (DisplayScaling.Apply() is { } factors)
+        App.StartupActivationToken = activationToken;
+        if (!UsesWayland && DisplayScaling.Apply() is { } factors)
             Trace("screen scale factors " + factors);
         App.Instance = instance;
         try
@@ -106,17 +112,33 @@ internal static class Program
     /// <summary>Also used by the visual designer.</summary>
     public static AppBuilder BuildAvaloniaApp()
     {
+        string? rendering = Environment.GetEnvironmentVariable("FERMATA_RENDERING");
         var x11 = new X11PlatformOptions { WmClass = "fermata" };
         // OpenGL, unless FERMATA_RENDERING chooses vulkan, gl or software.
-        x11.RenderingMode = Environment.GetEnvironmentVariable("FERMATA_RENDERING") switch
+        x11.RenderingMode = rendering switch
         {
             "software" => [X11RenderingMode.Software],
             "vulkan" => [X11RenderingMode.Vulkan, X11RenderingMode.Glx, X11RenderingMode.Software],
             _ => [X11RenderingMode.Glx, X11RenderingMode.Software],
         };
-        return AppBuilder.Configure<App>()
+        var builder = AppBuilder.Configure<App>()
             .UsePlatformDetect()
             .WithFermataFonts()
             .With(x11);
+        if (!UsesWayland)
+            return builder;
+        var wayland = new WaylandPlatformOptions();
+        if (rendering == "software")
+            wayland.GlProfiles = [];
+        builder = builder.With(wayland);
+        return Environment.GetEnvironmentVariable("FERMATA_PLATFORM") == "wayland" ? builder.UseWayland() : builder.UseWaylandWithFallback();
     }
+
+    /// <summary>Whether Fermata opens a Wayland window rather than an X11 one.</summary>
+    private static bool UsesWayland => Environment.GetEnvironmentVariable("FERMATA_PLATFORM") switch
+    {
+        "x11" => false,
+        "wayland" => true,
+        _ => !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("WAYLAND_DISPLAY")),
+    };
 }
