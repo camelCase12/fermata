@@ -19,6 +19,9 @@ public partial class App : Application
     /// <summary>Files named on the command line of the first launch.</summary>
     internal static IReadOnlyList<string> StartupRequests { get; set; } = [];
 
+    /// <summary>The activation token that the launcher of the first launch set, if any.</summary>
+    internal static string? StartupActivationToken { get; set; }
+
     internal static SingleInstance? Instance { get; set; }
 
     /// <summary>Application services, for controls that load art or act on tracks.</summary>
@@ -48,6 +51,10 @@ public partial class App : Application
             window.Opened += (_, _) =>
             {
                 Program.Trace("window opened");
+                // The token ends the launcher's startup notification and lets the new window take focus.
+                // X11 window managers decide focus without it.
+                if (StartupActivationToken is { } token && WaylandWindow.IsWayland(window))
+                    WaylandWindow.Activate(window, token);
                 shell.ReportUnreadable(services.Unreadable);
                 shell.ReportFromNewerVersion(services.FromNewerVersion);
             };
@@ -106,6 +113,8 @@ public partial class App : Application
         if (Services is not { } services || Shell is not { } shell)
             return;
         var files = new List<string>();
+        bool raise = false;
+        string? activationToken = null;
         foreach (string line in lines)
         {
             int tab = line.IndexOf('\t');
@@ -115,6 +124,9 @@ public partial class App : Application
             {
                 case "open":
                     files.Add(argument);
+                    break;
+                case "activation-token":
+                    activationToken = argument;
                     break;
                 case "command":
                     switch (argument)
@@ -126,15 +138,17 @@ public partial class App : Application
                     }
                     break;
                 case "raise":
-                    window?.Raise();
+                    raise = true;
                     break;
             }
         }
         if (files.Count > 0)
         {
             OpenFiles(services, shell, files);
-            window?.Raise();
+            raise = true;
         }
+        if (raise)
+            window?.Raise(activationToken);
     }
 
     /// <summary>Plays files, folders and M3U playlists given from outside, reading any files that are not in the library.</summary>

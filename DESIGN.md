@@ -6,8 +6,8 @@ This is a map of the code and the reasons behind its shape. The README covers us
 
 | Project | Contents |
 | --- | --- |
-| `src/Fermata.Core` | Everything that is not UI, with no Avalonia dependency. `Metadata`: tag readers. `Library`: tracks, the library index, scanning, the index cache, search, lyrics, recommendations, home sections, likes and history, playlists. `Playback`: the queue, the player and the libmpv engine. `Integration`: MPRIS and the single-instance socket. `Storage`: paths, settings, atomic and deferred writes. `Text`: accent folding and artist credits. |
-| `src/Fermata` | The Avalonia application. `Views` are XAML with small code-behind files; `ViewModels` use CommunityToolkit.Mvvm's source generators; `Controls` holds the few custom-drawn controls (cover art, mosaics, the seek bar) and row dragging; `Services` holds the composition root (`AppServices`), the cover art cache and the MPRIS bridge; `Styles` holds the theme tokens, icons and control themes. |
+| `src/Fermata.Core` | Everything that is not UI, with no Avalonia dependency. `Metadata`: tag readers. `Library`: tracks, the library index, scanning, the index cache, search, lyrics, recommendations, home sections, likes and history, playlists. `Playback`: the queue, the player and the libmpv engine. `Integration`: MPRIS, the single-instance socket and the launcher entry's ID. `Storage`: paths, settings, atomic and deferred writes. `Text`: accent folding and artist credits. |
+| `src/Fermata` | The Avalonia application. `Views` are XAML with small code-behind files; `ViewModels` use CommunityToolkit.Mvvm's source generators; `Controls` holds the few custom-drawn controls (cover art, mosaics, the seek bar) and row dragging; `Services` holds the composition root (`AppServices`), the cover art cache, the MPRIS bridge and the Wayland requests Avalonia does not make (`WaylandWindow`); `Styles` holds the theme tokens, icons and control themes. |
 | `tests/Fermata.Tests` | A console program of checks (no test framework), including randomized tests of the player. |
 | `tests/Fermata.Ui` | Renders every page, or the ambient backdrop for given covers, headlessly to PNG files. |
 | `tools` | Sample-library and table generators, and the isolated test session with its input tools. |
@@ -230,15 +230,34 @@ second signal exits at once.
 - **MPRIS** (`org.mpris.MediaPlayer2.fermata`) over Tmds.DBus.Protocol, which works under NativeAOT:
   play/pause, next, previous, seek, volume, shuffle, loop status, metadata and cover art. Embedded
   covers are exported to the cache so other programs can show them. Media keys on most desktops go
-  through this.
+  through this. Its `DesktopEntry` is the launcher entry's ID, `io.github.camelcase12.Fermata`, so
+  desktops show Fermata's name and icon beside the controls, and GNOME brings the window forward
+  itself when they are clicked.
 - **One instance.** A second launch sends its files or command (`--play-pause`, `--next`, …) over a
-  Unix socket in `$XDG_RUNTIME_DIR` and exits, in about 6 ms.
+  Unix socket in `$XDG_RUNTIME_DIR` and exits, in about 6 ms. When the request brings the window
+  forward, it also passes on the activation token that its launcher set (see below).
 - **Wayland.** In a Wayland session (`WAYLAND_DISPLAY` set), Fermata opens a Wayland window through
   Avalonia's Wayland backend, which Avalonia 12.1 still calls experimental. If the compositor cannot
   be used, it falls back to an X11 window through XWayland. `FERMATA_PLATFORM=x11` or `wayland`
   decides instead, without the fallback. A Wayland window is sharp at fractional scales, and while a
   song plays it takes less CPU than the XWayland window (see Performance).
 
+  Avalonia.Wayland 12.1.3 sends no app ID, and its `Window.Activate` does nothing. `WaylandWindow`
+  makes both requests itself, on the backend's own protocol objects and on its Wayland thread. It
+  reaches them through members that are internal to Avalonia, with `UnsafeAccessor`, which the native
+  build resolves at compile time. If an update renames them, the requests are skipped with one line
+  on standard error, which fails CI (`tools/check-platforms.sh`).
+
+  - The app ID is the launcher entry's ID, so desktops match the window to the launcher, its name and
+    its icon. It is sent before the window first appears, but after its first empty commit, so KWin
+    window rules that apply only when a window is created do not see it. Avalonia has approved an app
+    ID option (pull request 22209); once a release has it, the app ID can come from there.
+  - The activation token that a launcher sets in `XDG_ACTIVATION_TOKEN` is used when the window first
+    opens, which ends the launch feedback and lets the new window take focus. A second launch forwards
+    its token, so opening a song from a file manager brings the running window forward. Without a
+    token (MPRIS Raise, a launch from a terminal), Fermata asks the compositor for one, and the
+    compositor then usually just marks the window as wanting attention.
+  - The window's icon comes from the installed launcher entry; the window does not send one.
 - **X11.** The window class is `fermata`, matching `StartupWMClass` in the launcher entry.
 
 ## Testing
@@ -272,6 +291,11 @@ a Wayland window there, or an X11 one with `FERMATA_PLATFORM=x11`. That is how t
 above were made, and how dragging, typing and resizing were exercised with `tools/pointer.c` (the
 compositor's virtual pointer), `tools/keyboard.c` (its virtual keyboard) and `tools/xinput.c` (XTEST
 keys, for X11 windows only), without touching the real desktop.
+
+`tools/check-platforms.sh`, which CI runs in that session, opens Fermata as a Wayland client and as
+an X11 client. It checks that each window carries the identity desktops match to the launcher entry
+(the app ID on Wayland, the window class on X11), that the Wayland requests Fermata makes itself
+report no failure, and that Fermata then quits cleanly on SIGTERM.
 
 ## Choices
 
@@ -342,6 +366,7 @@ dotnet run --project tests/Fermata.Tests -c Release -- --measure-scan DIR
 dotnet run --project tests/Fermata.Ui -c Release -- --screenshots OUT_DIR MUSIC_DIR  # every page, headless
 tools/make-sample-library.py DIR                            # 105 tagged songs in 12 formats, with covers and lyrics
 dotnet run --project tools/icons [PREVIEW.png]                # regenerates the icons in Styles/Icons.axaml
+tools/isolated-session.sh tools/check-platforms.sh           # opens Wayland and X11 windows and checks their identity
 .venv/bin/python tools/font/build.py                         # rebuilds Fermata Sans into Assets/Fonts (see requirements.txt)
 ```
 

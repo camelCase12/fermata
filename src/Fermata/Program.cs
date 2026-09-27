@@ -71,6 +71,12 @@ internal static class Program
             return 1;
         if (lines.Count == 0)
             lines.Add("raise");
+        // A Wayland compositor lets a window take focus with the token that the launcher set.
+        // It is used once, so child processes must not inherit it.
+        string? activationToken = Environment.GetEnvironmentVariable("XDG_ACTIVATION_TOKEN") is { Length: > 0 } token ? token : null;
+        Environment.SetEnvironmentVariable("XDG_ACTIVATION_TOKEN", null);
+        if (activationToken is not null && lines.Any(l => l == "raise" || l.StartsWith("open\t", StringComparison.Ordinal)))
+            lines.Add("activation-token\t" + activationToken);
 
         var paths = AppPaths.FromEnvironment();
         CrashLog.Install(paths.CrashLogFile);
@@ -90,6 +96,7 @@ internal static class Program
 
         // Commands for a running instance mean nothing when this is the first one.
         App.StartupRequests = lines.Where(l => l.StartsWith("open\t", StringComparison.Ordinal)).ToList();
+        App.StartupActivationToken = activationToken;
         if (DisplayScaling.Apply() is { } factors)
             Trace("screen scale factors " + factors);
         App.Instance = instance;

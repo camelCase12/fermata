@@ -18,7 +18,8 @@ jobs:
       - name: Install build and test tools
         run: |
           sudo apt-get update
-          sudo apt-get install -y --no-install-recommends clang zlib1g-dev ffmpeg libmpv2 playerctl dbus fontconfig
+          sudo apt-get install -y --no-install-recommends clang zlib1g-dev ffmpeg libmpv2 playerctl dbus fontconfig \
+            sway xwayland bubblewrap jq
 
       - name: Build and run the checks
         env:
@@ -30,6 +31,16 @@ jobs:
         run: |
           python3 tools/make-sample-library.py "$RUNNER_TEMP/library" --seconds 5 10
           dotnet run --project tests/Fermata.Ui -c Release -- --screenshots "$RUNNER_TEMP/pages" "$RUNNER_TEMP/library"
+
+      - name: Run as a Wayland and an X11 client
+        timeout-minutes: 5
+        env:
+          # The runner has no GPU, so sway draws on the CPU.
+          WLR_RENDERER: pixman
+        run: |
+          # Ubuntu 24.04 keeps the unprivileged user namespaces that bubblewrap needs behind AppArmor.
+          sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+          tools/isolated-session.sh tools/check-platforms.sh
 
       - uses: actions/upload-artifact@v5
         if: always()

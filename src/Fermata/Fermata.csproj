@@ -14,6 +14,7 @@
     <PackageReference Include="Avalonia" Version="12.1.3" />
     <PackageReference Include="Avalonia.Desktop" Version="12.1.3" />
     <PackageReference Include="Avalonia.Themes.Fluent" Version="12.1.3" />
+    <!-- Services/WaylandWindow.cs reaches members internal to this version; CI's tools/check-platforms.sh checks them. -->
     <PackageReference Include="Avalonia.Wayland" Version="12.1.3" />
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
   </ItemGroup>

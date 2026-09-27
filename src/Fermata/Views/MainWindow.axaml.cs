@@ -5,7 +5,9 @@ using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
 using Avalonia.VisualTree;
 using Fermata.Controls;
+using Fermata.Integration;
 using Fermata.Library;
+using Fermata.Services;
 using Fermata.ViewModels;
 
 namespace Fermata.Views;
@@ -31,6 +33,8 @@ public partial class MainWindow : Window
         PlaylistList.AddHandler(DragDrop.DragLeaveEvent, OnPlaylistDragLeave);
         PlaylistList.AddHandler(DragDrop.DropEvent, OnPlaylistDrop);
         SearchBox.KeyDown += OnSearchKey;
+        // X11 gets its window class from the platform options.
+        WaylandWindow.SetAppId(this, DesktopEntry.Id);
     }
 
     private MainViewModel Model => (MainViewModel)DataContext!;
@@ -67,8 +71,18 @@ public partial class MainWindow : Window
     }
 
     /// <summary>Brings the window forward.</summary>
-    public void Raise()
+    /// <param name="activationToken">
+    /// On Wayland, the activation token that the launcher of the request set, which lets the compositor
+    /// focus the window.
+    /// </param>
+    public void Raise(string? activationToken = null)
     {
+        // Wayland does not tell a window that it is minimized, and activating it restores it.
+        if (WaylandWindow.IsWayland(this))
+        {
+            WaylandWindow.Activate(this, activationToken);
+            return;
+        }
         if (WindowState == WindowState.Minimized)
             WindowState = WindowState.Normal;
         Activate();
