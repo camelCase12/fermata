@@ -34,7 +34,6 @@ public partial class MainWindow : Window
         PlaylistList.AddHandler(DragDrop.DragLeaveEvent, OnPlaylistDragLeave);
         PlaylistList.AddHandler(DragDrop.DropEvent, OnPlaylistDrop);
         SearchBox.KeyDown += OnSearchKey;
-        // X11 gets its window class from the platform options.
         WaylandWindow.SetAppId(this, DesktopEntry.Id);
     }
 
@@ -64,8 +63,7 @@ public partial class MainWindow : Window
         }
     }
 
-    /// <summary>Moves the window when its own title bar is dragged, and maximizes or restores it on a double click.</summary>
-    /// <remarks>Only where the window draws its title bar: elsewhere the desktop's title bar does this.</remarks>
+    /// <summary>Moves, maximizes or restores the window from its drawn title bar.</summary>
     private void OnTitleBarPressed(object? sender, PointerPressedEventArgs e)
     {
         if (!IsExtendedIntoWindowDecorations || e.Source is not StyledElement source || !source.Classes.Contains("titleBar")
@@ -94,13 +92,10 @@ public partial class MainWindow : Window
     }
 
     /// <summary>Brings the window forward.</summary>
-    /// <param name="activationToken">
-    /// On Wayland, the activation token that the launcher of the request set, which lets the compositor
-    /// focus the window.
-    /// </param>
+    /// <param name="activationToken">The Wayland activation token from the request's launcher, if any.</param>
     public void Raise(string? activationToken = null)
     {
-        // Wayland does not tell a window that it is minimized, and activating it restores it.
+        // Wayland does not report minimizing, and activation restores the window.
         if (WaylandWindow.IsWayland(this))
         {
             WaylandWindow.Activate(this, activationToken);

@@ -19,7 +19,7 @@ public partial class App : Application
     /// <summary>Files named on the command line of the first launch.</summary>
     internal static IReadOnlyList<string> StartupRequests { get; set; } = [];
 
-    /// <summary>The activation token that the launcher of the first launch set, if any.</summary>
+    /// <summary>The activation token from the first launch's launcher.</summary>
     internal static string? StartupActivationToken { get; set; }
 
     internal static SingleInstance? Instance { get; set; }
@@ -51,8 +51,6 @@ public partial class App : Application
             window.Opened += (_, _) =>
             {
                 Program.Trace("window opened");
-                // The token ends the launcher's startup notification and lets the new window take focus.
-                // X11 window managers decide focus without it.
                 if (StartupActivationToken is { } token && WaylandWindow.IsWayland(window))
                     WaylandWindow.Activate(window, token);
                 shell.ReportUnreadable(services.Unreadable);

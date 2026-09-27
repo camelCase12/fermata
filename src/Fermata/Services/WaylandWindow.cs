@@ -6,20 +6,12 @@ using NWayland.Protocols.XdgShell;
 
 namespace Fermata.Services;
 
-/// <summary>The Wayland requests for a window that Avalonia 12.1 does not make: the app ID and activation.</summary>
+/// <summary>The app ID and activation requests for a window on Avalonia's Wayland backend.</summary>
 /// <remarks>
-/// <para>
-/// Avalonia's Wayland backend sends no <c>xdg_toplevel.set_app_id</c>, so desktops could not match the
-/// window to its launcher entry, name and icon. Its <c>Window.Activate</c> does nothing, so a second launch
-/// could not bring the window forward. This class makes both requests on the backend's own protocol
-/// objects. It reaches them through members that are internal to Avalonia.Wayland 12.1.3, with
-/// <see cref="UnsafeAccessorAttribute"/>, which the native build resolves at compile time. If an update
-/// renames them, the requests are skipped and one line on standard error says why.
-/// </para>
-/// <para>
-/// The protocol objects belong to the backend's Wayland thread, so every request is posted to that thread.
-/// An exception there would end the thread, so none escapes.
-/// </para>
+/// The requests use the backend's protocol objects, which are internal to Avalonia.Wayland 12.1.3 and are
+/// reached with <see cref="UnsafeAccessorAttribute"/>. If they are missing, the requests are skipped and
+/// one line goes to standard error. Every request runs on the backend's Wayland thread and catches its
+/// own exceptions, since one escaping would end that thread.
 /// </remarks>
 internal static class WaylandWindow
 {
@@ -34,20 +26,19 @@ internal static class WaylandWindow
 
     private static int reported;
 
-    /// <summary>Whether the window is shown by Avalonia's Wayland backend, rather than on X11 or XWayland.</summary>
+    /// <summary>Whether the window belongs to Avalonia's Wayland backend.</summary>
     public static bool IsWayland(TopLevel window) => window.PlatformImpl?.GetType().FullName == "Avalonia.Wayland.WindowImpl";
 
-    /// <summary>Sets the app ID, the name of the launcher entry that desktops take the window's name and icon from.</summary>
-    /// <remarks>Call it before the window is shown, so the compositor has the ID before the window appears.</remarks>
+    /// <summary>Sets the window's app ID.</summary>
+    /// <remarks>Call it before the window is shown.</remarks>
     public static void SetAppId(Window window, string appId) =>
         Post(window, "set the app ID", surface => GetXdgToplevel(surface)?.SetAppId(appId));
 
     /// <summary>Asks the compositor to focus the window.</summary>
     /// <param name="window">The window.</param>
     /// <param name="token">
-    /// The activation token that the launcher of this request set, or null to ask the compositor for one.
-    /// A requested token carries no input event to vouch for it, so the compositor may only mark the
-    /// window as wanting attention.
+    /// The activation token from the launcher, or null to request one. Compositors usually only mark the
+    /// window as wanting attention for a requested token.
     /// </param>
     public static void Activate(Window window, string? token) =>
         Post(window, "activate the window", surface =>
@@ -69,7 +60,7 @@ internal static class WaylandWindow
                 OnDone = (sender, issued) => Run("activate the window", () =>
                 {
                     sender.Destroy();
-                    // The window may have closed, or been recreated for a new connection, meanwhile.
+                    // The window may have closed or been recreated meanwhile.
                     if (GetWlSurface(surface) == wlSurface)
                         activation.Activate(issued, wlSurface);
                     activation.Destroy();
@@ -79,10 +70,10 @@ internal static class WaylandWindow
             request.Commit();
         });
 
-    /// <summary>Runs a request on the Wayland thread with the backend's surface object for the window.</summary>
+    /// <summary>Runs a request on the Wayland thread with the window's surface object.</summary>
     private static void Post(Window window, string what, Action<object> request)
     {
-        // The accessors do not check the types of the objects they are given, so this must.
+        // The accessors do not check the types of their arguments.
         if (!IsWayland(window))
             return;
         try
@@ -119,7 +110,7 @@ internal static class WaylandWindow
             Console.Error.WriteLine($"fermata: could not {what} on Wayland: {error.GetType().Name}: {error.Message}");
     }
 
-    // UI thread: the window's platform object, its surface proxy and the Wayland thread's queue.
+    // Used on the UI thread.
 
     [UnsafeAccessor(UnsafeAccessorKind.Method, Name = "get_SurfaceProxy")]
     [return: UnsafeAccessorType(ShellSurfaceProxy)]
@@ -136,7 +127,7 @@ internal static class WaylandWindow
     [UnsafeAccessor(UnsafeAccessorKind.Method, Name = "PostOob")]
     private static extern void PostOob([UnsafeAccessorType(WorkerClient)] object client, Action callback);
 
-    // Wayland thread: the surface's protocol objects and the compositor's globals.
+    // Used on the Wayland thread.
 
     [UnsafeAccessor(UnsafeAccessorKind.Field, Name = "_xdgTopLevel")]
     private static extern ref XdgToplevel? GetXdgToplevel([UnsafeAccessorType(Toplevel)] object surface);

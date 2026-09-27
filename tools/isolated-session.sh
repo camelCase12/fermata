@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
 # Runs a command in a private headless sway session with XWayland, its own D-Bus session bus and
 # XDG directories, and silent audio (FERMATA_AUDIO_OUTPUT=null). Inside, DISPLAY points at XWayland
-# and WAYLAND_DISPLAY at sway, so Fermata opens a Wayland window; FERMATA_PLATFORM=x11 opens an X11
-# one through XWayland. tools/pointer.c and tools/keyboard.c drive either; tools/xinput.c only X11.
+# and WAYLAND_DISPLAY at sway.
 #
 #   tools/isolated-session.sh COMMAND [ARGS…]
 #

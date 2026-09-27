@@ -71,8 +71,7 @@ internal static class Program
             return 1;
         if (lines.Count == 0)
             lines.Add("raise");
-        // A Wayland compositor lets a window take focus with the token that the launcher set.
-        // It is used once, so child processes must not inherit it.
+        // The token is valid once, so child processes must not inherit it.
         string? activationToken = Environment.GetEnvironmentVariable("XDG_ACTIVATION_TOKEN") is { Length: > 0 } token ? token : null;
         Environment.SetEnvironmentVariable("XDG_ACTIVATION_TOKEN", null);
         if (activationToken is not null && lines.Any(l => l == "raise" || l.StartsWith("open\t", StringComparison.Ordinal)))
@@ -97,7 +96,7 @@ internal static class Program
         // Commands for a running instance mean nothing when this is the first one.
         App.StartupRequests = lines.Where(l => l.StartsWith("open\t", StringComparison.Ordinal)).ToList();
         App.StartupActivationToken = activationToken;
-        if (DisplayScaling.Apply() is { } factors)
+        if (!UsesWayland && DisplayScaling.Apply() is { } factors)
             Trace("screen scale factors " + factors);
         App.Instance = instance;
         try
@@ -126,20 +125,20 @@ internal static class Program
             .UsePlatformDetect()
             .WithFermataFonts()
             .With(x11);
-        if (!OperatingSystem.IsLinux())
+        if (!UsesWayland)
             return builder;
-
         var wayland = new WaylandPlatformOptions();
         if (rendering == "software")
             wayland.GlProfiles = [];
         builder = builder.With(wayland);
-
-        return Environment.GetEnvironmentVariable("FERMATA_PLATFORM") switch
-        {
-            "x11" => builder,
-            "wayland" => builder.UseWayland(),
-            _ when Environment.GetEnvironmentVariable("WAYLAND_DISPLAY") is { Length: > 0 } => builder.UseWaylandWithFallback(),
-            _ => builder,
-        };
+        return Environment.GetEnvironmentVariable("FERMATA_PLATFORM") == "wayland" ? builder.UseWayland() : builder.UseWaylandWithFallback();
     }
+
+    /// <summary>Whether Fermata opens a Wayland window rather than an X11 one.</summary>
+    private static bool UsesWayland => Environment.GetEnvironmentVariable("FERMATA_PLATFORM") switch
+    {
+        "x11" => false,
+        "wayland" => true,
+        _ => !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("WAYLAND_DISPLAY")),
+    };
 }

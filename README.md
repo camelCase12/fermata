@@ -43,12 +43,10 @@ unpack it and run `./install.sh`. That puts Fermata in `~/.local` with a launche
 `./install.sh --uninstall` takes it back out. By default it reads your `~/Music` folder. You can change
 that in Settings.
 
-It runs natively on Wayland, and on X11. On desktops that leave window decorations to apps, such as
-GNOME, Fermata draws its own: the top row is the title bar, and the window buttons sit at its right end.
-Wayland support comes from Avalonia's Wayland backend, which is new. If something looks wrong on
-Wayland, `FERMATA_PLATFORM=x11 fermata` runs Fermata through XWayland instead. Please report the
-problem too. Through XWayland, Fermata matches each monitor's scale. To pick a scale yourself there, set
-`AVALONIA_GLOBAL_SCALE_FACTOR` (for example to `1.5`).
+It runs natively on Wayland, and on X11. Wayland support is new, so if something looks wrong there,
+please report it. In the meantime, `FERMATA_PLATFORM=x11 fermata` runs Fermata through XWayland, where
+it matches each monitor's scale. To pick a scale yourself there, set `AVALONIA_GLOBAL_SCALE_FACTOR`
+(for example to `1.5`).
 
 You can also control it from the command line:
 
@@ -61,8 +59,7 @@ Media keys work too.
 
 ## Building
 
-You need the .NET 10 SDK and clang. `global.json` selects the newest .NET 10 SDK installed, even when a
-newer major version is installed too.
+You need the .NET 10 SDK and clang.
 
 ```sh
 ./build.sh          # builds bin/fermata/fermata

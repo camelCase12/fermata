@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
-# Starts Fermata as a Wayland client and as an X11 client (through XWayland), and checks that each
-# window appears with the identity that desktops match to the launcher entry, that the Wayland
-# requests Fermata makes itself report no failure, and that Fermata then quits cleanly on SIGTERM.
-# Runs inside tools/isolated-session.sh, which provides sway:
+# Opens Fermata as a Wayland client and as an X11 client, and checks each window's app ID or class,
+# that no Wayland request failed, and that Fermata quits cleanly on SIGTERM. It runs inside
+# tools/isolated-session.sh:
 #
 #   tools/isolated-session.sh tools/check-platforms.sh [EXECUTABLE]
 #

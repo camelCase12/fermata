@@ -52,7 +52,7 @@
     <controls:AmbientBackdrop Covers="{Binding Player.Art, Converter={x:Static views:Converters.OneCover}}"
                               FadeStart="0.3" FadeEnd="1" FadeAmount="0.55" />
     <Grid ColumnDefinitions="*,460" RowDefinitions="Auto,*" Margin="28,16,28,20">
-      <!-- The empty space of the top row is the title bar, when the window draws its own. -->
+      <!-- The title bar, when the window draws its own. -->
       <Border Grid.ColumnSpan="2" Classes="titleBar" Background="Transparent" Margin="-28,-16,-28,0" />
       <Button Theme="{StaticResource IconButton}" Command="{Binding CloseCommand}" ToolTip.Tip="Close (Esc)" HorizontalAlignment="Left">
         <PathIcon Data="{StaticResource Icon.ChevronDown}" Width="36" Height="36" />

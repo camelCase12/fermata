@@ -106,10 +106,7 @@
         </Style>
       </ControlTheme>
 
-      <!-- The frame, shadow and window buttons that Avalonia draws where the compositor leaves decorations
-           to the window, as GNOME does on Wayland. There is no title bar: the window's own top row takes its
-           place, and the buttons sit at its right end (see MainWindow). The shadow's width is also where the
-           edges can be dragged to resize. -->
+      <!-- The window decorations Fermata draws when the compositor does not draw them. -->
       <ControlTheme x:Key="WindowDecorations" TargetType="WindowDrawnDecorations">
         <Setter Property="DefaultTitleBarHeight" Value="0" />
         <Setter Property="DefaultFrameThickness" Value="1" />
@@ -158,8 +155,6 @@
           </WindowDrawnDecorationsTemplate>
         </Setter>
 
-        <!-- A normal window: rounded corners, a soft shadow and a thin outline. MainWindow rounds its content to
-             match, and the background fills the corners between the two. -->
         <Style Selector="^:has-shadow /template/ Border#Frame">
           <Setter Property="Margin" Value="{TemplateBinding ShadowThickness}" />
           <Setter Property="Background" Value="{DynamicResource BackgroundBrush}" />

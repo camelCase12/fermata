@@ -11,14 +11,12 @@
         Width="1280" Height="820" MinWidth="860" MinHeight="560"
         Background="Transparent" ExtendClientAreaToDecorationsHint="True"
         WindowDecorationsTheme="{StaticResource WindowDecorations}">
-  <!-- The class drawnTitleBar marks a window that draws its own title bar, which Wayland compositors
-       without server-side decorations (GNOME) ask for: the top rows take its place, and the window
-       buttons sit at their right end. The class framed marks a window that also draws its frame. -->
+  <!-- The class drawnTitleBar marks a window that draws its own title bar, and framed one that also draws its frame. -->
   <Window.Styles>
     <Style Selector="Border#TopBar">
       <Setter Property="Padding" Value="24,14,24,6" />
     </Style>
-    <!-- Room for the window buttons: three of 32 px, 4 px apart and 16 px from the edge, then a 16 px gap. -->
+    <!-- Leaves room for the window buttons. -->
     <Style Selector="Window.drawnTitleBar Border#TopBar">
       <Setter Property="Padding" Value="24,14,136,6" />
     </Style>
@@ -27,7 +25,6 @@
       <Setter Property="ClipToBounds" Value="True" />
     </Style>
   </Window.Styles>
-  <!-- Inside the frame and shadow, when the window draws them. -->
   <Border Name="Root" Background="{DynamicResource BackgroundBrush}" Margin="{Binding $parent[Window].WindowDecorationMargin}">
     <Grid RowDefinitions="*,Auto">
       <Grid ColumnDefinitions="236,*">
@@ -125,7 +122,6 @@
         <Grid Grid.Column="1" RowDefinitions="Auto,*" IsEnabled="{Binding !Shell.IsNowPlayingOpen}">
           <controls:AmbientBackdrop Grid.RowSpan="2" Covers="{Binding Shell.Navigator.Current.Backdrop}"
                                     AlignTop="True" FadeStart="0" FadeEnd="0.8" />
-          <!-- Its empty space is the title bar, when the window draws its own. -->
           <Border Name="TopBar" Classes="titleBar" Background="Transparent">
             <Grid ColumnDefinitions="Auto,Auto,*,Auto">
               <Button Theme="{StaticResource IconButton}" Command="{Binding BackCommand}" Width="32" Height="32"

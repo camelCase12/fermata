@@ -124,8 +124,8 @@ file has the same identity, its history moves to that file, and playlists are up
 ## UI and performance
 
 **Nothing polls.** While paused, minimized or idle, no timer runs and CPU use is effectively zero.
-(Wayland does not tell a window that it is minimized or hidden, so there the position timer keeps
-running while a song plays. The compositor stops asking for frames, so nothing is drawn.) While
+The exception is a minimized or hidden Wayland window, which is not told so: the position timer
+keeps running while a song plays, though nothing is drawn. While
 playing, the one timer is the position timer. Its interval is the time the progress bar takes to
 move one pixel (every ~150 ms for a four-minute song on a wide window, clamped to 40 ms–1 s). The
 seek bar invalidates only when its fill has moved by at least one device pixel, and text is updated
@@ -206,8 +206,7 @@ noise of the measurement, in either style.
 **Renderer.** OpenGL. Measured while playing on an RTX 4080, Vulkan used about 40% more memory
 (it loads both GPUs' drivers) and more CPU. The software renderer uses less memory but about four
 times the CPU. `FERMATA_RENDERING` overrides the choice. On Wayland, OpenGL goes through EGL and
-Vulkan is not available. For `FERMATA_RENDERING=software` the Wayland backend is given no OpenGL
-versions to try, so it draws on the CPU into shared memory.
+Vulkan is not available.
 
 **Memory.** With a small library the process is about 300–340 MB resident, and most of that is the
 GPU driver: its libraries (shared with every other GL program) and its allocations. Fermata's own
@@ -230,42 +229,30 @@ second signal exits at once.
 - **MPRIS** (`org.mpris.MediaPlayer2.fermata`) over Tmds.DBus.Protocol, which works under NativeAOT:
   play/pause, next, previous, seek, volume, shuffle, loop status, metadata and cover art. Embedded
   covers are exported to the cache so other programs can show them. Media keys on most desktops go
-  through this. Its `DesktopEntry` is the launcher entry's ID, `io.github.camelcase12.Fermata`, so
-  desktops show Fermata's name and icon beside the controls, and GNOME brings the window forward
-  itself when they are clicked.
+  through this. Its `DesktopEntry` is the launcher entry's ID, `io.github.camelcase12.Fermata`.
 - **One instance.** A second launch sends its files or command (`--play-pause`, `--next`, …) over a
-  Unix socket in `$XDG_RUNTIME_DIR` and exits, in about 6 ms. When the request brings the window
-  forward, it also passes on the activation token that its launcher set (see below).
-- **Wayland.** In a Wayland session (`WAYLAND_DISPLAY` set), Fermata opens a Wayland window through
-  Avalonia's Wayland backend, which Avalonia 12.1 still calls experimental. If the compositor cannot
-  be used, it falls back to an X11 window through XWayland. `FERMATA_PLATFORM=x11` or `wayland`
-  decides instead, without the fallback. A Wayland window is sharp at fractional scales, and while a
-  song plays it takes less CPU than the XWayland window (see Performance).
+  Unix socket in `$XDG_RUNTIME_DIR` and exits, in about 6 ms. It passes on its launcher's
+  activation token too.
+- **Wayland.** In a Wayland session Fermata opens a Wayland window through Avalonia's Wayland backend,
+  which is still experimental in Avalonia 12.1, and falls back to XWayland if that fails.
+  `FERMATA_PLATFORM=x11` or `wayland` picks one without the fallback.
 
-  Avalonia.Wayland 12.1.3 sends no app ID, and its `Window.Activate` does nothing. `WaylandWindow`
-  makes both requests itself, on the backend's own protocol objects and on its Wayland thread. It
-  reaches them through members that are internal to Avalonia, with `UnsafeAccessor`, which the native
-  build resolves at compile time. If an update renames them, the requests are skipped with one line
-  on standard error, which fails CI (`tools/check-platforms.sh`).
+  Avalonia.Wayland 12.1.3 sends no app ID, and its `Window.Activate` does nothing, so `WaylandWindow`
+  makes both requests on the backend's internal protocol objects through `UnsafeAccessor`. If an
+  Avalonia update renames those, the requests are skipped with one line on standard error, and
+  `tools/check-platforms.sh` fails in CI. Once an Avalonia release has an app ID option (pull request
+  22209), that can replace the app ID request.
 
-  - The app ID is the launcher entry's ID, so desktops match the window to the launcher, its name and
-    its icon. It is sent before the window first appears, but after its first empty commit, so KWin
-    window rules that apply only when a window is created do not see it. Avalonia has approved an app
-    ID option (pull request 22209); once a release has it, the app ID can come from there.
-  - The activation token that a launcher sets in `XDG_ACTIVATION_TOKEN` is used when the window first
-    opens, which ends the launch feedback and lets the new window take focus. A second launch forwards
-    its token, so opening a song from a file manager brings the running window forward. Without a
-    token (MPRIS Raise, a launch from a terminal), Fermata asks the compositor for one, and the
-    compositor then usually just marks the window as wanting attention.
-  - The window's icon comes from the installed launcher entry; the window does not send one.
-- **Window decorations.** Where the compositor draws title bars (KDE, sway, and X11 window managers),
-  Fermata keeps the desktop's own. Where it leaves them to the window, as GNOME does, Avalonia draws
-  the decorations and Fermata gives them its own look (`WindowDecorations` in `Styles/Controls.axaml`).
-  There is no separate title bar. The window's top rows take its place: their empty space moves the
-  window, a double click there maximizes it, and the minimize, maximize and close buttons sit at the
-  right end of the top row. The window has rounded corners, a soft shadow and a thin outline, and the
-  shadow's width at the edges resizes it. GNOME's setting for which window buttons to show is not
-  followed; all three always show.
+  - The app ID is the launcher entry's ID. It is sent after the window's first commit, so KWin rules
+    that match only when a window is created do not see it.
+  - The window takes focus with the launcher's `XDG_ACTIVATION_TOKEN` when it first opens, and with a
+    second launch's token when that launch raises it. Without a token, as for MPRIS Raise, Fermata
+    requests one, and compositors usually only mark the window as wanting attention.
+- **Window decorations.** Where the compositor draws window decorations, Fermata uses them. Where it
+  does not, as on GNOME, Fermata draws its own, styled by `WindowDecorations` in
+  `Styles/Controls.axaml`. The empty space of the top row is the title bar, the minimize, maximize and
+  close buttons sit at its right end, and the window has rounded corners, a shadow and a thin outline.
+  All three buttons always show, whatever GNOME's button setting.
 - **X11.** The window class is `fermata`, matching `StartupWMClass` in the launcher entry.
 
 ## Testing
@@ -301,9 +288,8 @@ compositor's virtual pointer), `tools/keyboard.c` (its virtual keyboard) and `to
 keys, for X11 windows only), without touching the real desktop.
 
 `tools/check-platforms.sh`, which CI runs in that session, opens Fermata as a Wayland client and as
-an X11 client. It checks that each window carries the identity desktops match to the launcher entry
-(the app ID on Wayland, the window class on X11), that the Wayland requests Fermata makes itself
-report no failure, and that Fermata then quits cleanly on SIGTERM.
+an X11 client. It checks each window's app ID or class, that no Wayland request failed, and that
+Fermata quits cleanly on SIGTERM.
 
 ## Choices
 
@@ -353,13 +339,17 @@ compositor session:
 | 50,000-song library: heap / resident after browsing | ~41 MB / ~400 MB |
 | Scrolling 50,000 songs as fast as the wheel goes | ~17% of one core while scrolling |
 
-The table was measured with the X11 window. On a Ryzen 7 8845H laptop (Radeon 780M, OpenGL), in the
-same headless session with 20–40 s songs (so the position timer ran at its fastest), the Wayland
-window compared with the X11 one as follows. Start to window shown (until sway listed the window):
-~220 ms against ~265 ms. Playing with the window visible: 2.4% against 3.5% of one core, the render
-thread taking half as much. Idle and paused: at most 0.1% for both. Resident memory: ~220 MB for
-both. Playing with the window hidden on another workspace: ~2% against ~1.2%, because the Wayland
-window cannot tell that it is hidden.
+The table was measured with the X11 window. The Wayland and X11 windows compare as follows, measured
+in the same session on a Ryzen 7 8845H laptop (Radeon 780M, OpenGL) with 20–40 s songs, so the
+position timer ran at its fastest.
+
+| | Wayland | X11 |
+| --- | --- | --- |
+| Start to window shown | ~220 ms | ~265 ms |
+| Playing, window visible | 2.4% of one core | 3.5% of one core |
+| Playing, window hidden | ~2% | ~1.2% |
+| Idle or paused | at most 0.1% | at most 0.1% |
+| Resident memory | ~220 MB | ~220 MB |
 
 
 ### Development
@@ -390,8 +380,8 @@ screenshotted without touching your desktop, audio or files. `tools/pointer.c` (
 virtual pointer), `tools/keyboard.c` (its virtual keyboard) and `tools/xinput.c` (XTEST keys, for
 X11 windows) drive it; build instructions are at the top of each file.
 
-Environment variables for troubleshooting: `FERMATA_PLATFORM=wayland|x11` picks the window system
-(a Wayland session uses Wayland, falling back to XWayland), `FERMATA_RENDERING=gl|vulkan|software`
+Environment variables for troubleshooting: `FERMATA_PLATFORM=wayland|x11` picks the window system,
+`FERMATA_RENDERING=gl|vulkan|software`
 picks the renderer, `FERMATA_AUDIO_OUTPUT` sets mpv's audio output (`null` for silence),
 `FERMATA_MPV_LOG=FILE` writes mpv's detailed log to a file, and `FERMATA_TRACE_STARTUP=1` prints
 startup timings.
