@@ -72,7 +72,18 @@ done
 mkdir -p "$prefix/bin"
 ln -sfn "$lib/fermata" "$prefix/bin/fermata"
 remove_launcher_files
-install -Dm644 "packaging/$id.desktop" "$applications/$id.desktop"
+# The launcher runs the executable by its full path, since a desktop session's PATH often lacks $prefix/bin.
+command="$lib/fermata"
+if [[ "$command" =~ [^A-Za-z0-9/._+-] ]]; then
+    # Quoted as the desktop entry spec asks, with its string escapes applied on top.
+    command="\"$(printf '%s' "$command" | sed 's/[\\]/\\\\\\\\/g; s/["`$]/\\\\&/g')\""
+fi
+mkdir -p "$applications"
+while IFS= read -r line; do
+    [[ "$line" == Exec=fermata* ]] && line="Exec=$command${line#Exec=fermata}"
+    printf '%s\n' "$line"
+done < "packaging/$id.desktop" > "$applications/$id.desktop"
+chmod 644 "$applications/$id.desktop"
 install -Dm644 "packaging/$id.metainfo.xml" "$metainfo/$id.metainfo.xml"
 install -Dm644 "$assets/fermata.svg" "$icons/scalable/apps/$id.svg"
 for size in "${sizes[@]}"; do
@@ -82,5 +93,6 @@ refresh_launchers
 echo "Installed Fermata in $prefix (run: fermata)"
 case ":$PATH:" in
     *":$prefix/bin:"*) ;;
-    *) echo "Note: $prefix/bin is not on PATH" ;;
+    *) echo "Note: $prefix/bin is not on PATH, so the fermata command only works from the launcher."
+       echo "      To use it in a terminal, add this to your shell's startup file: export PATH=\"$prefix/bin:\$PATH\"" ;;
 esac
