@@ -19,6 +19,14 @@ public partial class QueueRow : UserControl
             if (entry is not null)
                 App.Services?.Player.RemoveFromQueue([entry]);
         };
+        PlayOverlay.PointerPressed += (_, e) =>
+        {
+            if (entry is not null && e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
+            {
+                App.Services?.Player.JumpTo(entry);
+                e.Handled = true;
+            }
+        };
         ContextRequested += (_, e) =>
         {
             if (entry is null || App.Shell is not { } shell || App.Services is not { } services)

@@ -8,10 +8,11 @@
              x:DataType="playback:QueueEntry"
              Background="Transparent">
   <UserControl.Styles>
-    <Style Selector="views|QueueRow Button#RemoveButton, views|QueueRow Border#PlayingOverlay">
+    <Style Selector="views|QueueRow Button#RemoveButton, views|QueueRow Border#PlayingOverlay, views|QueueRow Border#PlayOverlay">
       <Setter Property="IsVisible" Value="False" />
     </Style>
-    <Style Selector="ListBoxItem:pointerover views|QueueRow:not(.current) Button#RemoveButton">
+    <Style Selector="ListBoxItem:pointerover views|QueueRow:not(.current) Button#RemoveButton,
+                     ListBoxItem:pointerover views|QueueRow:not(.current) Border#PlayOverlay">
       <Setter Property="IsVisible" Value="True" />
     </Style>
     <Style Selector="ListBoxItem:pointerover views|QueueRow TextBlock#Duration">
@@ -65,6 +66,9 @@
       <controls:CoverArt Name="Art" Width="42" Height="42" Radius="6" />
       <Border Name="PlayingOverlay" Background="{DynamicResource ShadeStrongBrush}" CornerRadius="6">
         <PathIcon Data="{StaticResource Icon.Equalizer}" Classes="small" Foreground="{DynamicResource AccentBrush}" />
+      </Border>
+      <Border Name="PlayOverlay" Background="{DynamicResource ShadeBrush}" CornerRadius="6" Cursor="Hand" ToolTip.Tip="Play from here">
+        <PathIcon Data="{StaticResource Icon.Play}" Foreground="{DynamicResource OnTintPrimaryBrush}" />
       </Border>
     </Panel>
     <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="12,0" Spacing="2">
